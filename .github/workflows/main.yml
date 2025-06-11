@@ -90,6 +90,8 @@ jobs:
           FORMANCE_CLOUD_API_ENDPOINT: https://app.staging.formance.cloud/api
           FORMANCE_CLOUD_CLIENT_ID: ${{ secrets.FORMANCE_CLOUD_CLIENT_ID }}
           FORMANCE_CLOUD_CLIENT_SECRET: ${{ secrets.FORMANCE_CLOUD_CLIENT_SECRET }}
+          FORMANCE_CLOUD_REGION_NAME: ${{ secrets.FORMANCE_CLOUD_REGION_NAME }}
+          FORMANCE_CLOUD_ORGANIZATION_ID: ${{ secrets.FORMANCE_CLOUD_ORGANIZATION_ID }}
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:

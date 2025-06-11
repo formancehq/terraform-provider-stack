@@ -26,9 +26,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
-      - name: Add the OpenAPI file to the release assets
-        run: >
-          gh release upload ${{github.ref_name}} ./openapi.yaml#openapi.yaml
-
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_FULL_FP: ${{ secrets.GPG_FULL_FP }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
