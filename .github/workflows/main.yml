@@ -1,0 +1,125 @@
+name: Main
+on:
+  merge_group:
+  push:
+    branches:
+      - main
+      - release/*
+  pull_request:
+    types: [assigned, opened, synchronize, reopened, labeled]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  PR:
+    if: github.event_name == 'pull_request'
+    name: Check PR Title
+    runs-on: "shipfox-2vcpu-ubuntu-2404"
+    timeout-minutes: 1
+    permissions:
+      statuses: write
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  Dirty:
+    runs-on: "shipfox-2vcpu-ubuntu-2404"
+    name: "Dirty (Pre-commit)"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - name: Setup Nix
+        uses: ./.github/actions/default
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: >
+          nix develop --impure --command just pre-commit
+
+      - name: Get changed files
+        id: changed-files
+        shell: bash
+        run: "hasChanged=$(git status --porcelain) \nif (( $(echo ${#hasChanged}) != 0 )); then\n  git status\n  echo \"There are changes in the repository\"\n  git diff\n  exit 1\nfi\n"
+  TestsUnit:
+    name: "Tests (Unit)"
+    runs-on: "shipfox-4vcpu-ubuntu-2404"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - name: Setup Nix
+        uses: ./.github/actions/default
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Run unit tests
+        run: >
+          nix develop --impure --command just tests-unit
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit-report
+          path: ./coverage/coverage_unit.txt
+  TestsIntegration:
+    name: "Tests (Integration)"
+    runs-on: "shipfox-8vcpu-ubuntu-2404"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - name: Setup Nix
+        uses: ./.github/actions/default
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - name: Run integration tests
+        run: >
+          nix develop --impure --command just tests-integration ci
+
+        env:
+          PATH: ${PATH}:${PWD}/build
+          FORMANCE_CLOUD_API_ENDPOINT: https://app.staging.formance.cloud/api
+          FORMANCE_CLOUD_CLIENT_ID: ${{ secrets.FORMANCE_CLOUD_CLIENT_ID }}
+          FORMANCE_CLOUD_CLIENT_SECRET: ${{ secrets.FORMANCE_CLOUD_CLIENT_SECRET }}
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-integration-report
+          path: ./coverage/coverage_integration.txt
+  Tests:
+    runs-on: "shipfox-2vcpu-ubuntu-2404"
+    name: "Tests (Upload Coverage)"
+    needs:
+      - TestsUnit
+      - TestsIntegration
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - name: Setup Nix
+        uses: ./.github/actions/default
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Download a report artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage
+          pattern: coverage-*
+          merge-multiple: true
+      - name: Cover
+        run: nix develop --impure --command just coverage
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v5.1.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: coverage/coverage_unit.txt, coverage/coverage_integration.txt
