@@ -7,6 +7,7 @@ import (
 	formance "github.com/formancehq/formance-sdk-go/v3"
 )
 
+// NewStackClient creates a Formance API client configured with token-based authentication and a custom User-Agent header.
 func NewStackClient(url string, version string, transport http.RoundTripper, tp TokenProviderImpl) (*formance.Formance, error) {
 	return formance.New(
 		formance.WithServerURL(url),
@@ -45,6 +46,7 @@ func (s *stackHttpTransport) RoundTrip(request *http.Request) (*http.Response, e
 	return s.underlyingTransport.RoundTrip(request)
 }
 
+// newStackHTTPTransport creates a stackHttpTransport that injects authentication tokens and default headers into HTTP requests using the provided token provider and underlying transport.
 func newStackHTTPTransport(tp TokenProviderImpl, transport http.RoundTripper, defaultHeaders map[string][]string) *stackHttpTransport {
 	return &stackHttpTransport{
 		underlyingTransport: transport,

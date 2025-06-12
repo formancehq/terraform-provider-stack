@@ -32,12 +32,14 @@ type TokenProvider struct {
 	token *cloudpkg.TokenInfo
 }
 
+// NewTokenProviderFn returns a factory function that creates a TokenProviderImpl for a given HTTP transport, credentials, token provider, and stack.
 func NewTokenProviderFn() TokenProviderFactory {
 	return func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack Stack) TokenProviderImpl {
 		return NewTokenProvider(transport, creds, tokenProvider, stack)
 	}
 }
 
+// NewTokenProvider creates a TokenProvider configured with the specified HTTP transport, credentials, token provider, and stack information.
 func NewTokenProvider(
 	transport http.RoundTripper,
 	creds cloudpkg.Creds,

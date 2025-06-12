@@ -16,10 +16,12 @@ import (
 	"go.uber.org/fx"
 )
 
+// init enables Cobra's TraverseRunHooks to allow persistent pre-run and post-run hooks to be executed for all subcommands.
 func init() {
 	cobra.EnableTraverseRunHooks = true
 }
 
+// Execute runs the CLI application by initializing and executing the root Cobra command.
 func Execute() {
 	app := &App{}
 	service.Execute(app.CobraCommand())
@@ -60,6 +62,8 @@ func (a *App) CobraCommand() *cobra.Command {
 	return cmd
 }
 
+// logToFile creates or opens the log file for the application in the user's home directory and ensures appropriate permissions.
+// Returns a writable file handle or an error if the operation fails.
 func logToFile() (io.Writer, error) {
 	formanceDir := path.Join(os.Getenv("HOME"), ".formance")
 	if err := os.MkdirAll(formanceDir, 0755); err != nil {
@@ -128,6 +132,7 @@ func (app *App) postRunE(cmd *cobra.Command, args []string) error {
 	).Run(cmd)
 }
 
+// runServe injects the server module into the Fx options within the command context to prepare the application for execution.
 func runServe(cmd *cobra.Command, args []string) error {
 	cmd.SetContext(contextWithFxOpts(cmd.Context(), fx.Options(
 		fxOptsFromContext(cmd.Context()),

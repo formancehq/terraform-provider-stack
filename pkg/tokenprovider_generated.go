@@ -29,7 +29,7 @@ type MockTokenProviderImplMockRecorder struct {
 	mock *MockTokenProviderImpl
 }
 
-// NewMockTokenProviderImpl creates a new mock instance.
+// NewMockTokenProviderImpl returns a new MockTokenProviderImpl initialized with the provided gomock.Controller.
 func NewMockTokenProviderImpl(ctrl *gomock.Controller) *MockTokenProviderImpl {
 	mock := &MockTokenProviderImpl{ctrl: ctrl}
 	mock.recorder = &MockTokenProviderImplMockRecorder{mock}

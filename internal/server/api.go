@@ -31,6 +31,7 @@ func (a *API) Run(ctx context.Context, debug bool) error {
 
 	return nil
 }
+// NewAPI creates a new API instance with the provided provider factory.
 func NewAPI(factory ProviderFactory) *API {
 	return &API{
 		factory: factory,

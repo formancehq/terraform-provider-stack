@@ -9,6 +9,7 @@ import (
 	"go.uber.org/fx"
 )
 
+// NewVersion creates a Cobra command that logs and displays the Terraform provider's version information, then shuts down the application.
 func NewVersion() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",

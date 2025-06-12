@@ -10,6 +10,8 @@ import (
 	"fmt"
 )
 
+// CheckModuleHealth verifies the health status of a specified module in the current stack.
+// It returns an error if the module is not healthy or if the stack version information cannot be retrieved.
 func CheckModuleHealth(ctx context.Context, sdk *formance.Formance, moduleName string) error {
 	stackInfo, err := sdk.GetVersions(ctx)
 	if err != nil {

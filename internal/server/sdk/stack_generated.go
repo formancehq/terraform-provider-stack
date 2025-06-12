@@ -25,7 +25,7 @@ type MockStackSdkImplMockRecorder struct {
 	mock *MockStackSdkImpl
 }
 
-// NewMockStackSdkImpl creates a new mock instance.
+// NewMockStackSdkImpl returns a new MockStackSdkImpl instance for use with GoMock.
 func NewMockStackSdkImpl(ctrl *gomock.Controller) *MockStackSdkImpl {
 	mock := &MockStackSdkImpl{ctrl: ctrl}
 	mock.recorder = &MockStackSdkImplMockRecorder{mock}

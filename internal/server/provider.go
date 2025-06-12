@@ -34,6 +34,7 @@ type ProviderModelAdapter struct {
 	m *FormanceCloudProviderModel
 }
 
+// NewProviderModelAdapter creates a new ProviderModelAdapter that wraps the given FormanceCloudProviderModel.
 func NewProviderModelAdapter(m *FormanceCloudProviderModel) *ProviderModelAdapter {
 	return &ProviderModelAdapter{
 		m: m,
@@ -50,6 +51,7 @@ func (f *ProviderModelAdapter) Endpoint() string {
 	return f.m.Endpoint.ValueString()
 }
 
+// IsOrganizationClient returns true if the clientId starts with "organization_".
 func IsOrganizationClient(clientId string) bool {
 	return strings.HasPrefix(clientId, "organization_")
 }
@@ -351,6 +353,7 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 
 }
 
+// NewStackProvider returns a factory function that creates a new FormanceStackProvider with the specified dependencies and configuration.
 func NewStackProvider(
 	logger logging.Logger,
 	endpoint FormanceStackEndpoint,

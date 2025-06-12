@@ -18,6 +18,7 @@ type defaultStackSdk struct {
 
 type StackSdkFactory func(url string, version string, transport http.RoundTripper, tp pkg.TokenProviderImpl) (StackSdkImpl, error)
 
+// NewStackSdk returns a factory function that creates a StackSdkImpl using the provided URL, version, HTTP transport, and token provider. If client creation fails, an error is returned.
 func NewStackSdk() StackSdkFactory {
 	return func(url, version string, transport http.RoundTripper, tp pkg.TokenProviderImpl) (StackSdkImpl, error) {
 		client, err := pkg.NewStackClient(url, version, transport, tp)

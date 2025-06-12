@@ -37,6 +37,7 @@ type WebhooksModel struct {
 	Secret     types.String `tfsdk:"secret"`
 }
 
+// NewWebhooks returns a factory function that creates a new Webhooks resource with the provided logger.
 func NewWebhooks(logger logging.Logger) func() resource.Resource {
 	return func() resource.Resource {
 		return &Webhooks{

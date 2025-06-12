@@ -21,12 +21,16 @@ const (
 	FormanceStackEndpointKey     = "formance-stack-api-endpoint"
 )
 
+// AddFlags registers command-line flags for Formance Cloud or Stack client ID, client secret, and API endpoint configuration.
 func AddFlags(flagset *pflag.FlagSet) {
 	flagset.String(FormanceStackClientIdKey, "", "Client ID for Formance Cloud (user_%s) or Stack")
 	flagset.String(FormanceStackClientSecretKey, "", "Client Secret for Formance Cloud or Stack")
 	flagset.String(FormanceStackEndpointKey, "https://app.formance.cloud/api", "Endpoint for Formance Cloud")
 }
 
+// NewModule configures and returns an Fx module for integrating with Formance Cloud or Stack.
+//
+// It reads configuration values from the provided flag set, sets up HTTP transport with instrumentation and debugging, and supplies dependencies for the Formance SDK, token providers, stack provider, and API server. The module also registers a lifecycle hook to start the API server asynchronously and handle shutdown on failure.
 func NewModule(ctx context.Context, flagset *pflag.FlagSet) fx.Option {
 	clientId, _ := flagset.GetString(FormanceStackClientIdKey)
 	clientSecret, _ := flagset.GetString(FormanceStackClientSecretKey)

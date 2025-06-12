@@ -30,7 +30,7 @@ type MockCloudSDKMockRecorder struct {
 	mock *MockCloudSDK
 }
 
-// NewMockCloudSDK creates a new mock instance.
+// NewMockCloudSDK returns a new MockCloudSDK instance linked to the provided gomock.Controller for use in tests.
 func NewMockCloudSDK(ctrl *gomock.Controller) *MockCloudSDK {
 	mock := &MockCloudSDK{ctrl: ctrl}
 	mock.recorder = &MockCloudSDKMockRecorder{mock}

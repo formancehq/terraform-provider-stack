@@ -32,6 +32,7 @@ func (s *sdkImpl) ListModules(ctx context.Context, organizationID string, stackI
 
 type CloudFactory func(creds pkg.Creds, transport http.RoundTripper) CloudSDK
 
+// NewCloudSDK returns a factory function that creates a CloudSDK instance using the provided credentials and HTTP transport.
 func NewCloudSDK() CloudFactory {
 	return func(creds pkg.Creds, transport http.RoundTripper) CloudSDK {
 		return &sdkImpl{sdk: pkg.NewSDK(creds, transport)}
