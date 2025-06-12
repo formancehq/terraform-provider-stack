@@ -10,25 +10,48 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/formancehq/terraform-provider-cloud/pkg"
+	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"golang.org/x/oauth2"
 )
 
-type TokenProvider struct {
-	client *http.Client
-
-	creds pkg.Creds
-
-	stack *pkg.TokenInfo
+//go:generate mockgen -destination=tokenprovider_generated.go -package=pkg . TokenProviderImpl
+type TokenProviderImpl interface {
+	StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error)
 }
 
-func NewTokenProvider(client *http.Client, creds pkg.Creds) TokenProvider {
+type TokenProviderFactory func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack Stack) TokenProviderImpl
+
+type TokenProvider struct {
+	client        *http.Client
+	tokenProvider cloudpkg.TokenProviderImpl
+	creds         cloudpkg.Creds
+
+	stack Stack
+	token *cloudpkg.TokenInfo
+}
+
+func NewTokenProviderFn() TokenProviderFactory {
+	return func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack Stack) TokenProviderImpl {
+		return NewTokenProvider(transport, creds, tokenProvider, stack)
+	}
+}
+
+func NewTokenProvider(
+	transport http.RoundTripper,
+	creds cloudpkg.Creds,
+	tokenProvider cloudpkg.TokenProviderImpl,
+	stack Stack,
+) TokenProvider {
 	return TokenProvider{
-		client: client,
-		creds:  creds,
-		stack:  &pkg.TokenInfo{},
+		client: &http.Client{
+			Transport: transport,
+		},
+		creds:         creds,
+		tokenProvider: tokenProvider,
+		stack:         stack,
+		token:         &cloudpkg.TokenInfo{},
 	}
 }
 
@@ -38,15 +61,15 @@ type Stack struct {
 	Uri            string
 }
 
-func (p TokenProvider) StackSecurityToken(ctx context.Context, tokenProvider pkg.TokenProviderImpl, stack Stack) (*pkg.TokenInfo, error) {
-	token, err := tokenProvider.RefreshToken(ctx)
+func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error) {
+	token, err := p.tokenProvider.RefreshToken(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to refresh token: %w", err)
 	}
 
 	form := url.Values{
 		"grant_type":         []string{string(oidc.GrantTypeTokenExchange)},
-		"audience":           []string{fmt.Sprintf("stack://%s/%s", stack.OrganizationId, stack.Id)},
+		"audience":           []string{fmt.Sprintf("stack://%s/%s", p.stack.OrganizationId, p.stack.Id)},
 		"subject_token":      []string{token.AccessToken},
 		"subject_token_type": []string{"urn:ietf:params:oauth:token-type:access_token"},
 	}
@@ -82,13 +105,13 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context, tokenProvider pkg
 		return nil, err
 	}
 
-	baseUri, err := url.Parse(stack.Uri)
+	baseUri, err := url.Parse(p.stack.Uri)
 	if err != nil {
-		return nil, fmt.Errorf("invalid stack Uri %s: %w", stack.Uri, err)
+		return nil, fmt.Errorf("invalid stack Uri %s: %w", p.stack.Uri, err)
 	}
 	apiUrl, err := url.JoinPath(baseUri.String(), "api", "auth")
 	if err != nil {
-		return nil, fmt.Errorf("invalid stack Uri %s: %w", stack.Uri, err)
+		return nil, fmt.Errorf("invalid stack Uri %s: %w", p.stack.Uri, err)
 	}
 
 	form = url.Values{
@@ -127,9 +150,9 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context, tokenProvider pkg
 		return nil, err
 	}
 
-	p.stack.AccessToken = stackToken.AccessToken
-	p.stack.RefreshToken = stackToken.RefreshToken
-	p.stack.Expiry = stackToken.Expiry
+	p.token.AccessToken = stackToken.AccessToken
+	p.token.RefreshToken = stackToken.RefreshToken
+	p.token.Expiry = stackToken.Expiry
 
-	return p.stack, nil
+	return p.token, nil
 }

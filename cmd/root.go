@@ -99,11 +99,11 @@ func (app *App) preRunE(cmd *cobra.Command, args []string) error {
 	options := fx.Options(
 		fxOptsFromContext(cmd.Context()),
 		fx.Supply(internal.AppInfo{
-			Name:       internal.ServiceName,
-			Version:    internal.Version,
-			Repository: internal.Repository,
-			BuildDate:  internal.BuildDate,
-			Commit:     internal.Commit,
+			Name:                internal.ServiceName,
+			Version:             internal.Version,
+			TerraformRepository: internal.TerraformRepository,
+			BuildDate:           internal.BuildDate,
+			Commit:              internal.Commit,
 		}),
 		otlp.FXModuleFromFlags(cmd, otlp.WithServiceVersion(internal.Version)),
 		otlptraces.FXModuleFromFlags(cmd),

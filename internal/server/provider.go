@@ -8,13 +8,12 @@ import (
 	"time"
 
 	"github.com/formancehq/go-libs/v3/collectionutils"
-	"github.com/formancehq/go-libs/v3/httpclient"
 	"github.com/formancehq/go-libs/v3/logging"
-	"github.com/formancehq/go-libs/v3/otlp"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
-	"github.com/formancehq/terraform-provider-cloud/sdk"
+	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/resources"
+	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -51,8 +50,8 @@ func (f *ProviderModelAdapter) Endpoint() string {
 	return f.m.Endpoint.ValueString()
 }
 
-func (f *ProviderModelAdapter) IsOrganizationClient() bool {
-	return strings.HasPrefix(f.ClientId(), "organization_")
+func IsOrganizationClient(clientId string) bool {
+	return strings.HasPrefix(clientId, "organization_")
 }
 
 func (f *ProviderModelAdapter) UserAgent() string {
@@ -70,15 +69,18 @@ type FormanceStackProviderModel struct {
 }
 
 type FormanceStackProvider struct {
-	logger logging.Logger
+	logger            logging.Logger
+	transport         http.RoundTripper
+	cloudFactory      sdk.CloudFactory
+	cloudtokenFactory cloudpkg.TokenProviderFactory
+	stackTokenFactory pkg.TokenProviderFactory
+	stackSdkFactory   sdk.StackSdkFactory
 
 	Version  string
 	Endpoint string
 
 	ClientId     string
 	ClientSecret string
-
-	SDKFactory cloudpkg.SDKFactory
 }
 
 var SchemaStack = schema.Schema{
@@ -168,9 +170,9 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	}
 
 	creds := NewProviderModelAdapter(tfcreds)
-	if !creds.IsOrganizationClient() {
+	if !IsOrganizationClient(creds.ClientId()) {
 		resp.Diagnostics.AddError(
-			"Invalid Client ID",
+			fmt.Sprintf("Invalid client_id: %s", creds.ClientId()),
 			"The client_id must start with 'organization_' to be used with the stack provider. "+
 				"Please check your configuration and try again.",
 		)
@@ -181,26 +183,20 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	cloud, tp := p.SDKFactory(creds)
-	resp.Diagnostics.Append(p.pollStack(ctx, cloud, data.OrganizationId.ValueString(), data.StackId.ValueString())...)
+	cloudtp := p.cloudtokenFactory(p.transport, creds)
+	sdk := p.cloudFactory(creds, p.transport)
+	p.pollStack(ctx, &resp.Diagnostics, sdk, data.OrganizationId.ValueString(), data.StackId.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	stackTpProvider := pkg.NewTokenProvider(&http.Client{
-		Transport: otlp.NewRoundTripper(httpclient.NewDebugHTTPTransport(http.DefaultTransport), true),
-	}, creds)
-	stackToken, err := stackTpProvider.StackSecurityToken(ctx, tp, pkg.Stack{
+	stackTpProvider := p.stackTokenFactory(p.transport, creds, cloudtp, pkg.Stack{
 		Id:             data.StackId.ValueString(),
 		OrganizationId: data.OrganizationId.ValueString(),
 		Uri:            data.Uri.ValueString(),
 	})
-	if err != nil {
-		resp.Diagnostics.AddError("Unable to get stack security token", err.Error())
-		return
-	}
 
-	cli, err := pkg.NewStackClient(data.Uri.ValueString(), p.Version, stackToken)
+	cli, err := p.stackSdkFactory(data.Uri.ValueString(), p.Version, p.transport, stackTpProvider)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create stack client", err.Error())
 		return
@@ -210,37 +206,35 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	resp.DataSourceData = cli
 }
 
-// TODO: refactor to send continuous diagnostics
-func (p *FormanceStackProvider) pollStack(ctx context.Context, cli sdk.DefaultAPI, organizationId, stackId string, expectedModules ...string) diag.Diagnostics {
+func (p *FormanceStackProvider) pollStack(ctx context.Context, diags *diag.Diagnostics, cli sdk.CloudSDK, organizationId, stackId string, expectedModules ...string) {
 	pollctx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 	defer cancel()
-	diags := diag.Diagnostics{}
 	for {
 		select {
 		case <-pollctx.Done():
 			diags.Append(diag.NewErrorDiagnostic("Timeout while waiting for stack to be ready", "The stack did not become ready within the timeout period. Please check your configuration and try again."))
-			return diags
+			return
 		case <-time.After(2 * time.Second):
-			stack, res, err := cli.GetStack(ctx, organizationId, stackId).Execute()
+			stack, res, err := cli.GetStack(ctx, organizationId, stackId)
 			if err != nil {
-				cloudpkg.HandleSDKError(ctx, err, res, &diags)
-				return diags
+				cloudpkg.HandleSDKError(ctx, err, res, diags)
+				return
 			}
 
 			if stack.Data.State != "ACTIVE" {
 				diags.AddError("Stack is not active", fmt.Sprintf("The stack is currently in state '%s'. Please wait until it is active.", stack.Data.State))
-				return diags
+				return
 			}
 
 			if stack.Data.Status == "READY" {
 				if len(expectedModules) > 0 {
-					modules, res, err := cli.ListModules(ctx, organizationId, stackId).Execute()
+					modules, res, err := cli.ListModules(ctx, organizationId, stackId)
 					if err != nil {
-						cloudpkg.HandleSDKError(ctx, err, res, &diags)
-						return diags
+						cloudpkg.HandleSDKError(ctx, err, res, diags)
+						return
 					}
 
-					remaining := collectionutils.Filter(modules.Data, func(module sdk.Module) bool {
+					remaining := collectionutils.Filter(modules.Data, func(module cloudsdk.Module) bool {
 						return collectionutils.Contains(expectedModules, module.Name) && module.Status != "READY"
 					})
 
@@ -248,7 +242,7 @@ func (p *FormanceStackProvider) pollStack(ctx context.Context, cli sdk.DefaultAP
 						continue
 					}
 				}
-				return nil
+				return
 			}
 
 			p.logger.Debugf("Stack %s is not ready yet, current status: %s", stackId, stack.Data.Status)
@@ -362,15 +356,23 @@ func NewStackProvider(
 	endpoint FormanceStackEndpoint,
 	clientId FormanceStackClientId,
 	clientSecret FormanceStackClientSecret,
-	sdkFactory cloudpkg.SDKFactory,
-) func() provider.Provider {
+	transport http.RoundTripper,
+	cloudSdkFactory sdk.CloudFactory,
+	cloudTokenFactory cloudpkg.TokenProviderFactory,
+	stackTokenFactory pkg.TokenProviderFactory,
+	stackSdkFactory sdk.StackSdkFactory,
+) ProviderFactory {
 	return func() provider.Provider {
 		return &FormanceStackProvider{
-			logger:       logger,
-			ClientId:     string(clientId),
-			ClientSecret: string(clientSecret),
-			Endpoint:     string(endpoint),
-			SDKFactory:   sdkFactory,
+			logger:            logger,
+			ClientId:          string(clientId),
+			ClientSecret:      string(clientSecret),
+			Endpoint:          string(endpoint),
+			transport:         transport,
+			cloudFactory:      cloudSdkFactory,
+			cloudtokenFactory: cloudTokenFactory,
+			stackTokenFactory: stackTokenFactory,
+			stackSdkFactory:   stackSdkFactory,
 		}
 	}
 }

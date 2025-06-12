@@ -2,9 +2,14 @@ package server
 
 import (
 	"context"
+	"net/http"
 
+	"github.com/formancehq/go-libs/v3/httpclient"
+	"github.com/formancehq/go-libs/v3/otlp"
 	"github.com/formancehq/go-libs/v3/service"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
+	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
+	"github.com/formancehq/terraform-provider-stack/pkg"
 
 	"github.com/spf13/pflag"
 	"go.uber.org/fx"
@@ -26,19 +31,21 @@ func NewModule(ctx context.Context, flagset *pflag.FlagSet) fx.Option {
 	clientId, _ := flagset.GetString(FormanceStackClientIdKey)
 	clientSecret, _ := flagset.GetString(FormanceStackClientSecretKey)
 	endpoint, _ := flagset.GetString(FormanceStackEndpointKey)
+	debug, _ := flagset.GetBool(service.DebugFlag)
+	transport := otlp.NewRoundTripper(http.DefaultTransport, debug)
+	transport = httpclient.NewDebugHTTPTransport(transport)
+
 	return fx.Options(
 		fx.Supply(FormanceStackClientId(clientId)),
 		fx.Supply(FormanceStackClientSecret(clientSecret)),
 		fx.Supply(FormanceStackEndpoint(endpoint)),
-		fx.Provide(
-			func() cloudpkg.SDKFactory {
-				return cloudpkg.NewSDK
-			},
-		),
+		fx.Supply(fx.Annotate(transport, fx.As(new(http.RoundTripper)))),
+		fx.Provide(sdk.NewCloudSDK),
+		fx.Provide(pkg.NewTokenProviderFn),
+		fx.Provide(cloudpkg.NewTokenProviderFactory),
+		fx.Provide(sdk.NewStackSdk),
 		fx.Provide(NewStackProvider),
-		fx.Provide(
-			NewAPI,
-		),
+		fx.Provide(NewAPI),
 		fx.Invoke(func(lc fx.Lifecycle, server *API, shutdowner fx.Shutdowner) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

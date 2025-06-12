@@ -20,7 +20,7 @@ type API struct {
 
 func (a *API) Run(ctx context.Context, debug bool) error {
 	opts := providerserver.ServeOpts{
-		Address: fmt.Sprintf("%s/%s", "registry.terraform.io", internal.Repository),
+		Address: fmt.Sprintf("%s/%s", "registry.terraform.io", internal.TerraformRepository),
 		Debug:   debug,
 	}
 
