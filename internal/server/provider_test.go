@@ -22,6 +22,7 @@ import (
 )
 
 func TestProviderMetadata(t *testing.T) {
+	t.Parallel()
 	p := server.NewStackProvider(logging.Testing(),
 		"https://app.formance.cloud/api",
 		"client_id",
@@ -43,6 +44,7 @@ func TestProviderMetadata(t *testing.T) {
 }
 
 func TestProviderConfigure(t *testing.T) {
+	t.Parallel()
 	type testCase struct {
 		ClientId     string
 		ClientSecret string

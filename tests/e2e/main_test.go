@@ -4,8 +4,10 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/formancehq/go-libs/v3/collectionutils"
 	"github.com/formancehq/go-libs/v3/httpclient"
 	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/otlp"
@@ -32,6 +34,15 @@ func TestMain(m *testing.M) {
 	// TODO: This can be replaced with TF variables in the future
 	RegionName = os.Getenv("FORMANCE_CLOUD_REGION_NAME")
 	OrganizationId = os.Getenv("FORMANCE_CLOUD_ORGANIZATION_ID")
+	if RegionName == "" || OrganizationId == "" || endpoint == "" || clientID == "" || clientSecret == "" {
+		missingVars := []string{RegionName, OrganizationId, endpoint, clientID, clientSecret}
+		missingVars = collectionutils.Filter(missingVars, func(s string) bool {
+			return s == ""
+		})
+		if len(missingVars) > 0 {
+			panic("You must set the following environment variables: " + strings.Join(missingVars, ", "))
+		}
+	}
 
 	flag.Parse()
 
