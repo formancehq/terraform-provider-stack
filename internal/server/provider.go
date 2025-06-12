@@ -299,8 +299,8 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 			resp.Diagnostics.AddAttributeWarning(
 				path.Root("cloud.client_secret"),
 				"Missing client_secret Configuration",
-				"While configuring the provider, the client_secret was not found in "+
-					"however the environment variable FORMANCE_CLOUD_CLIENT_SECRET was found ",
+				"While configuring the provider, the client_secret was not found "+
+					"in the configuration. However, the FORMANCE_CLOUD_CLIENT_SECRET environment variable was found.",
 			)
 		} else {
 			resp.Diagnostics.AddAttributeError(
