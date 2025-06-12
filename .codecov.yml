@@ -1,0 +1,4 @@
+ignore:
+- "**/*generated*"
+- "/sdk"
+- "tests/e2e"
