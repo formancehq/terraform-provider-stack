@@ -1,0 +1,5 @@
+build
+*.log
+*tfstate*
+.terraform*
+.env
