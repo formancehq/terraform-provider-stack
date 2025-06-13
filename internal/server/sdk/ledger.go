@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 )
 
+//go:generate mockgen -destination=ledger_generated.go -package=sdk . LedgerSdkImpl
 type LedgerSdkImpl interface {
 	CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error)
 	GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error)
