@@ -12,7 +12,6 @@ import (
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
 	"github.com/formancehq/terraform-provider-stack/internal"
-	"github.com/formancehq/terraform-provider-stack/internal/resources"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -190,11 +189,12 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	stackTpProvider := p.stackTokenFactory(p.transport, creds, cloudtp, pkg.Stack{
+	stack := pkg.Stack{
 		Id:             data.StackId.ValueString(),
 		OrganizationId: data.OrganizationId.ValueString(),
 		Uri:            data.Uri.ValueString(),
-	})
+	}
+	stackTpProvider := p.stackTokenFactory(p.transport, creds, cloudtp, stack)
 
 	cli, err := p.stackSdkFactory(data.Uri.ValueString(), p.Version, p.transport, stackTpProvider)
 	if err != nil {
@@ -202,8 +202,12 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	resp.ResourceData = cli
-	resp.DataSourceData = cli
+	store := internal.Store{
+		Stack: stack,
+		Sdk:   cli,
+	}
+	resp.ResourceData = store
+	resp.DataSourceData = store
 }
 
 func (p *FormanceStackProvider) pollStack(ctx context.Context, diags *diag.Diagnostics, cli sdk.CloudSDK, organizationId, stackId string, expectedModules ...string) {
