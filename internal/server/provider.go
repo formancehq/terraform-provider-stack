@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -182,9 +183,13 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
+	expectedModules := collectionutils.Map(data.ExpectedModules.Elements(), func(v attr.Value) string {
+		return v.String()
+	})
+
 	cloudtp := p.cloudtokenFactory(p.transport, creds)
 	sdk := p.cloudFactory(creds, p.transport)
-	p.pollStack(ctx, &resp.Diagnostics, sdk, data.OrganizationId.ValueString(), data.StackId.ValueString())
+	p.pollStack(ctx, &resp.Diagnostics, sdk, data.OrganizationId.ValueString(), data.StackId.ValueString(), expectedModules...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
