@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
+	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
@@ -70,7 +71,18 @@ func TestProviderConfigure(t *testing.T) {
 			tokenProvider, mock := cloudpkg.NewMockTokenProvider(ctrl)
 			stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
 			stacksdk := sdk.NewMockStackSdkImpl(ctrl)
+			stackId := uuid.NewString()
+			organizationId := uuid.NewString()
+			stackUri := fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId)
 
+			store := internal.Store{
+				Stack: pkg.Stack{
+					Id:             stackId,
+					OrganizationId: organizationId,
+					Uri:            stackUri,
+				},
+				Sdk: stacksdk,
+			}
 			p := server.NewStackProvider(
 				logging.Testing(),
 				"https://app.formance.cloud/api",
@@ -88,9 +100,6 @@ func TestProviderConfigure(t *testing.T) {
 					return stacksdk, nil
 				},
 			)()
-			stackId := uuid.NewString()
-			organizationId := uuid.NewString()
-			stackUri := fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId)
 
 			clientId := tc.ClientId
 			if clientId == "" {
@@ -150,9 +159,9 @@ func TestProviderConfigure(t *testing.T) {
 
 			require.Empty(t, res.Diagnostics)
 			require.NotNil(t, res.ResourceData)
-			require.IsType(t, stacksdk, res.ResourceData)
+			require.IsType(t, store, res.ResourceData)
 			require.NotNil(t, res.DataSourceData)
-			require.IsType(t, stacksdk, res.DataSourceData)
+			require.IsType(t, store, res.DataSourceData)
 
 			if tc.ClientId == "" {
 				require.Equal(t, mock.ClientId(), "organization_client_id")
