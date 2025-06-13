@@ -10,6 +10,11 @@
 package sdk
 
 import (
+	context "context"
+	reflect "reflect"
+
+	operations "github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
+	shared "github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -35,4 +40,283 @@ func NewMockStackSdkImpl(ctrl *gomock.Controller) *MockStackSdkImpl {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStackSdkImpl) EXPECT() *MockStackSdkImplMockRecorder {
 	return m.recorder
+}
+
+// AddAccountToPool mocks base method.
+func (m *MockStackSdkImpl) AddAccountToPool(ctx context.Context, request operations.V3AddAccountToPoolRequest) (*operations.V3AddAccountToPoolResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddAccountToPool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3AddAccountToPoolResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddAccountToPool indicates an expected call of AddAccountToPool.
+func (mr *MockStackSdkImplMockRecorder) AddAccountToPool(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToPool", reflect.TypeOf((*MockStackSdkImpl)(nil).AddAccountToPool), ctx, request)
+}
+
+// CreateLedger mocks base method.
+func (m *MockStackSdkImpl) CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateLedger", ctx, request)
+	ret0, _ := ret[0].(*operations.V2CreateLedgerResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateLedger indicates an expected call of CreateLedger.
+func (mr *MockStackSdkImplMockRecorder) CreateLedger(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLedger", reflect.TypeOf((*MockStackSdkImpl)(nil).CreateLedger), ctx, request)
+}
+
+// CreatePolicy mocks base method.
+func (m *MockStackSdkImpl) CreatePolicy(ctx context.Context, request shared.PolicyRequest, opts ...operations.Option) (*operations.CreatePolicyResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, request}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CreatePolicy", varargs...)
+	ret0, _ := ret[0].(*operations.CreatePolicyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePolicy indicates an expected call of CreatePolicy.
+func (mr *MockStackSdkImplMockRecorder) CreatePolicy(ctx, request any, opts ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, request}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolicy", reflect.TypeOf((*MockStackSdkImpl)(nil).CreatePolicy), varargs...)
+}
+
+// CreatePool mocks base method.
+func (m *MockStackSdkImpl) CreatePool(ctx context.Context, request *shared.V3CreatePoolRequest) (*operations.V3CreatePoolResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3CreatePoolResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePool indicates an expected call of CreatePool.
+func (mr *MockStackSdkImplMockRecorder) CreatePool(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePool", reflect.TypeOf((*MockStackSdkImpl)(nil).CreatePool), ctx, request)
+}
+
+// DeleteConfig mocks base method.
+func (m *MockStackSdkImpl) DeleteConfig(ctx context.Context, request operations.DeleteConfigRequest, opts ...operations.Option) (*operations.DeleteConfigResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, request}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeleteConfig", varargs...)
+	ret0, _ := ret[0].(*operations.DeleteConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteConfig indicates an expected call of DeleteConfig.
+func (mr *MockStackSdkImplMockRecorder) DeleteConfig(ctx, request any, opts ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, request}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfig", reflect.TypeOf((*MockStackSdkImpl)(nil).DeleteConfig), varargs...)
+}
+
+// DeleteLedger mocks base method.
+func (m *MockStackSdkImpl) DeleteLedger(ctx context.Context, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLedger", ctx, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLedger indicates an expected call of DeleteLedger.
+func (mr *MockStackSdkImplMockRecorder) DeleteLedger(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLedger", reflect.TypeOf((*MockStackSdkImpl)(nil).DeleteLedger), ctx, name)
+}
+
+// DeletePolicy mocks base method.
+func (m *MockStackSdkImpl) DeletePolicy(ctx context.Context, request operations.DeletePolicyRequest, opts ...operations.Option) (*operations.DeletePolicyResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, request}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeletePolicy", varargs...)
+	ret0, _ := ret[0].(*operations.DeletePolicyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeletePolicy indicates an expected call of DeletePolicy.
+func (mr *MockStackSdkImplMockRecorder) DeletePolicy(ctx, request any, opts ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, request}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePolicy", reflect.TypeOf((*MockStackSdkImpl)(nil).DeletePolicy), varargs...)
+}
+
+// DeletePool mocks base method.
+func (m *MockStackSdkImpl) DeletePool(ctx context.Context, request operations.V3DeletePoolRequest) (*operations.V3DeletePoolResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3DeletePoolResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeletePool indicates an expected call of DeletePool.
+func (mr *MockStackSdkImplMockRecorder) DeletePool(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePool", reflect.TypeOf((*MockStackSdkImpl)(nil).DeletePool), ctx, request)
+}
+
+// GetLedger mocks base method.
+func (m *MockStackSdkImpl) GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLedger", ctx, request)
+	ret0, _ := ret[0].(*operations.V2GetLedgerResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLedger indicates an expected call of GetLedger.
+func (mr *MockStackSdkImplMockRecorder) GetLedger(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLedger", reflect.TypeOf((*MockStackSdkImpl)(nil).GetLedger), ctx, request)
+}
+
+// GetManyConfigs mocks base method.
+func (m *MockStackSdkImpl) GetManyConfigs(ctx context.Context, request operations.GetManyConfigsRequest) (*operations.GetManyConfigsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetManyConfigs", ctx, request)
+	ret0, _ := ret[0].(*operations.GetManyConfigsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetManyConfigs indicates an expected call of GetManyConfigs.
+func (mr *MockStackSdkImplMockRecorder) GetManyConfigs(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetManyConfigs", reflect.TypeOf((*MockStackSdkImpl)(nil).GetManyConfigs), ctx, request)
+}
+
+// GetPolicy mocks base method.
+func (m *MockStackSdkImpl) GetPolicy(ctx context.Context, request operations.GetPolicyRequest, opts ...operations.Option) (*operations.GetPolicyResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, request}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetPolicy", varargs...)
+	ret0, _ := ret[0].(*operations.GetPolicyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPolicy indicates an expected call of GetPolicy.
+func (mr *MockStackSdkImplMockRecorder) GetPolicy(ctx, request any, opts ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, request}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPolicy", reflect.TypeOf((*MockStackSdkImpl)(nil).GetPolicy), varargs...)
+}
+
+// GetPool mocks base method.
+func (m *MockStackSdkImpl) GetPool(ctx context.Context, request operations.V3GetPoolRequest) (*operations.V3GetPoolResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3GetPoolResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPool indicates an expected call of GetPool.
+func (mr *MockStackSdkImplMockRecorder) GetPool(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPool", reflect.TypeOf((*MockStackSdkImpl)(nil).GetPool), ctx, request)
+}
+
+// GetVersions mocks base method.
+func (m *MockStackSdkImpl) GetVersions(ctx context.Context) (*operations.GetVersionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVersions", ctx)
+	ret0, _ := ret[0].(*operations.GetVersionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVersions indicates an expected call of GetVersions.
+func (mr *MockStackSdkImplMockRecorder) GetVersions(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersions", reflect.TypeOf((*MockStackSdkImpl)(nil).GetVersions), ctx)
+}
+
+// InsertConfig mocks base method.
+func (m *MockStackSdkImpl) InsertConfig(ctx context.Context, request shared.ConfigUser) (*operations.InsertConfigResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertConfig", ctx, request)
+	ret0, _ := ret[0].(*operations.InsertConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertConfig indicates an expected call of InsertConfig.
+func (mr *MockStackSdkImplMockRecorder) InsertConfig(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertConfig", reflect.TypeOf((*MockStackSdkImpl)(nil).InsertConfig), ctx, request)
+}
+
+// RemoveAccountFromPool mocks base method.
+func (m *MockStackSdkImpl) RemoveAccountFromPool(ctx context.Context, request operations.V3RemoveAccountFromPoolRequest) (*operations.V3RemoveAccountFromPoolResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveAccountFromPool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3RemoveAccountFromPoolResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RemoveAccountFromPool indicates an expected call of RemoveAccountFromPool.
+func (mr *MockStackSdkImplMockRecorder) RemoveAccountFromPool(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveAccountFromPool", reflect.TypeOf((*MockStackSdkImpl)(nil).RemoveAccountFromPool), ctx, request)
+}
+
+// UpdateConfig mocks base method.
+func (m *MockStackSdkImpl) UpdateConfig(ctx context.Context, request operations.UpdateConfigRequest, opts ...operations.Option) (*operations.UpdateConfigResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, request}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateConfig", varargs...)
+	ret0, _ := ret[0].(*operations.UpdateConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateConfig indicates an expected call of UpdateConfig.
+func (mr *MockStackSdkImplMockRecorder) UpdateConfig(ctx, request any, opts ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, request}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConfig", reflect.TypeOf((*MockStackSdkImpl)(nil).UpdateConfig), varargs...)
+}
+
+// UpdateLedger mocks base method.
+func (m *MockStackSdkImpl) UpdateLedger(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLedger", ctx, request)
+	ret0, _ := ret[0].(*operations.V2UpdateLedgerMetadataResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLedger indicates an expected call of UpdateLedger.
+func (mr *MockStackSdkImplMockRecorder) UpdateLedger(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLedger", reflect.TypeOf((*MockStackSdkImpl)(nil).UpdateLedger), ctx, request)
 }

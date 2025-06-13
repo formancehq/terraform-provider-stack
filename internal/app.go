@@ -26,5 +26,5 @@ func (a AppInfo) String() string {
 
 type Store struct {
 	Stack pkg.Stack
-	Sdk   sdk.StackSdkImpl
+	sdk.StackSdkImpl
 }
