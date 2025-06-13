@@ -3,14 +3,14 @@ package internal
 import (
 	"context"
 
-	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	"github.com/formancehq/go-libs/v3/collectionutils"
+	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 
 	"fmt"
 )
 
-func CheckModuleHealth(ctx context.Context, sdk *formance.Formance, moduleName string) error {
+func CheckModuleHealth(ctx context.Context, sdk sdk.StackSdkImpl, moduleName string) error {
 	stackInfo, err := sdk.GetVersions(ctx)
 	if err != nil {
 		return fmt.Errorf("unable to get stack /versions: %w", err)
