@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 )
 
+//go:generate mockgen -destination=payments_generated.go -package=sdk . PaymentsSdkImpl
 type PaymentsSdkImpl interface {
 	CreatePool(ctx context.Context, request *shared.V3CreatePoolRequest) (*operations.V3CreatePoolResponse, error)
 	GetPool(ctx context.Context, request operations.V3GetPoolRequest) (*operations.V3GetPoolResponse, error)
