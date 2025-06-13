@@ -92,7 +92,11 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 		return nil, err
 	}
 
-	defer ret.Body.Close()
+	defer func() {
+		if err := ret.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
 	if ret.StatusCode != http.StatusOK {
 		data, err := io.ReadAll(ret.Body)
 		if err != nil {
@@ -138,7 +142,11 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 		return nil, err
 	}
 
-	defer ret.Body.Close()
+	defer func() {
+		if err := ret.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
 	if ret.StatusCode != http.StatusOK {
 		data, err := io.ReadAll(ret.Body)
 		if err != nil {
