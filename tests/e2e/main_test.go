@@ -55,8 +55,9 @@ func TestMain(m *testing.M) {
 		transport = otlp.NewRoundTripper(http.DefaultTransport, false)
 	}
 
+	logger := logging.Testing()
 	StackProvider = server.NewStackProvider(
-		logging.Testing(),
+		logger,
 		server.FormanceStackEndpoint(endpoint),
 		server.FormanceStackClientId(clientID),
 		server.FormanceStackClientSecret(clientSecret),
@@ -67,7 +68,7 @@ func TestMain(m *testing.M) {
 		sdk.NewStackSdk(),
 	)
 	CloudProvider = testprovider.NewCloudProvider(
-		logging.Testing(),
+		logger,
 		endpoint,
 		clientID,
 		clientSecret,

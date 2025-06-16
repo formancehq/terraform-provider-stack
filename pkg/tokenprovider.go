@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -62,6 +63,13 @@ type Stack struct {
 }
 
 func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error) {
+	logging.FromContext(ctx).WithFields(map[string]any{
+		"organization_id": p.stack.OrganizationId,
+		"stack_id":        p.stack.Id,
+		"stack_uri":       p.stack.Uri,
+		"client_id":       p.creds.ClientId(),
+	}).Debug("Refreshing stack security token")
+
 	token, err := p.tokenProvider.RefreshToken(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to refresh token: %w", err)

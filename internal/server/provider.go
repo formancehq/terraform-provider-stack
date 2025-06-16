@@ -12,6 +12,7 @@ import (
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
 	"github.com/formancehq/terraform-provider-stack/internal"
+	"github.com/formancehq/terraform-provider-stack/internal/resources"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -22,6 +23,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+var (
+	providerType = "formancestack"
 )
 
 type FormanceCloudProviderModel struct {
@@ -118,7 +123,7 @@ var SchemaStack = schema.Schema{
 
 // Metadata satisfies the provider.Provider interface for FormanceCloudProvider
 func (p *FormanceStackProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "formancestack"
+	resp.TypeName = providerType
 	resp.Version = internal.Version
 }
 
@@ -188,7 +193,7 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	})
 
 	cloudtp := p.cloudtokenFactory(p.transport, creds)
-	sdk := p.cloudFactory(creds, p.transport)
+	sdk := p.cloudFactory(creds, cloudpkg.NewTransport(p.transport, cloudtp))
 	p.pollStack(ctx, &resp.Diagnostics, sdk, data.OrganizationId.ValueString(), data.StackId.ValueString(), expectedModules...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -215,6 +220,7 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	resp.DataSourceData = store
 }
 
+// TODO: configure timeout and retry logic
 func (p *FormanceStackProvider) pollStack(ctx context.Context, diags *diag.Diagnostics, cli sdk.CloudSDK, organizationId, stackId string, expectedModules ...string) {
 	pollctx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 	defer cancel()
@@ -268,6 +274,8 @@ func (p *FormanceStackProvider) DataSources(ctx context.Context) []func() dataso
 func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		// resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
+		resources.NewLedger(p.logger.WithField("resource", "ledger")),
+		resources.NewNoop(p.logger.WithField("resource", "noop")),
 	}
 }
 
@@ -276,8 +284,8 @@ func (p FormanceStackProvider) ConfigValidators(ctx context.Context) []provider.
 }
 
 func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.ValidateConfigRequest, resp *provider.ValidateConfigResponse) {
+	p.logger.Debugf("Validating stack provider configuration version %s", p.Version)
 	var data FormanceStackProviderModel
-
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if data.Cloud == nil {
@@ -373,7 +381,7 @@ func NewStackProvider(
 ) ProviderFactory {
 	return func() provider.Provider {
 		return &FormanceStackProvider{
-			logger:            logger,
+			logger:            logger.WithField("provider", providerType),
 			ClientId:          string(clientId),
 			ClientSecret:      string(clientSecret),
 			Endpoint:          string(endpoint),

@@ -12,7 +12,7 @@ type LedgerSdkImpl interface {
 	CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error)
 	GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error)
 	DeleteLedger(ctx context.Context, name string) error
-	UpdateLedger(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error)
+	UpdateLedgerMetadata(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest, opts ...operations.Option) (*operations.V2UpdateLedgerMetadataResponse, error)
 }
 
 var _ LedgerSdkImpl = &defaultLedger{}
@@ -33,8 +33,8 @@ func (s *defaultLedger) DeleteLedger(ctx context.Context, name string) error {
 	return nil
 }
 
-func (s *defaultLedger) UpdateLedger(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error) {
-	return s.V2.UpdateLedgerMetadata(ctx, request)
+func (s *defaultLedger) UpdateLedgerMetadata(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest, opts ...operations.Option) (*operations.V2UpdateLedgerMetadataResponse, error) {
+	return s.V2.UpdateLedgerMetadata(ctx, request, opts...)
 }
 
 func newLedgerSdk(ledger *formance.Ledger) LedgerSdkImpl {

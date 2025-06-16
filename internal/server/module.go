@@ -32,8 +32,8 @@ func NewModule(ctx context.Context, flagset *pflag.FlagSet) fx.Option {
 	clientSecret, _ := flagset.GetString(FormanceStackClientSecretKey)
 	endpoint, _ := flagset.GetString(FormanceStackEndpointKey)
 	debug, _ := flagset.GetBool(service.DebugFlag)
-	transport := otlp.NewRoundTripper(http.DefaultTransport, debug)
-	transport = httpclient.NewDebugHTTPTransport(transport)
+
+	transport := httpclient.NewDebugHTTPTransport(otlp.NewRoundTripper(http.DefaultTransport, debug))
 
 	return fx.Options(
 		fx.Supply(FormanceStackClientId(clientId)),

@@ -13,6 +13,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
+func newTestStepStack() resource.TestStep {
+	return resource.TestStep{
+		Config: newStack(OrganizationId, RegionName),
+		ConfigStateChecks: []statecheck.StateCheck{
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+		},
+	}
+}
+
 func TestStack(t *testing.T) {
 	t.Parallel()
 	resource.Test(t, resource.TestCase{
@@ -23,15 +35,7 @@ func TestStack(t *testing.T) {
 			tfversion.SkipBelow(tfversion.Version0_15_0),
 		},
 		Steps: []resource.TestStep{
-			{
-				Config: newStack(OrganizationId, RegionName),
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
-					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-				},
-			},
+			newTestStepStack(),
 		},
 	})
 
