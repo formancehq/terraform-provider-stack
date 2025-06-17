@@ -66,6 +66,43 @@ func TestWebhooks(t *testing.T) {
 				},
 			},
 			{
+				Config: newStack(OrganizationId, RegionName) +
+					`
+							resource "formancecloud_stack_module" "webhooks" {
+								name = "webhooks"
+								stack_id = formancecloud_stack.default.id
+								organization_id = data.formancecloud_organizations.default.id
+							}
+	
+							provider "formancestack" {
+								stack_id = formancecloud_stack.default.id
+								organization_id = formancecloud_stack.default.organization_id
+								uri = formancecloud_stack.default.uri
+							}
+	
+							resource "formancestack_webhooks" "webhooks" {
+								endpoint = "https://formance.staging.com/webhook2"
+								event_types = [
+									"transaction.test",
+								]
+	
+								depends_on = [
+									formancecloud_stack_module.webhooks,
+								]
+							}
+						`,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook")),
+					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
+						[]knownvalue.Check{
+							knownvalue.StringExact("transaction.test"),
+						},
+					)),
+					statecheck.ExpectSensitiveValue("formancestack_webhooks.webhooks", tfjsonpath.New("secret")),
+				},
+			},
+			{
 				RefreshState: true,
 			},
 		},
