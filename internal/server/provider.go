@@ -7,16 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/go-libs/v3/collectionutils"
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
-	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
 	"github.com/formancehq/terraform-provider-stack/internal"
+	"github.com/formancehq/terraform-provider-stack/internal/resources"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -65,7 +62,7 @@ type FormanceStackProviderModel struct {
 	OrganizationId types.String `tfsdk:"organization_id"`
 	Uri            types.String `tfsdk:"uri"`
 
-	ExpectedModules types.List `tfsdk:"expected_modules"`
+	WaitModule types.String `tfsdk:"wait_module_duration"`
 }
 
 type FormanceStackProvider struct {
@@ -109,9 +106,9 @@ var SchemaStack = schema.Schema{
 				},
 			},
 		},
-		"expected_modules": schema.ListAttribute{
+		"wait_module_duration": schema.StringAttribute{
 			Optional:    true,
-			ElementType: types.StringType,
+			Description: "The duration to wait for the module to be ready before proceeding.",
 		},
 	},
 }
@@ -130,6 +127,7 @@ func (p *FormanceStackProvider) Schema(ctx context.Context, req provider.SchemaR
 // Configure satisfies the provider.Provider interface for FormanceCloudProvider.
 func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	p.logger.Debugf("Configuring stack provider version %s", p.Version)
+	defer p.logger.Debugf("Stack provider configured with client_id: %s, endpoint: %s", p.ClientId, p.Endpoint)
 	ctx = logging.ContextWithLogger(ctx, p.logger)
 	var data FormanceStackProviderModel
 
@@ -183,24 +181,14 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	expectedModules := collectionutils.Map(data.ExpectedModules.Elements(), func(v attr.Value) string {
-		return v.String()
-	})
-
 	cloudtp := p.cloudtokenFactory(p.transport, creds)
-	sdk := p.cloudFactory(creds, p.transport)
-	p.pollStack(ctx, &resp.Diagnostics, sdk, data.OrganizationId.ValueString(), data.StackId.ValueString(), expectedModules...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
+	cloudSDK := p.cloudFactory(creds, cloudpkg.NewTransport(p.transport, cloudtp))
 	stack := pkg.Stack{
 		Id:             data.StackId.ValueString(),
 		OrganizationId: data.OrganizationId.ValueString(),
 		Uri:            data.Uri.ValueString(),
 	}
 	stackTpProvider := p.stackTokenFactory(p.transport, creds, cloudtp, stack)
-
 	cli, err := p.stackSdkFactory(data.Uri.ValueString(), p.Version, p.transport, stackTpProvider)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create stack client", err.Error())
@@ -208,55 +196,26 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	}
 
 	store := internal.Store{
-		Stack:        stack,
-		StackSdkImpl: cli,
+		Stack:             stack,
+		StackSdkImpl:      cli,
+		CloudSDK:          cloudSDK,
+		WaitModuleTimeout: 2 * time.Minute,
 	}
+
+	if data.WaitModule.ValueString() != "" {
+		duration, err := time.ParseDuration(data.WaitModule.ValueString())
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Invalid wait_module_duration",
+				fmt.Sprintf("The provided wait_module_duration '%s' is not a valid duration: %s", data.WaitModule.ValueString(), err.Error()),
+			)
+			return
+		}
+		store.WaitModuleTimeout = duration
+	}
+
 	resp.ResourceData = store
 	resp.DataSourceData = store
-}
-
-func (p *FormanceStackProvider) pollStack(ctx context.Context, diags *diag.Diagnostics, cli sdk.CloudSDK, organizationId, stackId string, expectedModules ...string) {
-	pollctx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-	defer cancel()
-	for {
-		select {
-		case <-pollctx.Done():
-			diags.Append(diag.NewErrorDiagnostic("Timeout while waiting for stack to be ready", "The stack did not become ready within the timeout period. Please check your configuration and try again."))
-			return
-		case <-time.After(2 * time.Second):
-			stack, res, err := cli.GetStack(ctx, organizationId, stackId)
-			if err != nil {
-				cloudpkg.HandleSDKError(ctx, err, res, diags)
-				return
-			}
-
-			if stack.Data.State != "ACTIVE" {
-				diags.AddError("Stack is not active", fmt.Sprintf("The stack is currently in state '%s'. Please wait until it is active.", stack.Data.State))
-				return
-			}
-
-			if stack.Data.Status == "READY" {
-				if len(expectedModules) > 0 {
-					modules, res, err := cli.ListModules(ctx, organizationId, stackId)
-					if err != nil {
-						cloudpkg.HandleSDKError(ctx, err, res, diags)
-						return
-					}
-
-					remaining := collectionutils.Filter(modules.Data, func(module cloudsdk.Module) bool {
-						return collectionutils.Contains(expectedModules, module.Name) && module.Status != "READY"
-					})
-
-					if len(remaining) > 0 {
-						continue
-					}
-				}
-				return
-			}
-
-			p.logger.Debugf("Stack %s is not ready yet, current status: %s", stackId, stack.Data.Status)
-		}
-	}
 }
 
 // DataSources satisfies the provider.Provider interface for FormanceCloudProvider.
@@ -268,6 +227,8 @@ func (p *FormanceStackProvider) DataSources(ctx context.Context) []func() dataso
 func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		// resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
+		// resources.NewLedger(p.logger.WithField("resource", "ledger")),
+		resources.NewNoop(p.logger.WithField("resource", "noop")),
 	}
 }
 

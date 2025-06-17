@@ -78,3 +78,20 @@ release: pc
 [group('deployment')]
 connect-dev:
   vcluster connect $USER --server=https://kube.$USER.formance.dev
+
+
+delete-all-stack force="true":
+  #!/bin/bash
+  set -euo pipefail
+
+  # Récupération des IDs des stacks
+  stacks=$(fctl stacks list -o json | jq -r '.data.stacks[].id')
+
+  # Suppression de chaque stack
+  for stack in $stacks; do
+    if [[ "${force:-false}" == "true" ]]; then
+      fctl stacks delete "$stack" --force
+    else
+      fctl stacks delete "$stack"
+    fi
+  done

@@ -2,9 +2,6 @@ package internal
 
 import (
 	"fmt"
-
-	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
-	"github.com/formancehq/terraform-provider-stack/pkg"
 )
 
 const (
@@ -22,9 +19,4 @@ type AppInfo struct {
 
 func (a AppInfo) String() string {
 	return fmt.Sprintf("\n\tName: %s\n\tVersion: %s\n\tBuildDate: %s\n\tCommit: %s\n\tTerraform Repository: %s\n\t", a.Name, a.Version, a.BuildDate, a.Commit, a.TerraformRepository)
-}
-
-type Store struct {
-	Stack pkg.Stack
-	sdk.StackSdkImpl
 }
