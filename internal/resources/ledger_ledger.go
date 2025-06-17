@@ -149,6 +149,7 @@ func (s *Ledger) Create(ctx context.Context, req resource.CreateRequest, res *re
 	}
 	resp, err := ledgerSdk.CreateLedger(ctx, config)
 	if err != nil {
+
 		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
 		return
 	}
@@ -232,7 +233,7 @@ func (s *Ledger) Update(ctx context.Context, req resource.UpdateRequest, res *re
 	resp, err := ledgerSdk.UpdateLedgerMetadata(ctx, operations.V2UpdateLedgerMetadataRequest{
 		Ledger: state.Name.ValueString(),
 		RequestBody: collectionutils.ConvertMap(plan.Metadata.Elements(), func(v attr.Value) string {
-			return v.String()
+			return v.(types.String).ValueString()
 		}),
 	})
 	if err != nil {
