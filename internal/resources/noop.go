@@ -6,7 +6,6 @@ import (
 
 	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/terraform-provider-stack/internal"
-	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
 
@@ -19,7 +18,6 @@ var (
 
 type Noop struct {
 	logger logging.Logger
-	sdk    sdk.PaymentsSdkImpl
 }
 
 type NoopModel struct {
@@ -54,7 +52,6 @@ func (s *Noop) ConfigValidators(ctx context.Context) []resource.ConfigValidator 
 
 // Configure implements resource.ResourceWithConfigure.
 func (s *Noop) Configure(ctx context.Context, req resource.ConfigureRequest, res *resource.ConfigureResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
 	if req.ProviderData == nil {
 		return
 	}
