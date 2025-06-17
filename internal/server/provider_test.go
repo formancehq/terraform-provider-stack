@@ -7,7 +7,6 @@ import (
 
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
-	cloudsdk "github.com/formancehq/terraform-provider-cloud/sdk"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
@@ -105,15 +104,6 @@ func TestProviderConfigure(t *testing.T) {
 			if clientId == "" {
 				clientId = "organization_client_id"
 			}
-			if server.IsOrganizationClient(clientId) {
-				cloudSdk.EXPECT().GetStack(gomock.Any(), organizationId, stackId).Return(&cloudsdk.CreateStackResponse{
-					Data: &cloudsdk.Stack{
-						State:  "ACTIVE",
-						Status: "READY",
-					},
-				}, nil, nil)
-			}
-
 			res := provider.ConfigureResponse{
 				Diagnostics: []diag.Diagnostic{},
 			}
@@ -129,19 +119,17 @@ func TestProviderConfigure(t *testing.T) {
 				Config: tfsdk.Config{
 					Raw: tftypes.NewValue(tftypes.Object{
 						AttributeTypes: map[string]tftypes.Type{
-							"cloud":           cloudObj,
-							"stack_id":        tftypes.String,
-							"organization_id": tftypes.String,
-							"uri":             tftypes.String,
-							"expected_modules": tftypes.List{
-								ElementType: tftypes.String,
-							},
+							"cloud":                cloudObj,
+							"stack_id":             tftypes.String,
+							"organization_id":      tftypes.String,
+							"uri":                  tftypes.String,
+							"wait_module_duration": tftypes.String,
 						},
 					}, map[string]tftypes.Value{
-						"stack_id":         tftypes.NewValue(tftypes.String, stackId),
-						"organization_id":  tftypes.NewValue(tftypes.String, organizationId),
-						"uri":              tftypes.NewValue(tftypes.String, stackUri),
-						"expected_modules": tftypes.NewValue(tftypes.List{ElementType: tftypes.String}, []tftypes.Value{}),
+						"stack_id":             tftypes.NewValue(tftypes.String, stackId),
+						"organization_id":      tftypes.NewValue(tftypes.String, organizationId),
+						"uri":                  tftypes.NewValue(tftypes.String, stackUri),
+						"wait_module_duration": tftypes.NewValue(tftypes.String, nil),
 						"cloud": tftypes.NewValue(cloudObj, map[string]tftypes.Value{
 							"client_id":     tftypes.NewValue(tftypes.String, tc.ClientId),
 							"client_secret": tftypes.NewValue(tftypes.String, tc.ClientSecret),

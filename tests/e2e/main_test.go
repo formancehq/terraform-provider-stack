@@ -4,6 +4,7 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -17,6 +18,10 @@ import (
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
 var (
@@ -25,6 +30,18 @@ var (
 	RegionName     = ""
 	OrganizationId = ""
 )
+
+func newTestStepStack() resource.TestStep {
+	return resource.TestStep{
+		Config: newStack(OrganizationId, RegionName),
+		ConfigStateChecks: []statecheck.StateCheck{
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
+			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+		},
+	}
+}
 
 func TestMain(m *testing.M) {
 	endpoint := os.Getenv("FORMANCE_CLOUD_API_ENDPOINT")
