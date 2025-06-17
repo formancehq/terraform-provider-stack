@@ -85,17 +85,17 @@ func (mr *MockLedgerSdkImplMockRecorder) GetLedger(ctx, request any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLedger", reflect.TypeOf((*MockLedgerSdkImpl)(nil).GetLedger), ctx, request)
 }
 
-// UpdateLedger mocks base method.
-func (m *MockLedgerSdkImpl) UpdateLedger(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error) {
+// UpdateLedgerMetadata mocks base method.
+func (m *MockLedgerSdkImpl) UpdateLedgerMetadata(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateLedger", ctx, request)
+	ret := m.ctrl.Call(m, "UpdateLedgerMetadata", ctx, request)
 	ret0, _ := ret[0].(*operations.V2UpdateLedgerMetadataResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// UpdateLedger indicates an expected call of UpdateLedger.
-func (mr *MockLedgerSdkImplMockRecorder) UpdateLedger(ctx, request any) *gomock.Call {
+// UpdateLedgerMetadata indicates an expected call of UpdateLedgerMetadata.
+func (mr *MockLedgerSdkImplMockRecorder) UpdateLedgerMetadata(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLedger", reflect.TypeOf((*MockLedgerSdkImpl)(nil).UpdateLedger), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLedgerMetadata", reflect.TypeOf((*MockLedgerSdkImpl)(nil).UpdateLedgerMetadata), ctx, request)
 }
