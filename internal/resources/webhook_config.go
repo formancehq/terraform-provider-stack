@@ -156,6 +156,9 @@ func (s *Webhooks) Delete(ctx context.Context, req resource.DeleteRequest, res *
 	}
 
 	s.store.CheckModuleHealth(ctx, &res.Diagnostics)
+	if res.Diagnostics.HasError() {
+		return
+	}
 	sdk := s.store.Webhooks()
 	_, err := sdk.DeleteConfig(ctx, operations.DeleteConfigRequest{
 		ID: state.ID.ValueString(),
