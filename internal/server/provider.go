@@ -208,8 +208,8 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 	}
 
 	store := internal.Store{
-		Stack: stack,
-		Sdk:   cli,
+		Stack:        stack,
+		StackSdkImpl: cli,
 	}
 	resp.ResourceData = store
 	resp.DataSourceData = store

@@ -81,7 +81,7 @@ func TestProviderConfigure(t *testing.T) {
 					OrganizationId: organizationId,
 					Uri:            stackUri,
 				},
-				Sdk: stacksdk,
+				StackSdkImpl: stacksdk,
 			}
 			p := server.NewStackProvider(
 				logging.Testing(),

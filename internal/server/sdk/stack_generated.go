@@ -10,6 +10,10 @@
 package sdk
 
 import (
+	context "context"
+	reflect "reflect"
+
+	operations "github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -35,4 +39,75 @@ func NewMockStackSdkImpl(ctrl *gomock.Controller) *MockStackSdkImpl {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStackSdkImpl) EXPECT() *MockStackSdkImplMockRecorder {
 	return m.recorder
+}
+
+// GetVersions mocks base method.
+func (m *MockStackSdkImpl) GetVersions(ctx context.Context) (*operations.GetVersionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVersions", ctx)
+	ret0, _ := ret[0].(*operations.GetVersionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVersions indicates an expected call of GetVersions.
+func (mr *MockStackSdkImplMockRecorder) GetVersions(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersions", reflect.TypeOf((*MockStackSdkImpl)(nil).GetVersions), ctx)
+}
+
+// Ledger mocks base method.
+func (m *MockStackSdkImpl) Ledger() LedgerSdkImpl {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Ledger")
+	ret0, _ := ret[0].(LedgerSdkImpl)
+	return ret0
+}
+
+// Ledger indicates an expected call of Ledger.
+func (mr *MockStackSdkImplMockRecorder) Ledger() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ledger", reflect.TypeOf((*MockStackSdkImpl)(nil).Ledger))
+}
+
+// Payments mocks base method.
+func (m *MockStackSdkImpl) Payments() PaymentsSdkImpl {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Payments")
+	ret0, _ := ret[0].(PaymentsSdkImpl)
+	return ret0
+}
+
+// Payments indicates an expected call of Payments.
+func (mr *MockStackSdkImplMockRecorder) Payments() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Payments", reflect.TypeOf((*MockStackSdkImpl)(nil).Payments))
+}
+
+// Reconciliation mocks base method.
+func (m *MockStackSdkImpl) Reconciliation() ReconciliationSdkImpl {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Reconciliation")
+	ret0, _ := ret[0].(ReconciliationSdkImpl)
+	return ret0
+}
+
+// Reconciliation indicates an expected call of Reconciliation.
+func (mr *MockStackSdkImplMockRecorder) Reconciliation() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reconciliation", reflect.TypeOf((*MockStackSdkImpl)(nil).Reconciliation))
+}
+
+// Webhooks mocks base method.
+func (m *MockStackSdkImpl) Webhooks() WebhooksSdkImpl {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Webhooks")
+	ret0, _ := ret[0].(WebhooksSdkImpl)
+	return ret0
+}
+
+// Webhooks indicates an expected call of Webhooks.
+func (mr *MockStackSdkImplMockRecorder) Webhooks() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Webhooks", reflect.TypeOf((*MockStackSdkImpl)(nil).Webhooks))
 }
