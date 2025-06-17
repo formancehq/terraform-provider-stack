@@ -227,7 +227,7 @@ func (p *FormanceStackProvider) DataSources(ctx context.Context) []func() dataso
 func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		// resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
-		// resources.NewLedger(p.logger.WithField("resource", "ledger")),
+		resources.NewLedger(p.logger.WithField("resource", "ledger")),
 		resources.NewNoop(p.logger.WithField("resource", "noop")),
 	}
 }
