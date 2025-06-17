@@ -93,7 +93,7 @@ func TestWebhooks(t *testing.T) {
 						`,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook")),
+					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook2")),
 					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
 						[]knownvalue.Check{
 							knownvalue.StringExact("transaction.test"),

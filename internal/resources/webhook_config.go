@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/pointer"
 	"github.com/formancehq/terraform-provider-stack/internal"
+	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -122,17 +123,14 @@ func (s *Webhooks) Create(ctx context.Context, req resource.CreateRequest, res *
 		return v.(types.String).ValueString()
 	})
 
-	sdk := s.store.Webhooks()
+	sdkWebhooks := s.store.Webhooks()
 	s.store.CheckModuleHealth(ctx, &res.Diagnostics)
 	if res.Diagnostics.HasError() {
 		return
 	}
-	resp, err := sdk.InsertConfig(ctx, config)
+	resp, err := sdkWebhooks.InsertConfig(ctx, config)
 	if err != nil {
-		res.Diagnostics.AddError(
-			"Error Creating Webhook Configuration",
-			fmt.Sprintf("Unable to create webhook configuration: %s", err.Error()),
-		)
+		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
 		return
 	}
 	data := resp.ConfigResponse.Data
@@ -159,15 +157,12 @@ func (s *Webhooks) Delete(ctx context.Context, req resource.DeleteRequest, res *
 	if res.Diagnostics.HasError() {
 		return
 	}
-	sdk := s.store.Webhooks()
-	_, err := sdk.DeleteConfig(ctx, operations.DeleteConfigRequest{
+	sdkWebhooks := s.store.Webhooks()
+	resp, err := sdkWebhooks.DeleteConfig(ctx, operations.DeleteConfigRequest{
 		ID: state.ID.ValueString(),
 	})
 	if err != nil {
-		res.Diagnostics.AddError(
-			"Error Creating Webhook Configuration",
-			fmt.Sprintf("Unable to create webhook configuration: %s", err.Error()),
-		)
+		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
 		return
 	}
 }
@@ -191,15 +186,12 @@ func (s *Webhooks) Read(ctx context.Context, req resource.ReadRequest, res *reso
 	if res.Diagnostics.HasError() {
 		return
 	}
-	sdk := s.store.Webhooks()
-	resp, err := sdk.GetManyConfigs(ctx, operations.GetManyConfigsRequest{
+	sdkWebhooks := s.store.Webhooks()
+	resp, err := sdkWebhooks.GetManyConfigs(ctx, operations.GetManyConfigsRequest{
 		ID: pointer.For(state.ID.ValueString()),
 	})
 	if err != nil {
-		res.Diagnostics.AddError(
-			"Error Creating Webhook Configuration",
-			fmt.Sprintf("Unable to create webhook configuration: %s", err.Error()),
-		)
+		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
 		return
 	}
 
@@ -233,12 +225,15 @@ func (s *Webhooks) Update(ctx context.Context, req resource.UpdateRequest, res *
 		return
 	}
 
-	config := shared.ConfigUser{}
-	if plan.Secret.ValueString() != "" {
-		config.Secret = pointer.For(plan.Secret.ValueString())
+	plan.ID = state.ID
+	config := operations.UpdateConfigRequest{
+		ID: state.ID.ValueString(),
 	}
-	config.Endpoint = plan.Endpoint.ValueString()
-	config.EventTypes = collectionutils.Map(plan.EventTypes.Elements(), func(v attr.Value) string {
+	if plan.Secret.ValueString() != "" {
+		config.ConfigUser.Secret = pointer.For(plan.Secret.ValueString())
+	}
+	config.ConfigUser.Endpoint = plan.Endpoint.ValueString()
+	config.ConfigUser.EventTypes = collectionutils.Map(plan.EventTypes.Elements(), func(v attr.Value) string {
 		return v.(types.String).ValueString()
 	})
 
@@ -246,21 +241,12 @@ func (s *Webhooks) Update(ctx context.Context, req resource.UpdateRequest, res *
 	if res.Diagnostics.HasError() {
 		return
 	}
-	sdk := s.store.Webhooks()
-	resp, err := sdk.InsertConfig(ctx, config)
+	sdkWebhooks := s.store.Webhooks()
+	resp, err := sdkWebhooks.UpdateConfig(ctx, config)
 	if err != nil {
-		res.Diagnostics.AddError(
-			"Error Creating Webhook Configuration",
-			fmt.Sprintf("Unable to create webhook configuration: %s", err.Error()),
-		)
+		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
 		return
 	}
-	data := resp.ConfigResponse.Data
-	plan.ID = types.StringValue(data.ID)
-	plan.Endpoint = types.StringValue(data.Endpoint)
-	plan.EventTypes = types.ListValueMust(types.StringType, collectionutils.Map(data.EventTypes, func(s string) attr.Value {
-		return types.StringValue(s)
-	}))
 
 	res.Diagnostics.Append(res.State.Set(ctx, &plan)...)
 }
