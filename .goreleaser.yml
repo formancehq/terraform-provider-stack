@@ -5,11 +5,11 @@ version: 2
 builds:
 - env:
   - CGO_ENABLED=0
-  mod_timestamp: '{{ .CommitTimestamp }}'
+  mod_timestamp: "{{ .CommitTimestamp }}"
   flags:
   - -trimpath
   ldflags:
-  - '-s -w -X internal.version.Version={{.Version}} -X internal.version.Commit={{.Commit}} -X internal.version.BuildDate={{.CommitTimestamp}}'
+  - "-s -w -X internal.version.Version={{.Version}} -X internal.version.Commit={{.Commit}} -X internal.version.BuildDate={{.CommitTimestamp}}"
   goos:
   - linux
   - darwin
@@ -17,16 +17,19 @@ builds:
   - amd64
   - arm
   - arm64
-  binary: '{{ .ProjectName }}_v{{ .Version }}'
+  binary: "{{ .ProjectName }}_v{{ .Version }}"
+
 archives:
-- format: zip
-  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+- formats: [ 'zip' ]
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
 checksum:
   extra_files:
-  - glob: 'terraform-registry-manifest.json'
-    name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
-  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  - glob: "terraform-registry-manifest.json"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
   algorithm: sha256
+
 signs:
 - artifacts: checksum
   args:
@@ -40,8 +43,8 @@ signs:
 
 release:
   extra_files:
-  - glob: 'terraform-registry-manifest.json'
-    name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
+  - glob: "terraform-registry-manifest.json"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
   footer: |
     **Full Changelog**: https://github.com/formancehq/terraform-provider-stack/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
@@ -52,18 +55,18 @@ changelog:
   use: github
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
-    - '^spec:'
+    - "^docs:"
+    - "^test:"
+    - "^spec:"
     - Merge pull request
     - Merge remote-tracking branch
     - Merge branch
     - go mod tidy
   groups:
-  - title: 'New Features'
+  - title: "New Features"
     regexp: "^.*feat[(\\w)]*:+.*$"
     order: 0
-  - title: 'Bug fixes'
+  - title: "Bug fixes"
     regexp: "^.*fix[(\\w)]*:+.*$"
     order: 10
   - title: Other work
