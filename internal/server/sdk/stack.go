@@ -2,7 +2,6 @@ package sdk
 
 import (
 	"context"
-	"net/http"
 
 	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
@@ -45,11 +44,13 @@ func (s *defaultStackSdk) Reconciliation() ReconciliationSdkImpl {
 	return s.ReconciliationSdkImpl
 }
 
-type StackSdkFactory func(url string, version string, transport http.RoundTripper, tp pkg.TokenProviderImpl) (StackSdkImpl, error)
+type StackSdkFactory func(opts ...formance.SDKOption) (StackSdkImpl, error)
 
 func NewStackSdk() StackSdkFactory {
-	return func(url, version string, transport http.RoundTripper, tp pkg.TokenProviderImpl) (StackSdkImpl, error) {
-		client, err := pkg.NewStackClient(url, version, transport, tp)
+	return func(opts ...formance.SDKOption) (StackSdkImpl, error) {
+		client, err := pkg.NewStackClient(
+			opts...,
+		)
 		if err != nil {
 			return nil, err
 		}
