@@ -16,6 +16,11 @@ type PaymentsSdkImpl interface {
 
 	AddAccountToPool(ctx context.Context, request operations.V3AddAccountToPoolRequest) (*operations.V3AddAccountToPoolResponse, error)
 	RemoveAccountFromPool(ctx context.Context, request operations.V3RemoveAccountFromPoolRequest) (*operations.V3RemoveAccountFromPoolResponse, error)
+
+	CreateConnector(ctx context.Context, request operations.V3InstallConnectorRequest) (*operations.V3InstallConnectorResponse, error)
+	GetConnector(ctx context.Context, request operations.V3GetConnectorConfigRequest) (*operations.V3GetConnectorConfigResponse, error)
+	DeleteConnector(ctx context.Context, request operations.V3UninstallConnectorRequest) (*operations.V3UninstallConnectorResponse, error)
+	UpdateConnector(ctx context.Context, request operations.V3UpdateConnectorConfigRequest) (*operations.V3UpdateConnectorConfigResponse, error)
 }
 
 var _ PaymentsSdkImpl = &defaultPaymentsSdk{}
@@ -41,7 +46,22 @@ func (s *defaultPaymentsSdk) AddAccountToPool(ctx context.Context, request opera
 }
 func (s *defaultPaymentsSdk) RemoveAccountFromPool(ctx context.Context, request operations.V3RemoveAccountFromPoolRequest) (*operations.V3RemoveAccountFromPoolResponse, error) {
 	return s.V3.RemoveAccountFromPool(ctx, request)
+}
 
+func (s *defaultPaymentsSdk) CreateConnector(ctx context.Context, request operations.V3InstallConnectorRequest) (*operations.V3InstallConnectorResponse, error) {
+	return s.V3.InstallConnector(ctx, request)
+}
+
+func (s *defaultPaymentsSdk) GetConnector(ctx context.Context, request operations.V3GetConnectorConfigRequest) (*operations.V3GetConnectorConfigResponse, error) {
+	return s.V3.GetConnectorConfig(ctx, request)
+}
+
+func (s *defaultPaymentsSdk) DeleteConnector(ctx context.Context, request operations.V3UninstallConnectorRequest) (*operations.V3UninstallConnectorResponse, error) {
+	return s.V3.UninstallConnector(ctx, request)
+}
+
+func (s *defaultPaymentsSdk) UpdateConnector(ctx context.Context, request operations.V3UpdateConnectorConfigRequest) (*operations.V3UpdateConnectorConfigResponse, error) {
+	return s.V3.V3UpdateConnectorConfig(ctx, request)
 }
 
 func newPaymentsSdk(payments *formance.Payments) PaymentsSdkImpl {
