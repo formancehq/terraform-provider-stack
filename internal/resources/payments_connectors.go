@@ -40,10 +40,8 @@ func SanitizeUnknownKeys(m map[string]attr.Value, allowedKeys []string) map[stri
 }
 
 var (
-	_ resource.Resource                     = &PaymentsConnectors{}
-	_ resource.ResourceWithConfigure        = &PaymentsConnectors{}
-	_ resource.ResourceWithConfigValidators = &PaymentsConnectors{}
-	_ resource.ResourceWithValidateConfig   = &PaymentsConnectors{}
+	_ resource.Resource              = &PaymentsConnectors{}
+	_ resource.ResourceWithConfigure = &PaymentsConnectors{}
 )
 
 type PaymentsConnectors struct {
@@ -140,21 +138,6 @@ var SchemaPaymentsConnectors = schema.Schema{
 // Schema implements resource.Resource.
 func (s *PaymentsConnectors) Schema(ctx context.Context, req resource.SchemaRequest, res *resource.SchemaResponse) {
 	res.Schema = SchemaPaymentsConnectors
-}
-
-// ValidateConfig implements resource.ResourceWithValidateConfig.
-func (s *PaymentsConnectors) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, res *resource.ValidateConfigResponse) {
-	var config PaymentsConnectorsModel
-	res.Diagnostics.Append(req.Config.Get(ctx, &config)...)
-	if res.Diagnostics.HasError() {
-		return
-	}
-
-}
-
-// ConfigValidators implements resource.ResourceWithConfigValidators.
-func (s *PaymentsConnectors) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
-	return nil
 }
 
 // Configure implements resource.ResourceWithConfigure.
