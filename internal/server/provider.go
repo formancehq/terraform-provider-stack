@@ -229,6 +229,7 @@ func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource
 		resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
 		resources.NewLedger(p.logger.WithField("resource", "ledger")),
 		resources.NewNoop(p.logger.WithField("resource", "noop")),
+		resources.NewPaymentsConnectors(p.logger.WithField("resource", "payments_connectors")),
 	}
 }
 
