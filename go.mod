@@ -68,7 +68,7 @@ require (
 )
 
 require (
-	github.com/formancehq/formance-sdk-go/v3 v3.4.1
+	github.com/formancehq/formance-sdk-go/v3 v3.5.0
 	github.com/stretchr/testify v1.10.0
 	github.com/zitadel/oidc/v3 v3.38.1
 	go.uber.org/mock v0.5.2

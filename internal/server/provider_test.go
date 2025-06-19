@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/formancehq/terraform-provider-stack/internal"
@@ -16,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 	"github.com/stretchr/testify/require"
@@ -41,6 +43,18 @@ func TestProviderMetadata(t *testing.T) {
 
 	require.Equal(t, res.TypeName, "formancestack")
 	require.Equal(t, res.Version, "develop")
+}
+
+func getSchemaTypes(schema schema.Schema) map[string]tftypes.Type {
+	attributeTypes := make(map[string]tftypes.Type)
+	schemaAt := schema.Attributes
+	for name, attr := range schemaAt {
+		t := attr.GetType()
+		attributeTypes[name] = t.TerraformType(logging.TestingContext())
+	}
+
+	fmt.Println(attributeTypes)
+	return attributeTypes
 }
 
 func TestProviderConfigure(t *testing.T) {
@@ -95,7 +109,7 @@ func TestProviderConfigure(t *testing.T) {
 				func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
 					return stackTokenProvider
 				},
-				func(url, version string, transport http.RoundTripper, tp pkg.TokenProviderImpl) (sdk.StackSdkImpl, error) {
+				func(...formance.SDKOption) (sdk.StackSdkImpl, error) {
 					return stacksdk, nil
 				},
 			)()
@@ -108,29 +122,18 @@ func TestProviderConfigure(t *testing.T) {
 				Diagnostics: []diag.Diagnostic{},
 			}
 
-			cloudObj := tftypes.Object{
-				AttributeTypes: map[string]tftypes.Type{
-					"client_id":     tftypes.String,
-					"client_secret": tftypes.String,
-					"endpoint":      tftypes.String,
-				},
-			}
+			schemaType := getSchemaTypes(server.SchemaStack)
 			p.Configure(logging.TestingContext(), provider.ConfigureRequest{
 				Config: tfsdk.Config{
 					Raw: tftypes.NewValue(tftypes.Object{
-						AttributeTypes: map[string]tftypes.Type{
-							"cloud":                cloudObj,
-							"stack_id":             tftypes.String,
-							"organization_id":      tftypes.String,
-							"uri":                  tftypes.String,
-							"wait_module_duration": tftypes.String,
-						},
+						AttributeTypes: schemaType,
 					}, map[string]tftypes.Value{
 						"stack_id":             tftypes.NewValue(tftypes.String, stackId),
 						"organization_id":      tftypes.NewValue(tftypes.String, organizationId),
 						"uri":                  tftypes.NewValue(tftypes.String, stackUri),
 						"wait_module_duration": tftypes.NewValue(tftypes.String, nil),
-						"cloud": tftypes.NewValue(cloudObj, map[string]tftypes.Value{
+						"retry_config":         tftypes.NewValue(schemaType["retry_config"], nil),
+						"cloud": tftypes.NewValue(schemaType["cloud"], map[string]tftypes.Value{
 							"client_id":     tftypes.NewValue(tftypes.String, tc.ClientId),
 							"client_secret": tftypes.NewValue(tftypes.String, tc.ClientSecret),
 							"endpoint":      tftypes.NewValue(tftypes.String, tc.Endpoint),

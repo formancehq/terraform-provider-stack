@@ -24,6 +24,7 @@ description: |-
 ### Optional
 
 - `cloud` (Attributes) (see [below for nested schema](#nestedatt--cloud))
+- `retry_config` (Attributes) (see [below for nested schema](#nestedatt--retry_config))
 - `wait_module_duration` (String) The duration to wait for the module to be ready before proceeding.
 
 <a id="nestedatt--cloud"></a>
@@ -34,3 +35,25 @@ Optional:
 - `client_id` (String)
 - `client_secret` (String, Sensitive)
 - `endpoint` (String)
+
+
+<a id="nestedatt--retry_config"></a>
+### Nested Schema for `retry_config`
+
+Required:
+
+- `backoff_strategy` (Attributes) (see [below for nested schema](#nestedatt--retry_config--backoff_strategy))
+
+Optional:
+
+- `retry_connection_errors` (Boolean)
+
+<a id="nestedatt--retry_config--backoff_strategy"></a>
+### Nested Schema for `retry_config.backoff_strategy`
+
+Required:
+
+- `exponent` (Number)
+- `initial_interval` (Boolean)
+- `max_elapsed_time` (Number)
+- `max_interval` (Boolean)

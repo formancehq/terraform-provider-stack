@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	formance "github.com/formancehq/formance-sdk-go/v3"
+	"github.com/formancehq/formance-sdk-go/v3/pkg/retry"
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/formancehq/terraform-provider-stack/internal"
@@ -20,6 +22,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+type RetryConfig struct {
+	BackoffStrategy       BackoffStrategy `tfsdk:"backoff_strategy"`
+	RetryConnectionErrors types.Bool      `tfsdk:"retry_connection_errors"`
+}
+
+type BackoffStrategy struct {
+	InitialInterval types.Int32   `tfsdk:"initial_interval"`
+	MaxInterval     types.Int32   `tfsdk:"max_interval"`
+	Exponent        types.Float64 `tfsdk:"exponent"`
+	MaxElapsedTime  types.Int32   `tfsdk:"max_elapsed_time"`
+}
 
 type FormanceCloudProviderModel struct {
 	ClientId     types.String `tfsdk:"client_id"`
@@ -62,7 +76,31 @@ type FormanceStackProviderModel struct {
 	OrganizationId types.String `tfsdk:"organization_id"`
 	Uri            types.String `tfsdk:"uri"`
 
+	RetryConfig *RetryConfig `tfsdk:"retry_config"`
+
 	WaitModule types.String `tfsdk:"wait_module_duration"`
+}
+
+func (f *FormanceStackProviderModel) WithRetryConfig() formance.SDKOption {
+	if f.RetryConfig == nil {
+		return func(f *formance.Formance) {}
+	}
+	backoffStrategy := f.RetryConfig.BackoffStrategy
+	conf := retry.Config{
+		Strategy: "backoff",
+		Backoff: &retry.BackoffStrategy{
+			InitialInterval: int(backoffStrategy.InitialInterval.ValueInt32()),
+			MaxInterval:     int(backoffStrategy.MaxInterval.ValueInt32()),
+			Exponent:        backoffStrategy.Exponent.ValueFloat64(),
+			MaxElapsedTime:  int(backoffStrategy.MaxElapsedTime.ValueInt32()),
+		},
+	}
+
+	if !f.RetryConfig.RetryConnectionErrors.IsNull() {
+		conf.RetryConnectionErrors = f.RetryConfig.RetryConnectionErrors.ValueBool()
+	}
+
+	return formance.WithRetryConfig(conf)
 }
 
 type FormanceStackProvider struct {
@@ -102,6 +140,31 @@ var SchemaStack = schema.Schema{
 					Optional: true,
 				},
 				"endpoint": schema.StringAttribute{
+					Optional: true,
+				},
+			},
+		},
+		"retry_config": schema.SingleNestedAttribute{
+			Optional: true,
+			Attributes: map[string]schema.Attribute{
+				"backoff_strategy": schema.SingleNestedAttribute{
+					Required: true,
+					Attributes: map[string]schema.Attribute{
+						"initial_interval": schema.BoolAttribute{
+							Required: true,
+						},
+						"max_interval": schema.BoolAttribute{
+							Required: true,
+						},
+						"exponent": schema.Float64Attribute{
+							Required: true,
+						},
+						"max_elapsed_time": schema.Int64Attribute{
+							Required: true,
+						},
+					},
+				},
+				"retry_connection_errors": schema.BoolAttribute{
 					Optional: true,
 				},
 			},
@@ -188,8 +251,24 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		OrganizationId: data.OrganizationId.ValueString(),
 		Uri:            data.Uri.ValueString(),
 	}
-	stackTpProvider := p.stackTokenFactory(p.transport, creds, cloudtp, stack)
-	cli, err := p.stackSdkFactory(data.Uri.ValueString(), p.Version, p.transport, stackTpProvider)
+
+	opts := []formance.SDKOption{
+		data.WithRetryConfig(),
+		formance.WithServerURL(data.Uri.ValueString()),
+		formance.WithClient(
+			&http.Client{
+				Transport: pkg.NewStackHTTPTransport(
+					p.stackTokenFactory(p.transport, creds, cloudtp, stack),
+					p.transport,
+					map[string][]string{
+						"User-Agent": {"terraform-provider-stack/" + internal.Version},
+					},
+				),
+			},
+		),
+	}
+
+	cli, err := p.stackSdkFactory(opts...)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create stack client", err.Error())
 		return
@@ -236,6 +315,7 @@ func (p FormanceStackProvider) ConfigValidators(ctx context.Context) []provider.
 	return []provider.ConfigValidator{}
 }
 
+// TODO: This start being really long, maybe we should split it into multiple ValidateConfig functions attached to the models?
 func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.ValidateConfigRequest, resp *provider.ValidateConfigResponse) {
 	var data FormanceStackProviderModel
 
@@ -317,6 +397,44 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 			"While configuring the provider, the url was not found. "+
 				"Please provide a valid uri in the provider configuration block.",
 		)
+	}
+
+	if data.RetryConfig != nil {
+		if data.RetryConfig.BackoffStrategy.InitialInterval.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("retry_config.backoff_strategy.initial_interval"),
+				"Missing Initial Interval Configuration",
+				"While configuring the provider, the initial_interval was not found. "+
+					"Please provide a valid initial_interval in the provider configuration block.",
+			)
+		}
+
+		if data.RetryConfig.BackoffStrategy.MaxInterval.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("retry_config.backoff_strategy.max_interval"),
+				"Missing Max Interval Configuration",
+				"While configuring the provider, the max_interval was not found. "+
+					"Please provide a valid max_interval in the provider configuration block.",
+			)
+		}
+
+		if data.RetryConfig.BackoffStrategy.Exponent.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("retry_config.backoff_strategy.exponent"),
+				"Missing Exponent Configuration",
+				"While configuring the provider, the exponent was not found. "+
+					"Please provide a valid exponent in the provider configuration block.",
+			)
+		}
+
+		if data.RetryConfig.BackoffStrategy.MaxElapsedTime.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("retry_config.backoff_strategy.max_elapsed_time"),
+				"Missing Max Elapsed Time Configuration",
+				"While configuring the provider, the max_elapsed_time was not found. "+
+					"Please provide a valid max_elapsed_time in the provider configuration block.",
+			)
+		}
 	}
 
 }
