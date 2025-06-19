@@ -147,10 +147,10 @@ func (s *Ledger) Create(ctx context.Context, req resource.CreateRequest, res *re
 	if res.Diagnostics.HasError() {
 		return
 	}
-	resp, err := ledgerSdk.CreateLedger(ctx, config)
+	_, err := ledgerSdk.CreateLedger(ctx, config)
 	if err != nil {
 
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 
@@ -192,7 +192,7 @@ func (s *Ledger) Read(ctx context.Context, req resource.ReadRequest, res *resour
 		Ledger: state.Name.ValueString(),
 	})
 	if err != nil {
-		sdk.HandleStackError(err, ledger.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 
@@ -230,14 +230,14 @@ func (s *Ledger) Update(ctx context.Context, req resource.UpdateRequest, res *re
 	if res.Diagnostics.HasError() {
 		return
 	}
-	resp, err := ledgerSdk.UpdateLedgerMetadata(ctx, operations.V2UpdateLedgerMetadataRequest{
+	_, err := ledgerSdk.UpdateLedgerMetadata(ctx, operations.V2UpdateLedgerMetadataRequest{
 		Ledger: state.Name.ValueString(),
 		RequestBody: collectionutils.ConvertMap(plan.Metadata.Elements(), func(v attr.Value) string {
 			return v.(types.String).ValueString()
 		}),
 	})
 	if err != nil {
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 

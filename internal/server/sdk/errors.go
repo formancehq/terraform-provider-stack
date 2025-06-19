@@ -1,20 +1,24 @@
 package sdk
 
 import (
+	"context"
 	"errors"
-	"net/http"
 	"strings"
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/sdkerrors"
+	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
-func HandleStackError(err error, resp *http.Response, diag *diag.Diagnostics) {
+func HandleStackError(ctx context.Context, err error, diag *diag.Diagnostics) {
 	var details []string
 
-	traceparent := resp.Header.Get("traceparent")
-	if traceparent != "" {
-		details = append(details, "Traceparent: "+traceparent)
+	resp := pkg.ResponseFromContext(ctx)
+	if resp != nil {
+		traceparent := resp.Header.Get("Traceparent")
+		if traceparent != "" {
+			details = append(details, "Traceparent: "+traceparent)
+		}
 	}
 
 	switch e := err.(type) {
