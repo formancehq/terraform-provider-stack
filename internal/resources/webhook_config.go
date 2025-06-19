@@ -130,7 +130,7 @@ func (s *Webhooks) Create(ctx context.Context, req resource.CreateRequest, res *
 	}
 	resp, err := sdkWebhooks.InsertConfig(ctx, config)
 	if err != nil {
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 	data := resp.ConfigResponse.Data
@@ -158,11 +158,11 @@ func (s *Webhooks) Delete(ctx context.Context, req resource.DeleteRequest, res *
 		return
 	}
 	sdkWebhooks := s.store.Webhooks()
-	resp, err := sdkWebhooks.DeleteConfig(ctx, operations.DeleteConfigRequest{
+	_, err := sdkWebhooks.DeleteConfig(ctx, operations.DeleteConfigRequest{
 		ID: state.ID.ValueString(),
 	})
 	if err != nil {
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 }
@@ -191,7 +191,7 @@ func (s *Webhooks) Read(ctx context.Context, req resource.ReadRequest, res *reso
 		ID: pointer.For(state.ID.ValueString()),
 	})
 	if err != nil {
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 
@@ -242,9 +242,9 @@ func (s *Webhooks) Update(ctx context.Context, req resource.UpdateRequest, res *
 		return
 	}
 	sdkWebhooks := s.store.Webhooks()
-	resp, err := sdkWebhooks.UpdateConfig(ctx, config)
+	_, err := sdkWebhooks.UpdateConfig(ctx, config)
 	if err != nil {
-		sdk.HandleStackError(err, resp.RawResponse, &res.Diagnostics)
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
 

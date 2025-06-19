@@ -54,7 +54,7 @@ func (ms *ModuleStore) CheckModuleHealth(ctx context.Context, diagnostics *diag.
 				if modules == nil || modules.StatusCode > 300 {
 					continue
 				}
-				sdk.HandleStackError(err, modules.RawResponse, diagnostics)
+				sdk.HandleStackError(ctx, err, diagnostics)
 				return
 			}
 
