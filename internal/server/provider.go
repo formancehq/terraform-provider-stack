@@ -308,6 +308,7 @@ func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource
 		resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
 		resources.NewLedger(p.logger.WithField("resource", "ledger")),
 		resources.NewNoop(p.logger.WithField("resource", "noop")),
+		resources.NewPaymentsConnectors(p.logger.WithField("resource", "payments_connectors")),
 	}
 }
 
@@ -355,7 +356,7 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 		} else {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("cloud.client_secret"),
-				"Missing API Token Configuration",
+				"Missing client_secret Configuration",
 				"While configuring the provider, the API token was not found in "+
 					"the FORMANCE_CLOUD_CLIENT_SECRET environment variable or provider "+
 					"configuration block api_token attribute.",

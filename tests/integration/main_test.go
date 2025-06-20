@@ -1,9 +1,27 @@
-package integration
+package integration_test
 
-import "testing"
+import (
+	"flag"
+	"net/http"
+	"os"
+	"testing"
 
-func TestMain(t *testing.T) {
-	// This is a placeholder for the main test function.
-	// The actual tests will be defined in separate files.
-	t.Skip("Integration tests are not implemented yet")
+	"github.com/formancehq/go-libs/v3/httpclient"
+	"github.com/formancehq/go-libs/v3/otlp"
+)
+
+var transport http.RoundTripper
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+	if testing.Verbose() {
+		transport = httpclient.NewDebugHTTPTransport(
+			otlp.NewRoundTripper(http.DefaultTransport, true),
+		)
+	} else {
+		transport = otlp.NewRoundTripper(http.DefaultTransport, false)
+	}
+	code := m.Run()
+
+	os.Exit(code)
 }

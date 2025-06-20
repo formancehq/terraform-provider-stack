@@ -57,6 +57,21 @@ func (mr *MockPaymentsSdkImplMockRecorder) AddAccountToPool(ctx, request any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToPool", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).AddAccountToPool), ctx, request)
 }
 
+// CreateConnector mocks base method.
+func (m *MockPaymentsSdkImpl) CreateConnector(ctx context.Context, request operations.V3InstallConnectorRequest) (*operations.V3InstallConnectorResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateConnector", ctx, request)
+	ret0, _ := ret[0].(*operations.V3InstallConnectorResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateConnector indicates an expected call of CreateConnector.
+func (mr *MockPaymentsSdkImplMockRecorder) CreateConnector(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateConnector", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).CreateConnector), ctx, request)
+}
+
 // CreatePool mocks base method.
 func (m *MockPaymentsSdkImpl) CreatePool(ctx context.Context, request *shared.V3CreatePoolRequest) (*operations.V3CreatePoolResponse, error) {
 	m.ctrl.T.Helper()
@@ -72,6 +87,21 @@ func (mr *MockPaymentsSdkImplMockRecorder) CreatePool(ctx, request any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePool", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).CreatePool), ctx, request)
 }
 
+// DeleteConnector mocks base method.
+func (m *MockPaymentsSdkImpl) DeleteConnector(ctx context.Context, request operations.V3UninstallConnectorRequest) (*operations.V3UninstallConnectorResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteConnector", ctx, request)
+	ret0, _ := ret[0].(*operations.V3UninstallConnectorResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteConnector indicates an expected call of DeleteConnector.
+func (mr *MockPaymentsSdkImplMockRecorder) DeleteConnector(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConnector", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).DeleteConnector), ctx, request)
+}
+
 // DeletePool mocks base method.
 func (m *MockPaymentsSdkImpl) DeletePool(ctx context.Context, request operations.V3DeletePoolRequest) (*operations.V3DeletePoolResponse, error) {
 	m.ctrl.T.Helper()
@@ -85,6 +115,21 @@ func (m *MockPaymentsSdkImpl) DeletePool(ctx context.Context, request operations
 func (mr *MockPaymentsSdkImplMockRecorder) DeletePool(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePool", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).DeletePool), ctx, request)
+}
+
+// GetConnector mocks base method.
+func (m *MockPaymentsSdkImpl) GetConnector(ctx context.Context, request operations.V3GetConnectorConfigRequest) (*operations.V3GetConnectorConfigResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetConnector", ctx, request)
+	ret0, _ := ret[0].(*operations.V3GetConnectorConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetConnector indicates an expected call of GetConnector.
+func (mr *MockPaymentsSdkImplMockRecorder) GetConnector(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnector", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).GetConnector), ctx, request)
 }
 
 // GetPool mocks base method.
@@ -115,4 +160,19 @@ func (m *MockPaymentsSdkImpl) RemoveAccountFromPool(ctx context.Context, request
 func (mr *MockPaymentsSdkImplMockRecorder) RemoveAccountFromPool(ctx, request any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveAccountFromPool", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).RemoveAccountFromPool), ctx, request)
+}
+
+// UpdateConnector mocks base method.
+func (m *MockPaymentsSdkImpl) UpdateConnector(ctx context.Context, request operations.V3UpdateConnectorConfigRequest) (*operations.V3UpdateConnectorConfigResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateConnector", ctx, request)
+	ret0, _ := ret[0].(*operations.V3UpdateConnectorConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateConnector indicates an expected call of UpdateConnector.
+func (mr *MockPaymentsSdkImplMockRecorder) UpdateConnector(ctx, request any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConnector", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).UpdateConnector), ctx, request)
 }
