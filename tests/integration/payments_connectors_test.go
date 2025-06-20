@@ -119,7 +119,6 @@ func TestPaymentsConnectors(t *testing.T) {
 	}, nil)
 
 	paymentsSdk.EXPECT().UpdateConnector(gomock.Any(), gomock.Cond(func(r operations.V3UpdateConnectorConfigRequest) bool {
-		fmt.Println(r.ConnectorID)
 		return r.ConnectorID == connectorId
 	})).Return(nil, nil)
 
