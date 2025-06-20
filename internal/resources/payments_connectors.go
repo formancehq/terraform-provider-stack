@@ -310,7 +310,6 @@ func (s *PaymentsConnectors) Read(ctx context.Context, req resource.ReadRequest,
 		)
 		return
 	}
-	fmt.Println("New Plan:", newPlan)
 	res.Diagnostics.Append(res.State.Set(ctx, &newPlan)...)
 }
 
