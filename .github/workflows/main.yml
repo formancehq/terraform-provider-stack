@@ -64,8 +64,8 @@ jobs:
         with:
           name: coverage-unit-report
           path: ./coverage/coverage_unit.txt
-  TestsIntegration:
-    name: "Tests (Integration)"
+  TestsE2E:
+    name: "Tests (E2E)"
     runs-on: "shipfox-8vcpu-ubuntu-2404"
     steps:
       - uses: "actions/checkout@v4"
@@ -81,9 +81,9 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-      - name: Run integration tests
+      - name: Run e2e tests
         run: >
-          nix develop --impure --command just tests-integration ci
+          nix develop --impure --command just tests-e2e ci
 
         env:
           PATH: ${PATH}:${PWD}/build
@@ -95,6 +95,26 @@ jobs:
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:
+          name: coverage-e2e-report
+          path: ./coverage/coverage_e2e.txt
+  TestsIntegration:
+    name: "Tests (Integration)"
+    runs-on: "shipfox-8vcpu-ubuntu-2404"
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+      - name: Setup Nix
+        uses: ./.github/actions/default
+        with:
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Run e2e tests
+        run: >
+          nix develop --impure --command just tests-integration ci
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
           name: coverage-integration-report
           path: ./coverage/coverage_integration.txt
   Tests:
@@ -103,6 +123,7 @@ jobs:
     needs:
       - TestsUnit
       - TestsIntegration
+      - TestsE2E
     steps:
       - uses: "actions/checkout@v4"
         with:
@@ -124,4 +145,4 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          files: coverage/coverage_unit.txt, coverage/coverage_integration.txt
+          files: coverage/coverage_unit.txt, coverage/coverage_integration.txt, coverage/coverage_e2e.txt

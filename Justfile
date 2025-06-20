@@ -25,14 +25,14 @@ build:
   @go build -o ./build/terraform-provider-stack ./main.go
 
 [group('test')]
-tests: tests-unit tests-integration coverage
+tests: tests-unit tests-integration tests-e2e coverage
 
 [group('test')]
 coverage:
   @rm -rf coverage/coverage_merged.txt
   @head -n 1 coverage/coverage_unit.txt > coverage/coverage_merged.txt
   @tail -n +2 coverage/coverage_unit.txt | grep -Ev "generated|/sdk|tests/" >> coverage/coverage_merged.txt
-  @tail -n +2 coverage/coverage_integration.txt | grep -Ev "generated|/sdk|tests/" >> coverage/coverage_merged.txt
+  @tail -n +2 coverage/coverage_e2e.txt | grep -Ev "generated|/sdk|tests/" >> coverage/coverage_merged.txt
   @go tool cover -func=coverage/coverage_merged.txt
 
 [group('test')]
@@ -45,9 +45,13 @@ tests-unit:
   @go test -v -tags it ./internal/... -covermode=atomic -coverprofile=coverage/coverage_unit.txt -race -coverpkg=./internal/...
 
 [group('test')]
+tests-e2e tags="ci":
+  @mkdir -p ./coverage
+  @TF_ACC=1 go test -v -tags {{tags}} ./tests/e2e/... -covermode=atomic -coverprofile=coverage/coverage_e2e.txt -race -coverpkg=./internal/...,./cmd/...
+
 tests-integration tags="ci":
   @mkdir -p ./coverage
-  @TF_ACC=1 go test -v -tags {{tags}} ./tests/e2e/... -covermode=atomic -coverprofile=coverage/coverage_integration.txt -race -coverpkg=./internal/...,./cmd/...
+  @TF_ACC=1 go test -v -tags {{tags}} ./tests/integration/... -covermode=atomic -coverprofile=coverage/coverage_integration.txt -race -coverpkg=./internal/...,./cmd/...
 
 [group('terraform')]
 plan examples="install-verif": build

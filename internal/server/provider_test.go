@@ -53,7 +53,6 @@ func getSchemaTypes(schema schema.Schema) map[string]tftypes.Type {
 		attributeTypes[name] = t.TerraformType(logging.TestingContext())
 	}
 
-	fmt.Println(attributeTypes)
 	return attributeTypes
 }
 
