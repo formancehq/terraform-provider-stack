@@ -150,7 +150,7 @@ func (s *PaymentsConnectors) Configure(ctx context.Context, req resource.Configu
 	if !ok {
 		res.Diagnostics.AddError(
 			"Invalid Provider Data",
-			fmt.Sprintf("Expected *formance.Formance, got: %T", req.ProviderData),
+			fmt.Sprintf("Expected internal.Store, got: %T", req.ProviderData),
 		)
 		return
 	}
