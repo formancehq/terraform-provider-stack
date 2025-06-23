@@ -3,12 +3,12 @@
 page_title: "formancestack_payments_pool Resource - formancestack"
 subcategory: ""
 description: |-
-  
+  Resource for managing a Formance Payments Pool. For advanced usage and configuration, see the Payments documentation https://docs.formance.com/payments/.
 ---
 
 # formancestack_payments_pool (Resource)
 
-
+Resource for managing a Formance Payments Pool. For advanced usage and configuration, see the [Payments documentation](https://docs.formance.com/payments/).
 
 
 
@@ -21,8 +21,8 @@ description: |-
 
 ### Optional
 
-- `accounts_ids` (List of String) The list of accounts IDs associated with the pool.
+- `accounts_ids` (List of String) The list of accounts IDs associated with the pool. For more information, see the [Payments documentation](https://docs.formance.com/payments/).
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (String) The unique identifier of the payments pool.

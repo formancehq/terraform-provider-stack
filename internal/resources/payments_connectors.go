@@ -119,18 +119,20 @@ func NewPaymentsConnectors(logger logging.Logger) func() resource.Resource {
 }
 
 var SchemaPaymentsConnectors = schema.Schema{
+	Description: "Resource for managing Formance Payments Connectors. For advanced usage and configuration, see the [Payments Connectors documentation](https://docs.formance.com/payments/connectors/).",
 	Attributes: map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Computed: true,
+			Computed:    true,
+			Description: "The unique identifier of the payment connector.",
 		},
 		"credentials": schema.DynamicAttribute{
 			Sensitive:   true,
-			Description: "The credentials for the payment connector. This should include sensitive information like API keys, secrets, certificate, and must be handled securely.",
+			Description: "The credentials for the payment connector. This should include sensitive information like API keys, secrets, certificate, and must be handled securely. Advanced usage: See [Payments Connectors documentation](https://docs.formance.com/payments/connectors/) for connector security best practices.",
 			Required:    true,
 		},
 		"config": schema.DynamicAttribute{
 			Required:    true,
-			Description: "The configuration for the payment connector. It must not contain sensitive information like API keys or secrets.",
+			Description: "The configuration for the payment connector. It must not contain sensitive information like API keys or secrets. Advanced usage: See [Payments Connectors documentation](https://docs.formance.com/payments/connectors/) for connector configuration options.",
 		},
 	},
 }

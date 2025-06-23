@@ -3,12 +3,12 @@
 page_title: "formancestack_ledger Resource - formancestack"
 subcategory: ""
 description: |-
-  
+  Resource for managing a Formance Ledger. For advanced usage and configuration, see the Ledger documentation https://docs.formance.com/ledger/.
 ---
 
 # formancestack_ledger (Resource)
 
-
+Resource for managing a Formance Ledger. For advanced usage and configuration, see the [Ledger documentation](https://docs.formance.com/ledger/).
 
 
 
@@ -22,4 +22,4 @@ description: |-
 ### Optional
 
 - `bucket` (String) The bucket where the ledger data will be stored. If not provided, a default bucket will be used.
-- `metadata` (Map of String) Metadata associated with the ledger, stored as key-value pairs.
+- `metadata` (Map of String) Metadata associated with the ledger, stored as key-value pairs. Advanced usage: See [Ledger Advanced Filtering](https://docs.formance.com/ledger/advanced/filtering) and [Ledger documentation](https://docs.formance.com/ledger/) for more information.

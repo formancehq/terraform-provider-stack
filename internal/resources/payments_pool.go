@@ -41,16 +41,18 @@ func NewPaymentsPool(logger logging.Logger) func() resource.Resource {
 }
 
 var SchemaPaymentsPool = schema.Schema{
+	Description: "Resource for managing a Formance Payments Pool. For advanced usage and configuration, see the [Payments documentation](https://docs.formance.com/payments/).",
 	Attributes: map[string]schema.Attribute{
 		"id": schema.StringAttribute{
-			Computed: true,
+			Computed:    true,
+			Description: "The unique identifier of the payments pool.",
 		},
 		"name": schema.StringAttribute{
 			Description: "The name of the pool.",
 			Required:    true,
 		},
 		"accounts_ids": schema.ListAttribute{
-			Description: "The list of accounts IDs associated with the pool.",
+			Description: "The list of accounts IDs associated with the pool. For more information, see the [Payments documentation](https://docs.formance.com/payments/).",
 			ElementType: types.StringType,
 			Optional:    true,
 		},

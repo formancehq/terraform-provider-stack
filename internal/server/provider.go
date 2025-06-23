@@ -121,26 +121,32 @@ type FormanceStackProvider struct {
 var SchemaStack = schema.Schema{
 	Attributes: map[string]schema.Attribute{
 		"stack_id": schema.StringAttribute{
-			Required: true,
+			Required:    true,
+			Description: "The unique identifier of the stack.",
 		},
 		"organization_id": schema.StringAttribute{
-			Required: true,
+			Required:    true,
+			Description: "The unique identifier of the organization.",
 		},
 		"uri": schema.StringAttribute{
-			Required: true,
+			Required:    true,
+			Description: "The base URI of the stack API.",
 		},
 		"cloud": schema.SingleNestedAttribute{
 			Optional: true,
 			Attributes: map[string]schema.Attribute{
 				"client_secret": schema.StringAttribute{
-					Optional:  true,
-					Sensitive: true,
+					Optional:    true,
+					Sensitive:   true,
+					Description: "The client secret for authenticating with the cloud API.",
 				},
 				"client_id": schema.StringAttribute{
-					Optional: true,
+					Optional:    true,
+					Description: "The client ID for authenticating with the cloud API.",
 				},
 				"endpoint": schema.StringAttribute{
-					Optional: true,
+					Optional:    true,
+					Description: "The endpoint URL for the cloud API.",
 				},
 			},
 		},
@@ -150,22 +156,27 @@ var SchemaStack = schema.Schema{
 				"backoff_strategy": schema.SingleNestedAttribute{
 					Required: true,
 					Attributes: map[string]schema.Attribute{
-						"initial_interval": schema.BoolAttribute{
-							Required: true,
+						"initial_interval": schema.Int32Attribute{
+							Required:    true,
+							Description: "The initial interval for the backoff strategy.",
 						},
-						"max_interval": schema.BoolAttribute{
-							Required: true,
+						"max_interval": schema.Int32Attribute{
+							Required:    true,
+							Description: "The maximum interval for the backoff strategy.",
 						},
 						"exponent": schema.Float64Attribute{
-							Required: true,
+							Required:    true,
+							Description: "The exponent used to increase the backoff interval.",
 						},
-						"max_elapsed_time": schema.Int64Attribute{
-							Required: true,
+						"max_elapsed_time": schema.Int32Attribute{
+							Required:    true,
+							Description: "The maximum total time to spend on retries.",
 						},
 					},
 				},
 				"retry_connection_errors": schema.BoolAttribute{
-					Optional: true,
+					Optional:    true,
+					Description: "Whether to retry on connection errors.",
 				},
 			},
 		},
