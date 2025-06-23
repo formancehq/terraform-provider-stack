@@ -309,6 +309,7 @@ func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource
 		resources.NewLedger(p.logger.WithField("resource", "ledger")),
 		resources.NewNoop(p.logger.WithField("resource", "noop")),
 		resources.NewPaymentsConnectors(p.logger.WithField("resource", "payments_connectors")),
+		resources.NewPaymentsPool(p.logger.WithField("resource", "payments_pool")),
 	}
 }
 
