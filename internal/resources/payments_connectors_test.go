@@ -25,16 +25,16 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 	for _, tc := range []testCase{
 		{
 			plan: resources.PaymentsConnectorsModel{
-				Credentials: types.DynamicValue(types.MapValueMust(types.DynamicType, map[string]attr.Value{
+				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
 					"apiKey": types.DynamicValue(types.StringValue("my-api-key")),
-				})),
-				Config: types.DynamicValue(types.MapValueMust(types.DynamicType, map[string]attr.Value{
+				}).Value()),
+				Config: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
 					"endpoint":      types.DynamicValue(types.StringValue("https://api.example.com")),
 					"name":          types.DynamicValue(types.StringValue("Example Connector")),
 					"pageSize":      types.DynamicValue(types.Int64Value(100)),
 					"pollingPeriod": types.DynamicValue(types.StringValue("5m")),
 					"provider":      types.DynamicValue(types.StringValue("Generic")),
-				})),
+				}).Value()),
 			},
 			expectedConnector: operations.V3InstallConnectorRequest{
 				V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{
@@ -52,19 +52,22 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 		},
 		{
 			plan: resources.PaymentsConnectorsModel{
-				Credentials: types.DynamicValue(types.MapValueMust(types.DynamicType, map[string]attr.Value{
-					"apiKey":          types.DynamicValue(types.StringValue("api-key-value")),
-					"webhookPassword": types.DynamicValue(types.StringValue("webhook-password")),
-				})),
-				Config: types.DynamicValue(types.MapValueMust(types.DynamicType, map[string]attr.Value{
-					"name":               types.DynamicValue(types.StringValue("Example Connector")),
-					"pageSize":           types.DynamicValue(types.Int64Value(50)),
-					"pollingPeriod":      types.DynamicValue(types.StringValue("2m")),
-					"provider":           types.DynamicValue(types.StringValue("Adyen")),
-					"companyID":          types.DynamicValue(types.StringValue("company-id-value")),
-					"liveEndpointPrefix": types.DynamicValue(types.StringValue("https://live.example.com")),
-					"webhookUsername":    types.DynamicValue(types.StringValue("webhook-username")),
-				})),
+				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(
+					map[string]attr.Value{
+						"apiKey":          types.DynamicValue(types.StringValue("api-key-value")),
+						"webhookPassword": types.DynamicValue(types.StringValue("webhook-password")),
+					}).Value()),
+				Config: types.DynamicValue(resources.NewDynamicObjectValue(
+					map[string]attr.Value{
+						"name":               types.DynamicValue(types.StringValue("Example Connector")),
+						"pageSize":           types.DynamicValue(types.Int64Value(50)),
+						"pollingPeriod":      types.DynamicValue(types.StringValue("2m")),
+						"provider":           types.DynamicValue(types.StringValue("Adyen")),
+						"companyID":          types.DynamicValue(types.StringValue("company-id-value")),
+						"liveEndpointPrefix": types.DynamicValue(types.StringValue("https://live.example.com")),
+						"webhookUsername":    types.DynamicValue(types.StringValue("webhook-username")),
+					},
+				).Value()),
 			},
 			expectedConnector: operations.V3InstallConnectorRequest{
 				V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{
@@ -180,32 +183,19 @@ func TestPaymentsStateFromRequest(t *testing.T) {
 			},
 			fromState: resources.PaymentsConnectorsModel{
 				ID: types.StringValue("somevalue"),
-				Credentials: types.DynamicValue(types.ObjectValueMust(
-					resources.GetMapTypeFromAttrTypes(map[string]attr.Value{
-						"apiKey":          types.StringValue("api-key-value"),
-						"webhookPassword": types.StringValue("webhook-password"),
-					}), map[string]attr.Value{
-						"apiKey":          types.StringValue("api-key-value"),
-						"webhookPassword": types.StringValue("webhook-password"),
-					})),
-				Config: types.DynamicValue(types.ObjectValueMust(
-					resources.GetMapTypeFromAttrTypes(map[string]attr.Value{
-						"name":               types.StringValue("Example Connector"),
-						"pageSize":           types.Int64Value(50),
-						"pollingPeriod":      types.StringValue("2m"),
-						"provider":           types.StringValue("Adyen"),
-						"companyID":          types.StringValue("company-id-value"),
-						"liveEndpointPrefix": types.StringValue("https://live.example.com"),
-						"webhookUsername":    types.StringValue("webhook-username"),
-					}), map[string]attr.Value{
-						"name":               types.StringValue("Example Connector"),
-						"pageSize":           types.Int64Value(50),
-						"pollingPeriod":      types.StringValue("2m"),
-						"provider":           types.StringValue("Adyen"),
-						"companyID":          types.StringValue("company-id-value"),
-						"liveEndpointPrefix": types.StringValue("https://live.example.com"),
-						"webhookUsername":    types.StringValue("webhook-username"),
-					})),
+				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+					"apiKey":          types.StringValue("api-key-value"),
+					"webhookPassword": types.StringValue("webhook-password"),
+				}).Value()),
+				Config: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+					"name":               types.StringValue("Example Connector"),
+					"pageSize":           types.Int64Value(50),
+					"pollingPeriod":      types.StringValue("2m"),
+					"provider":           types.StringValue("Adyen"),
+					"companyID":          types.StringValue("company-id-value"),
+					"liveEndpointPrefix": types.StringValue("https://live.example.com"),
+					"webhookUsername":    types.StringValue("webhook-username"),
+				}).Value()),
 			},
 		},
 	} {
