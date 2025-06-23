@@ -44,7 +44,6 @@ func (m *ReconciliationPolicyModel) CreateConfig() (shared.PolicyRequest, error)
 	var ledgerQuery map[string]any
 
 	if object, ok := m.LedgerQuery.UnderlyingValue().(types.Object); ok {
-		fmt.Println(object.String())
 		qb, err := query.ParseJSON(object.String())
 		if err != nil {
 			return shared.PolicyRequest{}, fmt.Errorf("%w: %w", ErrParseLedgerQuery, err)
@@ -185,7 +184,6 @@ func (s *ReconciliationPolicy) Create(ctx context.Context, req resource.CreateRe
 
 	plan.ID = types.StringValue(resp.PolicyResponse.Data.ID)
 	plan.CreatedAt = types.StringValue(resp.PolicyResponse.Data.CreatedAt.String())
-	fmt.Println(plan)
 	res.Diagnostics.Append(res.State.Set(ctx, &plan)...)
 }
 
