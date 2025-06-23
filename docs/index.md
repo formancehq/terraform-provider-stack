@@ -54,6 +54,6 @@ Optional:
 Required:
 
 - `exponent` (Number) The exponent used to increase the backoff interval.
-- `initial_interval` (Boolean) The initial interval for the backoff strategy.
+- `initial_interval` (Number) The initial interval for the backoff strategy.
 - `max_elapsed_time` (Number) The maximum total time to spend on retries.
-- `max_interval` (Boolean) The maximum interval for the backoff strategy.
+- `max_interval` (Number) The maximum interval for the backoff strategy.

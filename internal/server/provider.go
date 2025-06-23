@@ -156,11 +156,11 @@ var SchemaStack = schema.Schema{
 				"backoff_strategy": schema.SingleNestedAttribute{
 					Required: true,
 					Attributes: map[string]schema.Attribute{
-						"initial_interval": schema.BoolAttribute{
+						"initial_interval": schema.Int32Attribute{
 							Required:    true,
 							Description: "The initial interval for the backoff strategy.",
 						},
-						"max_interval": schema.BoolAttribute{
+						"max_interval": schema.Int32Attribute{
 							Required:    true,
 							Description: "The maximum interval for the backoff strategy.",
 						},
@@ -168,7 +168,7 @@ var SchemaStack = schema.Schema{
 							Required:    true,
 							Description: "The exponent used to increase the backoff interval.",
 						},
-						"max_elapsed_time": schema.Int64Attribute{
+						"max_elapsed_time": schema.Int32Attribute{
 							Required:    true,
 							Description: "The maximum total time to spend on retries.",
 						},
