@@ -74,13 +74,15 @@ func NewReconciliationPolicy(logger logging.Logger) func() resource.Resource {
 }
 
 var SchemaReconciliationPolicy = schema.Schema{
+	Description: "Resource for managing a Formance Reconciliation Policy. For advanced usage and configuration, see the [Reconciliation documentation](https://docs.formance.com/reconciliation/).",
 	Attributes: map[string]schema.Attribute{
 		"id": schema.StringAttribute{
 			Computed:    true,
 			Description: "The unique identifier of the reconciliation policy.",
 		},
 		"ledger_name": schema.StringAttribute{
-			Required: true,
+			Required:    true,
+			Description: "The name of the ledger associated with the reconciliation policy.",
 		},
 		"name": schema.StringAttribute{
 			Description: "The name of the pool.",
@@ -91,7 +93,7 @@ var SchemaReconciliationPolicy = schema.Schema{
 			Required:    true,
 		},
 		"ledger_query": schema.DynamicAttribute{
-			Description: "The ledger query used to filter transactions for reconciliation. It must be a valid JSON object representing a query Builder.",
+			Description: "The ledger query used to filter transactions for reconciliation. It must be a valid JSON object representing a query Builder. Advanced usage: See [Ledger Advanced Filtering documentation](https://docs.formance.com/ledger/advanced/filtering) for more details.",
 			Optional:    true,
 		},
 		"created_at": schema.StringAttribute{

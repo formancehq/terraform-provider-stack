@@ -46,6 +46,7 @@ func NewLedger(logger logging.Logger) func() resource.Resource {
 }
 
 var SchemaLedger = schema.Schema{
+	Description: "Resource for managing a Formance Ledger. For advanced usage and configuration, see the [Ledger documentation](https://docs.formance.com/ledger/).",
 	Attributes: map[string]schema.Attribute{
 		"name": schema.StringAttribute{
 			Required:    true,
@@ -63,7 +64,7 @@ var SchemaLedger = schema.Schema{
 		"metadata": schema.MapAttribute{
 			Optional:    true,
 			ElementType: types.StringType,
-			Description: "Metadata associated with the ledger, stored as key-value pairs.",
+			Description: "Metadata associated with the ledger, stored as key-value pairs. Advanced usage: See [Ledger Advanced Filtering](https://docs.formance.com/ledger/advanced/filtering) and [Ledger documentation](https://docs.formance.com/ledger/) for more information.",
 		},
 	},
 }

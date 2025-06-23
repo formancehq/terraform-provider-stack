@@ -17,9 +17,9 @@ description: |-
 
 ### Required
 
-- `organization_id` (String)
-- `stack_id` (String)
-- `uri` (String)
+- `organization_id` (String) The unique identifier of the organization.
+- `stack_id` (String) The unique identifier of the stack.
+- `uri` (String) The base URI of the stack API.
 
 ### Optional
 
@@ -32,9 +32,9 @@ description: |-
 
 Optional:
 
-- `client_id` (String)
-- `client_secret` (String, Sensitive)
-- `endpoint` (String)
+- `client_id` (String) The client ID for authenticating with the cloud API.
+- `client_secret` (String, Sensitive) The client secret for authenticating with the cloud API.
+- `endpoint` (String) The endpoint URL for the cloud API.
 
 
 <a id="nestedatt--retry_config"></a>
@@ -46,14 +46,14 @@ Required:
 
 Optional:
 
-- `retry_connection_errors` (Boolean)
+- `retry_connection_errors` (Boolean) Whether to retry on connection errors.
 
 <a id="nestedatt--retry_config--backoff_strategy"></a>
 ### Nested Schema for `retry_config.backoff_strategy`
 
 Required:
 
-- `exponent` (Number)
-- `initial_interval` (Boolean)
-- `max_elapsed_time` (Number)
-- `max_interval` (Boolean)
+- `exponent` (Number) The exponent used to increase the backoff interval.
+- `initial_interval` (Boolean) The initial interval for the backoff strategy.
+- `max_elapsed_time` (Number) The maximum total time to spend on retries.
+- `max_interval` (Boolean) The maximum interval for the backoff strategy.
