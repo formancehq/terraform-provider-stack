@@ -24,7 +24,7 @@ func TestStack(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: newStack(OrganizationId, RegionName),
+				Config: newStack(RegionName),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
 					statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),

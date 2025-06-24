@@ -23,11 +23,11 @@ func TestNoopResources(t *testing.T) {
 		Steps: []resource.TestStep{
 			newTestStepStack(),
 			{
-				Config: newStack(OrganizationId, RegionName) +
+				Config: newStack(RegionName) +
 					`
 						provider "formancestack" {
 							stack_id = formancecloud_stack.default.id
-							organization_id = formancecloud_stack.default.organization_id
+							organization_id = data.formancecloud_current_organization.default.id
 							uri = formancecloud_stack.default.uri
 						}
 

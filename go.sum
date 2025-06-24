@@ -39,10 +39,10 @@ github.com/formancehq/formance-sdk-go/v3 v3.5.0 h1:4qUhPOaF0igfH+cR95bnsteNXoidZ
 github.com/formancehq/formance-sdk-go/v3 v3.5.0/go.mod h1:6V6/yj6FZDYS3lA7R8d93y/Z4mQbLdGoNOYEMrUKUWM=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef h1:yrhbW231+FUOUrrKGsDhUyqhWFIjFv4TLtoP6L6HJgc=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef/go.mod h1:faThzFZoF/9uEZQgifklAespL+quZ1CnTTF63+mG950=
-github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250617093736-a5a3abe25511 h1:yWljUOJPjiYza7f6tEAoxBb5pohcG5auwbaSqwIWR/A=
-github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250617093736-a5a3abe25511/go.mod h1:Mho2pUyEDMBa40z1O2hTWND3J7Db8f5smkBdv/URkrU=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250617093736-a5a3abe25511 h1:TafrTTiry/UcvRr5OG4yKgA2hMtoJjOFoymPLIX2CwM=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250617093736-a5a3abe25511/go.mod h1:6XkfNbGruADRkgUtfu9+U069EZt+4Ev5sVWUjq1FnOI=
+github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250624122835-08527daf62c5 h1:wx4RAoHRP7L3pAmMlgSAO1eQEWwYmaND4bd1dmTtd60=
+github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250624122835-08527daf62c5/go.mod h1:ND38nmai7sABUwH97OYaE+IvsPArTdU511Z7y4sSGgs=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250624122835-08527daf62c5 h1:5nBh+ygIPfw0FFwjyfPORdOpgI+myAd/RVsRqV4bTEg=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250624122835-08527daf62c5/go.mod h1:6XkfNbGruADRkgUtfu9+U069EZt+4Ev5sVWUjq1FnOI=
 github.com/go-chi/chi/v5 v5.2.1 h1:KOIHODQj58PmL80G2Eak4WdvUzjSJSm0vG72crDCqb8=
 github.com/go-chi/chi/v5 v5.2.1/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 h1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=
@@ -115,6 +115,8 @@ github.com/hashicorp/terraform-json v0.25.0 h1:rmNqc/CIfcWawGiwXmRuiXJKEiJu1ntGo
 github.com/hashicorp/terraform-json v0.25.0/go.mod h1:sMKS8fiRDX4rVlR6EJUMudg1WcanxCMoWwTLkgZP/vc=
 github.com/hashicorp/terraform-plugin-framework v1.15.0 h1:LQ2rsOfmDLxcn5EeIwdXFtr03FVsNktbbBci8cOKdb4=
 github.com/hashicorp/terraform-plugin-framework v1.15.0/go.mod h1:hxrNI/GY32KPISpWqlCoTLM9JZsGH3CyYlir09bD/fI=
+github.com/hashicorp/terraform-plugin-framework-validators v0.18.0 h1:OQnlOt98ua//rCw+QhBbSqfW3QbwtVrcdWeQN5gI3Hw=
+github.com/hashicorp/terraform-plugin-framework-validators v0.18.0/go.mod h1:lZvZvagw5hsJwuY7mAY6KUz45/U6fiDR0CzQAwWD0CA=
 github.com/hashicorp/terraform-plugin-go v0.27.0 h1:ujykws/fWIdsi6oTUT5Or4ukvEan4aN9lY+LOxVP8EE=
 github.com/hashicorp/terraform-plugin-go v0.27.0/go.mod h1:FDa2Bb3uumkTGSkTFpWSOwWJDwA7bf3vdP3ltLDTH6o=
 github.com/hashicorp/terraform-plugin-log v0.9.0 h1:i7hOA+vdAItN1/7UrfBqBwvYPQ9TFvymaRGZED3FCV0=
