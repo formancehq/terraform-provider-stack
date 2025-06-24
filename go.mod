@@ -94,6 +94,7 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-exec v0.23.0 // indirect
 	github.com/hashicorp/terraform-json v0.25.0 // indirect
+	github.com/hashicorp/terraform-plugin-framework-validators v0.18.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.37.0 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
@@ -110,13 +111,13 @@ require (
 require (
 	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250617093736-a5a3abe25511
+	github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250624122835-08527daf62c5
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
-	github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250617093736-a5a3abe25511
+	github.com/formancehq/terraform-provider-cloud v0.0.5-0.20250624122835-08527daf62c5
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/hashicorp/terraform-plugin-testing v1.13.1

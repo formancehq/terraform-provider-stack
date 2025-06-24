@@ -25,15 +25,14 @@ import (
 )
 
 var (
-	CloudProvider  func() provider.Provider
-	StackProvider  func() provider.Provider
-	RegionName     = ""
-	OrganizationId = ""
+	CloudProvider func() provider.Provider
+	StackProvider func() provider.Provider
+	RegionName    = ""
 )
 
 func newTestStepStack() resource.TestStep {
 	return resource.TestStep{
-		Config: newStack(OrganizationId, RegionName),
+		Config: newStack(RegionName),
 		ConfigStateChecks: []statecheck.StateCheck{
 			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
 			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
@@ -50,9 +49,8 @@ func TestMain(m *testing.M) {
 
 	// TODO: This can be replaced with TF variables in the future
 	RegionName = os.Getenv("FORMANCE_CLOUD_REGION_NAME")
-	OrganizationId = os.Getenv("FORMANCE_CLOUD_ORGANIZATION_ID")
-	if RegionName == "" || OrganizationId == "" || endpoint == "" || clientID == "" || clientSecret == "" {
-		missingVars := []string{RegionName, OrganizationId, endpoint, clientID, clientSecret}
+	if RegionName == "" || endpoint == "" || clientID == "" || clientSecret == "" {
+		missingVars := []string{RegionName, endpoint, clientID, clientSecret}
 		missingVars = collectionutils.Filter(missingVars, func(s string) bool {
 			return s == ""
 		})
@@ -89,7 +87,7 @@ func TestMain(m *testing.M) {
 		clientID,
 		clientSecret,
 		transport,
-		cloudpkg.NewSDK,
+		cloudpkg.NewCloudSDK(),
 		cloudpkg.NewTokenProvider,
 	)
 
@@ -98,20 +96,16 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func newStack(organizationId, regionName string) string {
+func newStack(regionName string) string {
 	return `
-		data "formancecloud_organizations" "default" {
-			id = "` + organizationId + `"
-		}
+		data "formancecloud_current_organization" "default" {}
 
 		data "formancecloud_regions" "default" {
 			name = "` + regionName + `"
-			organization_id = data.formancecloud_organizations.default.id
 		}
 
 		resource "formancecloud_stack" "default" {
 			name = "test"
-			organization_id = data.formancecloud_organizations.default.id
 			region_id = data.formancecloud_regions.default.id
 
 			force_destroy = true
