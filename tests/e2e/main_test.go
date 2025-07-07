@@ -34,10 +34,10 @@ func newTestStepStack() resource.TestStep {
 	return resource.TestStep{
 		Config: newStack(RegionName),
 		ConfigStateChecks: []statecheck.StateCheck{
-			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
-			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
-			statecheck.ExpectKnownValue("formancecloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
 		},
 	}
 }
@@ -98,15 +98,15 @@ func TestMain(m *testing.M) {
 
 func newStack(regionName string) string {
 	return `
-		data "formancecloud_current_organization" "default" {}
+		data "cloud_current_organization" "default" {}
 
-		data "formancecloud_regions" "default" {
+		data "cloud_regions" "default" {
 			name = "` + regionName + `"
 		}
 
-		resource "formancecloud_stack" "default" {
+		resource "cloud_stack" "default" {
 			name = "test"
-			region_id = data.formancecloud_regions.default.id
+			region_id = data.cloud_regions.default.id
 
 			force_destroy = true
 		}
