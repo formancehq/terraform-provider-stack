@@ -17,7 +17,7 @@ func TestLedger(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"formancecloud": providerserver.NewProtocol6WithError(CloudProvider()),
+			"cloud":         providerserver.NewProtocol6WithError(CloudProvider()),
 			"formancestack": providerserver.NewProtocol6WithError(StackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
@@ -29,9 +29,9 @@ func TestLedger(t *testing.T) {
 				Config: newStack(RegionName) +
 					`
 						provider "formancestack" {
-							stack_id = formancecloud_stack.default.id
-							organization_id = data.formancecloud_current_organization.default.id
-							uri = formancecloud_stack.default.uri
+							stack_id = cloud_stack.default.id
+							organization_id = data.cloud_current_organization.default.id
+							uri = cloud_stack.default.uri
 						}
 
 						resource "formancestack_ledger" "default" {
@@ -58,9 +58,9 @@ func TestLedger(t *testing.T) {
 				Config: newStack(RegionName) +
 					`
 						provider "formancestack" {
-							stack_id = formancecloud_stack.default.id
-							organization_id = data.formancecloud_current_organization.default.id
-							uri = formancecloud_stack.default.uri
+							stack_id = cloud_stack.default.id
+							organization_id = data.cloud_current_organization.default.id
+							uri = cloud_stack.default.uri
 						}
 
 						resource "formancestack_ledger" "default" {
