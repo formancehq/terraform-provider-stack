@@ -20,7 +20,7 @@ To install the provider, add the following to your Terraform configuration:
 terraform {
   required_providers {
     stack = {
-      source  = "formance/stack"
+      source  = "formancehq/stack"
       version = ">= 0.1.0"
     }
   }
