@@ -17,8 +17,8 @@ func TestLedger(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"cloud":         providerserver.NewProtocol6WithError(CloudProvider()),
-			"formancestack": providerserver.NewProtocol6WithError(StackProvider()),
+			"cloud": providerserver.NewProtocol6WithError(CloudProvider()),
+			"stack": providerserver.NewProtocol6WithError(StackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -28,13 +28,13 @@ func TestLedger(t *testing.T) {
 			{
 				Config: newStack(RegionName) +
 					`
-						provider "formancestack" {
+						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
 						}
 
-						resource "formancestack_ledger" "default" {
+						resource "stack_ledger" "default" {
 							name = "test"
 							bucket = "test-bucket"
 							metadata = {
@@ -44,9 +44,9 @@ func TestLedger(t *testing.T) {
 						}
 					`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("bucket"), knownvalue.StringExact("test-bucket")),
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("metadata"), knownvalue.MapExact(
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("bucket"), knownvalue.StringExact("test-bucket")),
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("metadata"), knownvalue.MapExact(
 						map[string]knownvalue.Check{
 							"key1": knownvalue.StringExact("value1"),
 							"key2": knownvalue.StringExact("value2"),
@@ -57,13 +57,13 @@ func TestLedger(t *testing.T) {
 			{
 				Config: newStack(RegionName) +
 					`
-						provider "formancestack" {
+						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
 						}
 
-						resource "formancestack_ledger" "default" {
+						resource "stack_ledger" "default" {
 							name = "test"
 							bucket = "test-bucket"
 							metadata = {
@@ -73,9 +73,9 @@ func TestLedger(t *testing.T) {
 						}
 					`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("bucket"), knownvalue.StringExact("test-bucket")),
-					statecheck.ExpectKnownValue("formancestack_ledger.default", tfjsonpath.New("metadata"), knownvalue.MapExact(
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("bucket"), knownvalue.StringExact("test-bucket")),
+					statecheck.ExpectKnownValue("stack_ledger.default", tfjsonpath.New("metadata"), knownvalue.MapExact(
 						map[string]knownvalue.Check{
 							"key1": knownvalue.StringExact("value1"),
 							"key2": knownvalue.StringExact("newvalue"),

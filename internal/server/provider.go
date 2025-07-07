@@ -189,7 +189,7 @@ var SchemaStack = schema.Schema{
 
 // Metadata satisfies the provider.Provider interface for FormanceCloudProvider
 func (p *FormanceStackProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "formancestack"
+	resp.TypeName = "stack"
 	resp.Version = internal.Version
 }
 

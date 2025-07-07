@@ -14,8 +14,8 @@ func TestNoopResources(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"cloud":         providerserver.NewProtocol6WithError(CloudProvider()),
-			"formancestack": providerserver.NewProtocol6WithError(StackProvider()),
+			"cloud": providerserver.NewProtocol6WithError(CloudProvider()),
+			"stack": providerserver.NewProtocol6WithError(StackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -25,13 +25,13 @@ func TestNoopResources(t *testing.T) {
 			{
 				Config: newStack(RegionName) +
 					`
-						provider "formancestack" {
+						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
 						}
 
-						resource "formancestack_noop" "noop" {}
+						resource "stack_noop" "noop" {}
 					
 					`,
 			},

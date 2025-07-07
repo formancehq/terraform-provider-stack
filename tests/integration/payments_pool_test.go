@@ -127,7 +127,7 @@ func TestPaymentsPool(t *testing.T) {
 	// testCases
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"formancestack": providerserver.NewProtocol6WithError(stackProvider()),
+			"stack": providerserver.NewProtocol6WithError(stackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -135,13 +135,13 @@ func TestPaymentsPool(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-					provider "formancestack" {
+					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
 						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
 					}
 
-					resource "formancestack_payments_pool" "default" {
+					resource "stack_payments_pool" "default" {
 						name = "Example Pool"
 						accounts_ids = [
 							"account1",
@@ -151,17 +151,17 @@ func TestPaymentsPool(t *testing.T) {
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"formancestack_payments_pool.default",
+						"stack_payments_pool.default",
 						tfjsonpath.New("id"),
 						knownvalue.StringExact(poolId),
 					),
 					statecheck.ExpectKnownValue(
-						"formancestack_payments_pool.default",
+						"stack_payments_pool.default",
 						tfjsonpath.New("name"),
 						knownvalue.StringExact("Example Pool"),
 					),
 					statecheck.ExpectKnownValue(
-						"formancestack_payments_pool.default",
+						"stack_payments_pool.default",
 						tfjsonpath.New("accounts_ids"),
 						knownvalue.ListExact(
 							[]knownvalue.Check{
@@ -174,13 +174,13 @@ func TestPaymentsPool(t *testing.T) {
 			},
 			{
 				Config: `
-					provider "formancestack" {
+					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
 						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
 					}
 
-					resource "formancestack_payments_pool" "default" {
+					resource "stack_payments_pool" "default" {
 						name = "Example Pool"
 						accounts_ids = [
 							"account1",
@@ -189,7 +189,7 @@ func TestPaymentsPool(t *testing.T) {
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"formancestack_payments_pool.default",
+						"stack_payments_pool.default",
 						tfjsonpath.New("accounts_ids"),
 						knownvalue.ListExact(
 							[]knownvalue.Check{

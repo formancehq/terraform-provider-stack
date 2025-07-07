@@ -18,8 +18,8 @@ func TestWebhooks(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"cloud":         providerserver.NewProtocol6WithError(CloudProvider()),
-			"formancestack": providerserver.NewProtocol6WithError(StackProvider()),
+			"cloud": providerserver.NewProtocol6WithError(CloudProvider()),
+			"stack": providerserver.NewProtocol6WithError(StackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -34,13 +34,13 @@ func TestWebhooks(t *testing.T) {
 							stack_id = cloud_stack.default.id
 						}
 
-						provider "formancestack" {
+						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
 						}
 
-						resource "formancestack_webhooks" "webhooks" {
+						resource "stack_webhooks" "webhooks" {
 							endpoint = "https://formance.staging.com/webhook"
 							event_types = [
 								"transaction.created",
@@ -53,15 +53,15 @@ func TestWebhooks(t *testing.T) {
 						}
 					`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook")),
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook")),
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
 						[]knownvalue.Check{
 							knownvalue.StringExact("transaction.created"),
 							knownvalue.StringExact("transaction.updated"),
 						},
 					)),
-					statecheck.ExpectSensitiveValue("formancestack_webhooks.webhooks", tfjsonpath.New("secret")),
+					statecheck.ExpectSensitiveValue("stack_webhooks.webhooks", tfjsonpath.New("secret")),
 				},
 			},
 			{
@@ -72,13 +72,13 @@ func TestWebhooks(t *testing.T) {
 								stack_id = cloud_stack.default.id
 							}
 	
-							provider "formancestack" {
+							provider "stack" {
 								stack_id = cloud_stack.default.id
 								organization_id = data.cloud_current_organization.default.id
 								uri = cloud_stack.default.uri
 							}
 	
-							resource "formancestack_webhooks" "webhooks" {
+							resource "stack_webhooks" "webhooks" {
 								endpoint = "https://formance.staging.com/webhook2"
 								event_types = [
 									"transaction.test",
@@ -90,14 +90,14 @@ func TestWebhooks(t *testing.T) {
 							}
 						`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook2")),
-					statecheck.ExpectKnownValue("formancestack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("endpoint"), knownvalue.StringExact("https://formance.staging.com/webhook2")),
+					statecheck.ExpectKnownValue("stack_webhooks.webhooks", tfjsonpath.New("event_types"), knownvalue.ListExact(
 						[]knownvalue.Check{
 							knownvalue.StringExact("transaction.test"),
 						},
 					)),
-					statecheck.ExpectSensitiveValue("formancestack_webhooks.webhooks", tfjsonpath.New("secret")),
+					statecheck.ExpectSensitiveValue("stack_webhooks.webhooks", tfjsonpath.New("secret")),
 				},
 			},
 			{

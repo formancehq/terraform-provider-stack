@@ -76,7 +76,7 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 
 	membershipDiscoveryConfiguration, err := client.Discover(ctx, p.creds.Endpoint(), p.client)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to discover membership configuration: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, membershipDiscoveryConfiguration.TokenEndpoint,
@@ -89,7 +89,7 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 
 	ret, err := p.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to exchange token: %w", err)
 	}
 
 	defer func() {
@@ -127,19 +127,19 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 
 	stackDiscoveryConfiguration, err := client.Discover(ctx, apiUrl, p.client)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to discover stack configuration: %w", err)
 	}
 
 	req, err = http.NewRequestWithContext(ctx, http.MethodPost, stackDiscoveryConfiguration.TokenEndpoint,
 		bytes.NewBufferString(form.Encode()))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create request for token exchange: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	ret, err = p.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to exchange security token: %w", err)
 	}
 
 	defer func() {
