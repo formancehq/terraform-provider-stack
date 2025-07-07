@@ -135,7 +135,7 @@ func TestReconciliationPolicy(t *testing.T) {
 	// testCases
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"formancestack": providerserver.NewProtocol6WithError(stackProvider()),
+			"stack": providerserver.NewProtocol6WithError(stackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -143,13 +143,13 @@ func TestReconciliationPolicy(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-					provider "formancestack" {
+					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
 						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
 					}
 
-					resource "formancestack_reconciliation_policy" "policy" {
+					resource "stack_reconciliation_policy" "policy" {
 						ledger_name = "test-ledger"
 						name = "Test Policy"
 						payments_pool_id = "test-payments-pool"
@@ -179,11 +179,11 @@ func TestReconciliationPolicy(t *testing.T) {
 					}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_reconciliation_policy.policy", tfjsonpath.New("id"), knownvalue.StringExact(policyId)),
-					statecheck.ExpectKnownValue("formancestack_reconciliation_policy.policy", tfjsonpath.New("ledger_name"), knownvalue.StringExact(policy.LedgerName)),
-					statecheck.ExpectKnownValue("formancestack_reconciliation_policy.policy", tfjsonpath.New("name"), knownvalue.StringExact(policy.Name)),
-					statecheck.ExpectKnownValue("formancestack_reconciliation_policy.policy", tfjsonpath.New("payments_pool_id"), knownvalue.StringExact(policy.PaymentsPoolID)),
-					statecheck.ExpectKnownValue("formancestack_reconciliation_policy.policy", tfjsonpath.New("ledger_query"), knownvalue.MapExact(
+					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("id"), knownvalue.StringExact(policyId)),
+					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_name"), knownvalue.StringExact(policy.LedgerName)),
+					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("name"), knownvalue.StringExact(policy.Name)),
+					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("payments_pool_id"), knownvalue.StringExact(policy.PaymentsPoolID)),
+					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_query"), knownvalue.MapExact(
 						map[string]knownvalue.Check{
 							"$and": knownvalue.TupleExact(
 								[]knownvalue.Check{
