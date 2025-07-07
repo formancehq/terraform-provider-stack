@@ -19,7 +19,7 @@ To install the provider, add the following to your Terraform configuration:
 ```hcl
 terraform {
   required_providers {
-    formancestack = {
+    stack = {
       source  = "formance/stack"
       version = ">= 0.1.0"
     }
@@ -30,7 +30,7 @@ terraform {
 ## Provider Configuration
 
 ```hcl
-provider "formancestack" {
+provider "stack" {
   organization_id = "your-organization-id"
   stack_id        = "your-stack-id"
   uri             = "https://api.formance.cloud"

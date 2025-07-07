@@ -148,7 +148,7 @@ func TestPaymentsConnectors(t *testing.T) {
 	// testCases
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"formancestack": providerserver.NewProtocol6WithError(stackProvider()),
+			"stack": providerserver.NewProtocol6WithError(stackProvider()),
 		},
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version0_15_0),
@@ -156,13 +156,13 @@ func TestPaymentsConnectors(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-					provider "formancestack" {
+					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
 						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
 					}
 
-					resource "formancestack_payments_connectors" "generic" {
+					resource "stack_payments_connectors" "generic" {
 						credentials = {
 							apiKey = "my-api-key"
 						}
@@ -177,12 +177,12 @@ func TestPaymentsConnectors(t *testing.T) {
 					}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("credentials"), knownvalue.ObjectExact(
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("credentials"), knownvalue.ObjectExact(
 						map[string]knownvalue.Check{
 							"apiKey": knownvalue.StringExact("my-api-key"),
 						},
 					)),
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("config"), knownvalue.ObjectExact(
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("config"), knownvalue.ObjectExact(
 						map[string]knownvalue.Check{
 							"endpoint":      knownvalue.StringExact("https://api.example.com"),
 							"name":          knownvalue.StringExact("Example Connector"),
@@ -191,17 +191,17 @@ func TestPaymentsConnectors(t *testing.T) {
 							"provider":      knownvalue.StringExact("Generic"),
 						},
 					)),
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("id"), knownvalue.StringExact(connectorId)),
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("id"), knownvalue.StringExact(connectorId)),
 				},
 			},
 			{
 				Config: `
-					provider "formancestack" {
+					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
 						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
 					}
-					resource "formancestack_payments_connectors" "generic" {
+					resource "stack_payments_connectors" "generic" {
 						credentials = {
 							apiKey = "new-api-key"
 						}
@@ -216,12 +216,12 @@ func TestPaymentsConnectors(t *testing.T) {
 					}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("credentials"), knownvalue.ObjectExact(
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("credentials"), knownvalue.ObjectExact(
 						map[string]knownvalue.Check{
 							"apiKey": knownvalue.StringExact("new-api-key"),
 						},
 					)),
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("config"), knownvalue.ObjectExact(
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("config"), knownvalue.ObjectExact(
 						map[string]knownvalue.Check{
 							"endpoint":      knownvalue.StringExact("https://new-endpoint.com"),
 							"name":          knownvalue.StringExact("New Example Connector"),
@@ -230,7 +230,7 @@ func TestPaymentsConnectors(t *testing.T) {
 							"provider":      knownvalue.StringExact("Generic"),
 						},
 					)),
-					statecheck.ExpectKnownValue("formancestack_payments_connectors.generic", tfjsonpath.New("id"), knownvalue.StringExact(connectorId)),
+					statecheck.ExpectKnownValue("stack_payments_connectors.generic", tfjsonpath.New("id"), knownvalue.StringExact(connectorId)),
 				},
 			},
 		},

@@ -41,7 +41,7 @@ func TestProviderMetadata(t *testing.T) {
 	res := provider.MetadataResponse{}
 	p.Metadata(logging.TestingContext(), provider.MetadataRequest{}, &res)
 
-	require.Equal(t, res.TypeName, "formancestack")
+	require.Equal(t, res.TypeName, "stack")
 	require.Equal(t, res.Version, "develop")
 }
 
