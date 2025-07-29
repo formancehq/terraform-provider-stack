@@ -19,6 +19,7 @@ import (
 	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/pointer"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
+	"github.com/formancehq/terraform-provider-cloud/pkg/testprovider"
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 
@@ -32,7 +33,7 @@ func TestPaymentsConnectors(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	cloudSdk := sdk.NewMockCloudSDK(ctrl)
-	tokenProvider, _ := cloudpkg.NewMockTokenProvider(ctrl)
+	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
 	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
 	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
 	paymentsSdk := sdk.NewMockPaymentsSdkImpl(ctrl)

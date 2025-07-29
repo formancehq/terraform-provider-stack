@@ -8,6 +8,7 @@ import (
 	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
+	"github.com/formancehq/terraform-provider-cloud/pkg/testprovider"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
@@ -80,7 +81,7 @@ func TestProviderConfigure(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 			cloudSdk := sdk.NewMockCloudSDK(ctrl)
-			tokenProvider, mock := cloudpkg.NewMockTokenProvider(ctrl)
+			tokenProvider, mock := testprovider.NewMockTokenProvider(ctrl)
 			stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
 			stacksdk := sdk.NewMockStackSdkImpl(ctrl)
 			stackId := uuid.NewString()
