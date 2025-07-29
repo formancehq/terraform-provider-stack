@@ -29,8 +29,6 @@ import (
 )
 
 func TestPaymentsPool(t *testing.T) {
-	t.Parallel()
-
 	ctrl := gomock.NewController(t)
 	cloudSdk := sdk.NewMockCloudSDK(ctrl)
 	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
@@ -126,7 +124,7 @@ func TestPaymentsPool(t *testing.T) {
 	}).Return(nil, nil)
 
 	// testCases
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 			"stack": providerserver.NewProtocol6WithError(stackProvider()),
 		},

@@ -61,7 +61,6 @@ func TestNoop(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s %+v", t.Name(), tc), func(t *testing.T) {
-			t.Parallel()
 			ctrl := gomock.NewController(t)
 			cloudSdk := sdk.NewMockCloudSDK(ctrl)
 			tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
@@ -103,7 +102,7 @@ func TestNoop(t *testing.T) {
 				noopStep.ExpectError = regexp.MustCompile(tc.expectedError)
 			}
 
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 					"stack": providerserver.NewProtocol6WithError(stackProvider()),
 				},
