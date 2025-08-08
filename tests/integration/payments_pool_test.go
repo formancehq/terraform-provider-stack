@@ -19,6 +19,7 @@ import (
 
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
+	"github.com/formancehq/terraform-provider-cloud/pkg/testprovider"
 	"github.com/google/uuid"
 	"go.uber.org/mock/gomock"
 
@@ -28,11 +29,9 @@ import (
 )
 
 func TestPaymentsPool(t *testing.T) {
-	t.Parallel()
-
 	ctrl := gomock.NewController(t)
 	cloudSdk := sdk.NewMockCloudSDK(ctrl)
-	tokenProvider, _ := cloudpkg.NewMockTokenProvider(ctrl)
+	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
 	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
 	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
 	paymentsSdk := sdk.NewMockPaymentsSdkImpl(ctrl)
@@ -125,7 +124,7 @@ func TestPaymentsPool(t *testing.T) {
 	}).Return(nil, nil)
 
 	// testCases
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 			"stack": providerserver.NewProtocol6WithError(stackProvider()),
 		},

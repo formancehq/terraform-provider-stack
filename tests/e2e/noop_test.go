@@ -10,8 +10,7 @@ import (
 )
 
 func TestNoopResources(t *testing.T) {
-	t.Parallel()
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 			"cloud": providerserver.NewProtocol6WithError(CloudProvider()),
