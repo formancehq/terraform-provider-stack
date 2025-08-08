@@ -112,13 +112,13 @@ require (
 require (
 	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729133033-20132c32e37a
+	github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729141854-fcdde5634fc1
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
-	github.com/formancehq/terraform-provider-cloud v0.0.7-0.20250729133033-20132c32e37a
+	github.com/formancehq/terraform-provider-cloud v0.0.7
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/hashicorp/terraform-plugin-testing v1.13.1

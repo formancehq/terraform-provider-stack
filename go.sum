@@ -39,10 +39,10 @@ github.com/formancehq/formance-sdk-go/v3 v3.5.0 h1:4qUhPOaF0igfH+cR95bnsteNXoidZ
 github.com/formancehq/formance-sdk-go/v3 v3.5.0/go.mod h1:6V6/yj6FZDYS3lA7R8d93y/Z4mQbLdGoNOYEMrUKUWM=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef h1:yrhbW231+FUOUrrKGsDhUyqhWFIjFv4TLtoP6L6HJgc=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef/go.mod h1:faThzFZoF/9uEZQgifklAespL+quZ1CnTTF63+mG950=
-github.com/formancehq/terraform-provider-cloud v0.0.7-0.20250729133033-20132c32e37a h1:Wo6ifPlXsTMz4jpAzoyb6iBxpL9wIWk+17kE0Lo30zU=
-github.com/formancehq/terraform-provider-cloud v0.0.7-0.20250729133033-20132c32e37a/go.mod h1:nLYF93kExNRZeiEH/TQTWn5/Koc52YKkIy/zLXfJnRE=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729133033-20132c32e37a h1:15NQn7CK7LbHpm5gtm1fG+rRSXAse/W08bx6ldqpqqk=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729133033-20132c32e37a/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
+github.com/formancehq/terraform-provider-cloud v0.0.7 h1:Rncd9w9kmFoL34Wx6bIDcBZO2SgTQfBth5gmP/iqzEI=
+github.com/formancehq/terraform-provider-cloud v0.0.7/go.mod h1:nLYF93kExNRZeiEH/TQTWn5/Koc52YKkIy/zLXfJnRE=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729141854-fcdde5634fc1 h1:cjUkZrDtfPY2NpFfVwddGpEhvxIv/Vm+gh5FyCMBL0A=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729141854-fcdde5634fc1/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
 github.com/go-chi/chi/v5 v5.2.1 h1:KOIHODQj58PmL80G2Eak4WdvUzjSJSm0vG72crDCqb8=
 github.com/go-chi/chi/v5 v5.2.1/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 h1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=
