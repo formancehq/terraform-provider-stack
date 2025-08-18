@@ -7,8 +7,9 @@
 //go:generate terraform fmt -recursive ./examples/
 
 // Generate documentation.
+//
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest generate --provider-dir . -provider-name stack
-
+//go:generate cd examples/latest && terraform init -upgrade && terraform providers schema -json > ../../schema/providers.json
 package main
 
 import "github.com/formancehq/terraform-provider-stack/cmd"
