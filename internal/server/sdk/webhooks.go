@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 )
 
-//go:generate mockgen -destination=webhooks_generated.go -package=sdk . WebhooksSdkImpl
+//go:generate mockgen -typed -destination=webhooks_generated.go -package=sdk . WebhooksSdkImpl
 type WebhooksSdkImpl interface {
 	InsertConfig(ctx context.Context, request shared.ConfigUser) (*operations.InsertConfigResponse, error)
 	GetManyConfigs(ctx context.Context, request operations.GetManyConfigsRequest) (*operations.GetManyConfigsResponse, error)

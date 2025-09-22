@@ -16,7 +16,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate mockgen -destination=tokenprovider_generated.go -package=pkg . TokenProviderImpl
+//go:generate mockgen -typed -destination=tokenprovider_generated.go -package=pkg . TokenProviderImpl
 type TokenProviderImpl interface {
 	StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error)
 }

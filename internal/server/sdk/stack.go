@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/terraform-provider-stack/pkg"
 )
 
-//go:generate mockgen -destination=stack_generated.go -package=sdk . StackSdkImpl
+//go:generate mockgen -typed -destination=stack_generated.go -package=sdk . StackSdkImpl
 type StackSdkImpl interface {
 	GetVersions(ctx context.Context) (*operations.GetVersionsResponse, error)
 	Ledger() LedgerSdkImpl

@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 )
 
-//go:generate mockgen -destination=reconciliation_generated.go -package=sdk . ReconciliationSdkImpl
+//go:generate mockgen -typed -destination=reconciliation_generated.go -package=sdk . ReconciliationSdkImpl
 type ReconciliationSdkImpl interface {
 	CreatePolicy(ctx context.Context, request shared.PolicyRequest, opts ...operations.Option) (*operations.CreatePolicyResponse, error)
 	GetPolicy(ctx context.Context, request operations.GetPolicyRequest, opts ...operations.Option) (*operations.GetPolicyResponse, error)
