@@ -22,9 +22,9 @@ const (
 )
 
 func AddFlags(flagset *pflag.FlagSet) {
-	flagset.String(FormanceStackClientIdKey, "", "Client ID for Formance Cloud (user_%s) or Stack")
+	flagset.String(FormanceStackClientIdKey, "", "Client ID for Formance Cloud (organization_%s) or Stack")
 	flagset.String(FormanceStackClientSecretKey, "", "Client Secret for Formance Cloud or Stack")
-	flagset.String(FormanceStackEndpointKey, "https://app.formance.cloud/api", "Endpoint for Formance Cloud")
+	flagset.String(FormanceStackEndpointKey, "https://app.formance.cloud/api", "Endpoint for Formance Cloud Or Stack Auth module")
 }
 
 func NewModule(ctx context.Context, flagset *pflag.FlagSet) fx.Option {
