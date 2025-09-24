@@ -8,7 +8,7 @@ import (
 	cloud "github.com/formancehq/terraform-provider-cloud/sdk"
 )
 
-//go:generate mockgen -destination=cloud_generated.go -package=sdk . CloudSDK
+//go:generate mockgen -typed -destination=cloud_generated.go -package=sdk . CloudSDK
 type CloudSDK interface {
 	GetStack(ctx context.Context, organizationID, stackID string) (*cloud.CreateStackResponse, *http.Response, error)
 	ListModules(ctx context.Context, organizationID, stackID string) (*cloud.ListModulesResponse, *http.Response, error)

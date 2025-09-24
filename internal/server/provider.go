@@ -345,14 +345,14 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 				path.Root("cloud.client_id"),
 				"Missing client_id Configuration",
 				"While configuring the provider, the client_id was not found "+
-					"However the FORMANCE_CLOUD_CLIENT_ID environment variable was set ",
+					"However the FORMANCE_STACK_CLIENT_ID environment variable was set ",
 			)
 		} else {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("cloud.client_id"),
 				"Missing Client ID Configuration",
 				"While configuring the provider, the client id was not found. "+
-					"the FORMANCE_CLOUD_CLIENT_ID environment variable or provider "+
+					"the FORMANCE_STACK_CLIENT_ID environment variable or provider "+
 					"configuration block client_id attribute.",
 			)
 		}
@@ -364,14 +364,14 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 				path.Root("cloud.client_secret"),
 				"Missing client_secret Configuration",
 				"While configuring the provider, the client_secret was not found "+
-					"in the configuration. However, the FORMANCE_CLOUD_CLIENT_SECRET environment variable was found.",
+					"in the configuration. However, the FORMANCE_STACK_CLIENT_SECRET environment variable was found.",
 			)
 		} else {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("cloud.client_secret"),
 				"Missing client_secret Configuration",
 				"While configuring the provider, the API token was not found in "+
-					"the FORMANCE_CLOUD_CLIENT_SECRET environment variable or provider "+
+					"the FORMANCE_STACK_CLIENT_SECRET environment variable or provider "+
 					"configuration block api_token attribute.",
 			)
 		}
@@ -382,7 +382,7 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 			path.Root("cloud.endpoint"),
 			fmt.Sprintf("Missing Endpoint Configuration use %s", p.Endpoint),
 			"While configuring the provider, the endpoint was not found "+
-				"However the FORMANCE_CLOUD_API_ENDPOINT environment variable was set",
+				"However the FORMANCE_STACK_API_ENDPOINT environment variable was set",
 		)
 	}
 
