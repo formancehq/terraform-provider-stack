@@ -71,9 +71,20 @@ func TestPaymentsConnectors(t *testing.T) {
 
 	connectorId := uuid.NewString()
 	// Init state
-	paymentsSdk.EXPECT().CreateConnector(gomock.Any(), gomock.Cond(func(req operations.V3InstallConnectorRequest) bool {
-		return true
-	})).Return(&operations.V3InstallConnectorResponse{
+	paymentsSdk.EXPECT().CreateConnector(gomock.Any(), operations.V3InstallConnectorRequest{
+		Connector: "Generic",
+		V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{
+			Type: "Generic",
+			V3GenericConfig: &shared.V3GenericConfig{
+				APIKey:        "my-api-key",
+				Endpoint:      "https://api.example.com",
+				Name:          "Example Connector",
+				PageSize:      pointer.For(int64(100)),
+				PollingPeriod: pointer.For("5m"),
+				Provider:      pointer.For("Generic"),
+			},
+		},
+	}).Return(&operations.V3InstallConnectorResponse{
 		V3InstallConnectorResponse: &shared.V3InstallConnectorResponse{
 			Data: connectorId,
 		},

@@ -37,6 +37,7 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 				}).Value()),
 			},
 			expectedConnector: operations.V3InstallConnectorRequest{
+				Connector: "Generic",
 				V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{
 					Type: "Generic",
 					V3GenericConfig: &shared.V3GenericConfig{
@@ -70,6 +71,7 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 				).Value()),
 			},
 			expectedConnector: operations.V3InstallConnectorRequest{
+				Connector: "Adyen",
 				V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{
 					Type: "Adyen",
 					V3AdyenConfig: &shared.V3AdyenConfig{
