@@ -72,7 +72,15 @@ func (m PaymentsConnectorsModel) CreateConfig() (operations.V3InstallConnectorRe
 		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to marshal connector config: %w", err)
 	}
 
+	provider := ""
+	if v, ok := snakeAS["provider"]; ok {
+		if n, ok := v.(string); ok {
+			provider = n
+		}
+	}
+
 	config := operations.V3InstallConnectorRequest{
+		Connector:                 provider,
 		V3InstallConnectorRequest: &shared.V3InstallConnectorRequest{},
 	}
 
