@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	"github.com/formancehq/go-libs/v3/collectionutils"
-	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -22,8 +21,7 @@ var (
 )
 
 type PaymentsPool struct {
-	logger logging.Logger
-	store  *internal.ModuleStore
+	store *internal.ModuleStore
 }
 
 type PaymentsPoolModel struct {
@@ -32,11 +30,9 @@ type PaymentsPoolModel struct {
 	AccountsIds types.List   `tfsdk:"accounts_ids"`
 }
 
-func NewPaymentsPool(logger logging.Logger) func() resource.Resource {
+func NewPaymentsPool() func() resource.Resource {
 	return func() resource.Resource {
-		return &PaymentsPool{
-			logger: logger,
-		}
+		return &PaymentsPool{}
 	}
 }
 
@@ -85,11 +81,6 @@ func (s *PaymentsPool) Configure(ctx context.Context, req resource.ConfigureRequ
 
 // Create implements resource.Resource.
 func (s *PaymentsPool) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	logger := s.logger.WithField("func", "Create")
-	logger.Debug("Creating Payments Pool")
-	defer logger.Debug("Payments Pool creation completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var plan PaymentsPoolModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -120,11 +111,6 @@ func (s *PaymentsPool) Create(ctx context.Context, req resource.CreateRequest, r
 
 // Delete implements resource.Resource.
 func (s *PaymentsPool) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	logger := s.logger.WithField("func", "Delete")
-	logger.Debug("Deleting Payments Pool")
-	defer logger.Debug("Payments Pool deletion completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state PaymentsPoolModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -153,11 +139,6 @@ func (s *PaymentsPool) Metadata(_ context.Context, req resource.MetadataRequest,
 
 // Read implements resource.Resource.
 func (s *PaymentsPool) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
-	logger := s.logger.WithField("func", "Read")
-	logger.Debug("Reading Payments Pool")
-	defer logger.Debug("Payments Pool read completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state PaymentsPoolModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -210,11 +191,6 @@ func diff(a, b []string) []string {
 
 // Update implements resource.Resource.
 func (s *PaymentsPool) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	logger := s.logger.WithField("func", "Update")
-	logger.Debug("Updating Payments Pool")
-	defer logger.Debug("Payments Pool update completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var plan PaymentsPoolModel
 	var state PaymentsPoolModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)

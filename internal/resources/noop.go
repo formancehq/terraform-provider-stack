@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
@@ -17,17 +16,14 @@ var (
 )
 
 type Noop struct {
-	logger logging.Logger
 }
 
 type NoopModel struct {
 }
 
-func NewNoop(logger logging.Logger) func() resource.Resource {
+func NewNoop() func() resource.Resource {
 	return func() resource.Resource {
-		return &Noop{
-			logger: logger,
-		}
+		return &Noop{}
 	}
 }
 
@@ -68,7 +64,6 @@ func (s *Noop) Configure(ctx context.Context, req resource.ConfigureRequest, res
 
 // Create implements resource.Resource.
 func (s *Noop) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
 	var plan NoopModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -80,8 +75,6 @@ func (s *Noop) Create(ctx context.Context, req resource.CreateRequest, res *reso
 
 // Delete implements resource.Resource.
 func (s *Noop) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state NoopModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -108,8 +101,6 @@ func (s *Noop) Read(ctx context.Context, req resource.ReadRequest, res *resource
 
 // Update implements resource.Resource.
 func (s *Noop) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state NoopModel
 	var plan NoopModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)

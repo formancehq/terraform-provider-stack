@@ -9,6 +9,7 @@ import (
 
 	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/retry"
+	"github.com/formancehq/go-libs/v3/collectionutils"
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/formancehq/terraform-provider-stack/internal"
@@ -315,14 +316,17 @@ func (p *FormanceStackProvider) DataSources(ctx context.Context) []func() dataso
 
 // Resources satisfies the provider.Provider interface for FormanceCloudProvider.
 func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		resources.NewWebhooks(p.logger.WithField("resource", "webhooks")),
-		resources.NewLedger(p.logger.WithField("resource", "ledger")),
-		resources.NewNoop(p.logger.WithField("resource", "noop")),
-		resources.NewPaymentsConnectors(p.logger.WithField("resource", "payments_connectors")),
-		resources.NewPaymentsPool(p.logger.WithField("resource", "payments_pool")),
-		resources.NewReconciliationPolicy(p.logger.WithField("resource", "reconciliation_policy")),
+	res := []func() resource.Resource{
+		resources.NewWebhooks(),
+		resources.NewLedger(),
+		resources.NewNoop(),
+		resources.NewPaymentsConnectors(),
+		resources.NewPaymentsPool(),
+		resources.NewReconciliationPolicy(),
 	}
+	return collectionutils.Map(res, func(fn func() resource.Resource) func() resource.Resource {
+		return resources.NewResourceTracer(p.logger, fn())
+	})
 }
 
 func (p FormanceStackProvider) ConfigValidators(ctx context.Context) []provider.ConfigValidator {
@@ -466,7 +470,7 @@ func NewStackProvider(
 ) ProviderFactory {
 	return func() provider.Provider {
 		return &FormanceStackProvider{
-			logger:            logger,
+			logger:            logger.WithField("provider", "stack"),
 			ClientId:          string(clientId),
 			ClientSecret:      string(clientSecret),
 			Endpoint:          string(endpoint),

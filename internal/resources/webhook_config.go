@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	"github.com/formancehq/go-libs/v3/collectionutils"
-	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/pointer"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
@@ -25,8 +24,7 @@ var (
 )
 
 type Webhooks struct {
-	logger logging.Logger
-	store  *internal.ModuleStore
+	store *internal.ModuleStore
 }
 
 type WebhooksModel struct {
@@ -36,11 +34,9 @@ type WebhooksModel struct {
 	Secret     types.String `tfsdk:"secret"`
 }
 
-func NewWebhooks(logger logging.Logger) func() resource.Resource {
+func NewWebhooks() func() resource.Resource {
 	return func() resource.Resource {
-		return &Webhooks{
-			logger: logger,
-		}
+		return &Webhooks{}
 	}
 }
 
@@ -109,8 +105,6 @@ func (s *Webhooks) Configure(ctx context.Context, req resource.ConfigureRequest,
 
 // Create implements resource.Resource.
 func (s *Webhooks) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var plan WebhooksModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -148,8 +142,6 @@ func (s *Webhooks) Create(ctx context.Context, req resource.CreateRequest, res *
 
 // Delete implements resource.Resource.
 func (s *Webhooks) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state WebhooksModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -177,8 +169,6 @@ func (s *Webhooks) Metadata(_ context.Context, req resource.MetadataRequest, res
 
 // Read implements resource.Resource.
 func (s *Webhooks) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state WebhooksModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -218,8 +208,6 @@ func (s *Webhooks) Read(ctx context.Context, req resource.ReadRequest, res *reso
 
 // Update implements resource.Resource.
 func (s *Webhooks) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var plan WebhooksModel
 	var state WebhooksModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)

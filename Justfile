@@ -54,6 +54,10 @@ tests-integration tags="ci":
   @TF_ACC=1 go test -v -tags {{tags}} ./tests/integration/... -covermode=atomic -coverprofile=coverage/coverage_integration.txt -race -coverpkg=./internal/...,./cmd/...
 
 [group('terraform')]
+init examples="install-verif": build
+  @cd examples/{{examples}} && terraform init -upgrade
+
+[group('terraform')]
 plan examples="install-verif": build
   @cd examples/{{examples}} && terraform plan -generate-config-out=generated.tf
 

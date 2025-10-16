@@ -9,7 +9,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
-	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -47,8 +46,7 @@ var (
 )
 
 type PaymentsConnectors struct {
-	logger logging.Logger
-	store  *internal.ModuleStore
+	store *internal.ModuleStore
 }
 
 type PaymentsConnectorsModel struct {
@@ -118,11 +116,9 @@ func (m PaymentsConnectorsModel) StateFromRequest(resp *shared.V3InstallConnecto
 	return plan, nil
 }
 
-func NewPaymentsConnectors(logger logging.Logger) func() resource.Resource {
+func NewPaymentsConnectors() func() resource.Resource {
 	return func() resource.Resource {
-		return &PaymentsConnectors{
-			logger: logger,
-		}
+		return &PaymentsConnectors{}
 	}
 }
 
@@ -171,8 +167,6 @@ func (s *PaymentsConnectors) Configure(ctx context.Context, req resource.Configu
 
 // ValidateConfig implements resource.ResourceWithValidateConfig.
 func (s *PaymentsConnectors) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, res *resource.ValidateConfigResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var conf PaymentsConnectorsModel
 	res.Diagnostics.Append(req.Config.Get(ctx, &conf)...)
 	if res.Diagnostics.HasError() {
@@ -215,11 +209,6 @@ func (s *PaymentsConnectors) ValidateConfig(ctx context.Context, req resource.Va
 
 // Create implements resource.Resource.
 func (s *PaymentsConnectors) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	logger := s.logger.WithField("func", "Create")
-	logger.Debug("Creating Payments Connector")
-	defer logger.Debug("Create completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var plan PaymentsConnectorsModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -254,11 +243,6 @@ func (s *PaymentsConnectors) Create(ctx context.Context, req resource.CreateRequ
 
 // Delete implements resource.Resource.
 func (s *PaymentsConnectors) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	logger := s.logger.WithField("func", "Delete")
-	logger.Debug("Deleting Payments Connector")
-	defer logger.Debug("Delete completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state PaymentsConnectorsModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -287,11 +271,6 @@ func (s *PaymentsConnectors) Metadata(_ context.Context, req resource.MetadataRe
 
 // Read implements resource.Resource.
 func (s *PaymentsConnectors) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
-	logger := s.logger.WithField("func", "Read")
-	logger.Debug("Reading Payments Connector")
-	defer logger.Debug("Read completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state PaymentsConnectorsModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -325,11 +304,6 @@ func (s *PaymentsConnectors) Read(ctx context.Context, req resource.ReadRequest,
 
 // Update implements resource.Resource.
 func (s *PaymentsConnectors) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	logger := s.logger.WithField("func", "Update")
-	logger.Debug("Updating Payments Connector")
-	defer logger.Debug("Update completed")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var plan PaymentsConnectorsModel
 	var state PaymentsConnectorsModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
