@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/terraform-provider-stack/internal/server"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
+	"go.opentelemetry.io/otel/trace/noop"
 	"go.uber.org/mock/gomock"
 
 	"github.com/google/uuid"
@@ -26,7 +27,9 @@ import (
 
 func TestProviderMetadata(t *testing.T) {
 	t.Parallel()
-	p := server.NewStackProvider(logging.Testing(),
+	p := server.NewStackProvider(
+		noop.NewTracerProvider(),
+		logging.Testing(),
 		"https://app.formance.cloud/api",
 		"client_id",
 		"client_secret",
@@ -97,6 +100,7 @@ func TestProviderConfigure(t *testing.T) {
 				StackSdkImpl: stacksdk,
 			}
 			p := server.NewStackProvider(
+				noop.NewTracerProvider(),
 				logging.Testing(),
 				"https://app.formance.cloud/api",
 				"organization_client_id",

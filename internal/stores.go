@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	"github.com/formancehq/go-libs/v3/collectionutils"
+	"github.com/formancehq/terraform-provider-stack/pkg/otlp"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -38,6 +39,8 @@ type ModuleStore struct {
 }
 
 func (ms *ModuleStore) CheckModuleHealth(ctx context.Context, diagnostics *diag.Diagnostics) {
+	ctx, span := otlp.Tracer.Start(ctx, "CheckModuleHealth")
+	defer span.End()
 	for {
 		select {
 		case <-ctx.Done():

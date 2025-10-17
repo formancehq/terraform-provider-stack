@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/mock/gomock"
 )
 
@@ -68,6 +69,7 @@ func TestNoop(t *testing.T) {
 			stacksdk := sdk.NewMockStackSdkImpl(ctrl)
 
 			stackProvider := server.NewStackProvider(
+				otel.GetTracerProvider(),
 				logging.Testing().WithField("provider", "stack_noop"),
 				server.FormanceStackEndpoint(tc.endpoint),
 				server.FormanceStackClientId(tc.clientId),

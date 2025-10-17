@@ -7,10 +7,11 @@ import (
 	"strings"
 
 	"github.com/formancehq/go-libs/v3/logging"
-	"github.com/formancehq/terraform-provider-stack/internal/otlp"
 	"github.com/formancehq/terraform-provider-stack/pkg/tracing"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
 )
 
 var (
@@ -20,9 +21,10 @@ var (
 	_ resource.ResourceWithValidateConfig = &ResourceTracer{}
 )
 
-func NewResourceTracer(logger logging.Logger, res any) func() resource.Resource {
+func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
 	return func() resource.Resource {
 		return &ResourceTracer{
+			tracer:          tracer,
 			logger:          logger,
 			underlyingValue: res,
 		}
@@ -31,6 +33,7 @@ func NewResourceTracer(logger logging.Logger, res any) func() resource.Resource 
 }
 
 type ResourceTracer struct {
+	tracer          trace.Tracer
 	logger          logging.Logger
 	underlyingValue any
 }
@@ -47,9 +50,14 @@ var (
 )
 
 func injectTraceContext(ctx context.Context, res any, funcName string) context.Context {
+	span := trace.SpanFromContext(ctx)
+	if !span.SpanContext().IsValid() {
+		return ctx
+	}
+
+	// TODO: implement a logger hook to automatically add trace context to logs
 	headerCarrier := propagation.MapCarrier{}
 	propagation.TraceContext{}.Inject(ctx, headerCarrier)
-
 	for k, v := range headerCarrier {
 		ctx = logging.ContextWithField(ctx, k, v)
 	}
@@ -57,6 +65,10 @@ func injectTraceContext(ctx context.Context, res any, funcName string) context.C
 	name := reflect.TypeOf(res).Elem().Name()
 	ctx = logging.ContextWithField(ctx, "resource", strings.ToLower(name))
 	ctx = logging.ContextWithField(ctx, "operation", strings.ToLower(funcName))
+	span.SetAttributes(
+		attribute.String("resource", strings.ToLower(name)),
+		attribute.String("operation", strings.ToLower(funcName)),
+	)
 	return ctx
 }
 
@@ -65,7 +77,7 @@ func (r *ResourceTracer) ValidateConfig(ctx context.Context, req resource.Valida
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "ValidateConfig"
 	if v, ok := r.underlyingValue.(resource.ResourceWithValidateConfig); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -83,7 +95,7 @@ func (r *ResourceTracer) ImportState(ctx context.Context, req resource.ImportSta
 	operation := "ImportState"
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	if v, ok := r.underlyingValue.(resource.ResourceWithImportState); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -101,7 +113,7 @@ func (r *ResourceTracer) Configure(ctx context.Context, req resource.ConfigureRe
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Configure"
 	if v, ok := r.underlyingValue.(resource.ResourceWithConfigure); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -119,7 +131,7 @@ func (r *ResourceTracer) Create(ctx context.Context, req resource.CreateRequest,
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Create"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -137,7 +149,7 @@ func (r *ResourceTracer) Delete(ctx context.Context, req resource.DeleteRequest,
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Delete"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -155,7 +167,7 @@ func (r *ResourceTracer) Metadata(ctx context.Context, req resource.MetadataRequ
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Metadata"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -170,7 +182,7 @@ func (r *ResourceTracer) Read(ctx context.Context, req resource.ReadRequest, res
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Read"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			logging.FromContext(ctx).Debug(operation + " called")
 			defer logging.FromContext(ctx).Debug(operation + " completed")
@@ -188,7 +200,7 @@ func (r *ResourceTracer) Schema(ctx context.Context, req resource.SchemaRequest,
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Schema"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			v.Schema(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
@@ -204,7 +216,7 @@ func (r *ResourceTracer) Update(ctx context.Context, req resource.UpdateRequest,
 	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "Update"
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
-		_ = tracing.TraceError(ctx, otlp.Tracer, operation, func(ctx context.Context) error {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
 			v.Update(ctx, req, resp)
 			if resp.Diagnostics.HasError() {

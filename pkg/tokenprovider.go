@@ -9,10 +9,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
+	"github.com/formancehq/terraform-provider-stack/pkg/otlp"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/oauth2"
 )
 
@@ -43,8 +46,8 @@ func NewTokenProvider(
 	creds cloudpkg.Creds,
 	tokenProvider cloudpkg.TokenProviderImpl,
 	stack Stack,
-) TokenProvider {
-	return TokenProvider{
+) *TokenProvider {
+	return &TokenProvider{
 		client: &http.Client{
 			Transport: transport,
 		},
@@ -61,10 +64,20 @@ type Stack struct {
 	Uri            string
 }
 
-func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error) {
+func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenInfo, error) {
+	ctx, span := otlp.Tracer.Start(ctx, "StackSecurityToken")
+	defer span.End()
+	span.SetAttributes(
+		attribute.String("expiracy", p.token.Expiry.String()),
+	)
+
 	token, err := p.tokenProvider.RefreshToken(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to refresh token: %w", err)
+	}
+
+	if time.Now().Before(p.token.Expiry) {
+		return p.token, nil
 	}
 
 	form := url.Values{
@@ -162,7 +175,6 @@ func (p TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.TokenI
 
 	p.token.AccessToken = stackToken.AccessToken
 	p.token.RefreshToken = stackToken.RefreshToken
-	p.token.Expiry = stackToken.Expiry
-
+	p.token.Expiry = time.Now().Add(time.Second * time.Duration(stackToken.ExpiresIn))
 	return p.token, nil
 }

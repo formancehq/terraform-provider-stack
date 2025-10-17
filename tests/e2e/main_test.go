@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+	"go.opentelemetry.io/otel"
 )
 
 var (
@@ -69,8 +70,8 @@ func TestMain(m *testing.M) {
 	} else {
 		transport = otlp.NewRoundTripper(http.DefaultTransport, false)
 	}
-
 	StackProvider = server.NewStackProvider(
+		otel.GetTracerProvider(),
 		logging.Testing(),
 		server.FormanceStackEndpoint(endpoint),
 		server.FormanceStackClientId(clientID),
@@ -82,6 +83,7 @@ func TestMain(m *testing.M) {
 		sdk.NewStackSdk(),
 	)
 	CloudProvider = testprovider.NewCloudProvider(
+		otel.GetTracerProvider(),
 		logging.Testing(),
 		endpoint,
 		clientID,

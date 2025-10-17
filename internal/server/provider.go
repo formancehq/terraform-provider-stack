@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type RetryConfig struct {
@@ -105,6 +106,7 @@ func (f *FormanceStackProviderModel) WithRetryConfig() formance.SDKOption {
 }
 
 type FormanceStackProvider struct {
+	tracer            trace.Tracer
 	logger            logging.Logger
 	transport         http.RoundTripper
 	cloudFactory      sdk.CloudFactory
@@ -325,7 +327,7 @@ func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource
 		resources.NewReconciliationPolicy(),
 	}
 	return collectionutils.Map(res, func(fn func() resource.Resource) func() resource.Resource {
-		return resources.NewResourceTracer(p.logger, fn())
+		return resources.NewResourceTracer(p.tracer, p.logger, fn())
 	})
 }
 
@@ -458,6 +460,7 @@ func (p FormanceStackProvider) ValidateConfig(ctx context.Context, req provider.
 }
 
 func NewStackProvider(
+	tracer trace.TracerProvider,
 	logger logging.Logger,
 	endpoint FormanceStackEndpoint,
 	clientId FormanceStackClientId,
@@ -470,6 +473,7 @@ func NewStackProvider(
 ) ProviderFactory {
 	return func() provider.Provider {
 		return &FormanceStackProvider{
+			tracer:            tracer.Tracer("github.com/formancehq/terraform-provider-stack"),
 			logger:            logger.WithField("provider", "stack"),
 			ClientId:          string(clientId),
 			ClientSecret:      string(clientSecret),
