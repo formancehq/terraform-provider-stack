@@ -39,10 +39,10 @@ github.com/formancehq/formance-sdk-go/v3 v3.5.0 h1:4qUhPOaF0igfH+cR95bnsteNXoidZ
 github.com/formancehq/formance-sdk-go/v3 v3.5.0/go.mod h1:6V6/yj6FZDYS3lA7R8d93y/Z4mQbLdGoNOYEMrUKUWM=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef h1:yrhbW231+FUOUrrKGsDhUyqhWFIjFv4TLtoP6L6HJgc=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef/go.mod h1:faThzFZoF/9uEZQgifklAespL+quZ1CnTTF63+mG950=
-github.com/formancehq/terraform-provider-cloud v0.0.7 h1:Rncd9w9kmFoL34Wx6bIDcBZO2SgTQfBth5gmP/iqzEI=
-github.com/formancehq/terraform-provider-cloud v0.0.7/go.mod h1:nLYF93kExNRZeiEH/TQTWn5/Koc52YKkIy/zLXfJnRE=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729141854-fcdde5634fc1 h1:cjUkZrDtfPY2NpFfVwddGpEhvxIv/Vm+gh5FyCMBL0A=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20250729141854-fcdde5634fc1/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
+github.com/formancehq/terraform-provider-cloud v0.0.9 h1:pMJ3+wqR7UcCjW5C/I2z/OuJwcqjro7mvE7lCAqypQQ=
+github.com/formancehq/terraform-provider-cloud v0.0.9/go.mod h1:Ir6dH6BmmYlK382kN9bPKyjBaRGIi0G6ELXdvl5ITro=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251017143225-b1b55e0a27cf h1:LJPoyWejBp3zEcnywFj38u13bmsa6CdvGtnytyIa0FE=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251017143225-b1b55e0a27cf/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
 github.com/go-chi/chi/v5 v5.2.2 h1:CMwsvRVTbXVytCk1Wd72Zy1LAsAh9GxMmSNWLHCG618=
 github.com/go-chi/chi/v5 v5.2.2/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 h1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=
@@ -282,8 +282,8 @@ golang.org/x/net v0.0.0-20210226172049-e18ecbb05110/go.mod h1:m0MpNAwzfU5UDzcl9v
 golang.org/x/net v0.0.0-20220722155237-a158d28d115b/go.mod h1:XRhObCWvk6IyKnWLug+ECip1KBveYUHfp+8e9klMJ9c=
 golang.org/x/net v0.40.0 h1:79Xs7wF06Gbdcg4kdCCIQArK11Z1hr5POQ6+fIYHNuY=
 golang.org/x/net v0.40.0/go.mod h1:y0hY0exeL2Pku80/zKK7tpntoX23cqL3Oa6njdgRtds=
-golang.org/x/oauth2 v0.29.0 h1:WdYw2tdTK1S8olAzWHdgeqfy+Mtm9XNhv/xJsY65d98=
-golang.org/x/oauth2 v0.29.0/go.mod h1:onh5ek6nERTohokkhCD/y2cV4Do3fxFHFuAejCkRWT8=
+golang.org/x/oauth2 v0.32.0 h1:jsCblLleRMDrxMN29H3z/k1KliIvpLgCkE6R8FXXNgY=
+golang.org/x/oauth2 v0.32.0/go.mod h1:lzm5WQJQwKZ3nwavOZ3IS5Aulzxi68dUSgRHujetwEA=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=

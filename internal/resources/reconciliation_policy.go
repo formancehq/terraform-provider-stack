@@ -235,8 +235,6 @@ func (s *ReconciliationPolicy) Read(ctx context.Context, req resource.ReadReques
 		PolicyID: state.ID.ValueString(),
 	})
 	if err != nil {
-		// TODO: remove the resource from the state if not found to recreate it
-		// TODO: on all resources
 		sdk.HandleStackError(ctx, err, &res.Diagnostics)
 		return
 	}
