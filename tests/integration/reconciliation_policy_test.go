@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel"
 
 	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
@@ -41,6 +42,8 @@ func TestReconciliationPolicy(t *testing.T) {
 	organizationId := uuid.NewString()
 
 	stackProvider := server.NewStackProvider(
+		otel.GetTracerProvider(),
+
 		logging.Testing().WithField("test", "payments_connectors"),
 		server.FormanceStackEndpoint("dummy-endpoint"),
 		server.FormanceStackClientId("organization_dummy-client-id"),

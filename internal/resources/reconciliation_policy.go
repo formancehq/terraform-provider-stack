@@ -13,6 +13,9 @@ import (
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/dynamicplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -23,8 +26,7 @@ var (
 )
 
 type ReconciliationPolicy struct {
-	logger logging.Logger
-	store  *internal.ModuleStore
+	store *internal.ModuleStore
 }
 
 type ReconciliationPolicyModel struct {
@@ -64,11 +66,9 @@ func (m *ReconciliationPolicyModel) CreateConfig() (shared.PolicyRequest, error)
 	}, nil
 }
 
-func NewReconciliationPolicy(logger logging.Logger) func() resource.Resource {
+func NewReconciliationPolicy() func() resource.Resource {
 	return func() resource.Resource {
-		return &ReconciliationPolicy{
-			logger: logger,
-		}
+		return &ReconciliationPolicy{}
 	}
 }
 
@@ -82,18 +82,30 @@ var SchemaReconciliationPolicy = schema.Schema{
 		"ledger_name": schema.StringAttribute{
 			Required:    true,
 			Description: "The name of the ledger associated with the reconciliation policy.",
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplace(),
+			},
 		},
 		"name": schema.StringAttribute{
 			Description: "The name of the pool.",
 			Required:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplace(),
+			},
 		},
 		"payments_pool_id": schema.StringAttribute{
 			Description: "The ID of the payments pool associated with the reconciliation policy.",
 			Required:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.RequiresReplace(),
+			},
 		},
 		"ledger_query": schema.DynamicAttribute{
 			Description: "The ledger query used to filter transactions for reconciliation. It must be a valid JSON object representing a query Builder. Advanced usage: See [Ledger Advanced Filtering documentation](https://docs.formance.com/ledger/advanced/filtering) for more details.",
 			Optional:    true,
+			PlanModifiers: []planmodifier.Dynamic{
+				dynamicplanmodifier.RequiresReplace(),
+			},
 		},
 		"created_at": schema.StringAttribute{
 			Computed:    true,
@@ -128,11 +140,6 @@ func (s *ReconciliationPolicy) Configure(ctx context.Context, req resource.Confi
 
 // ValidateConfig implements resource.ResourceWithValidateConfig.
 func (s *ReconciliationPolicy) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, res *resource.ValidateConfigResponse) {
-	logger := s.logger.WithField("func", "ValidateConfig")
-	logger.Debug("Validating reconciliation policy configuration")
-	defer logger.Debug("Finished validating reconciliation policy configuration")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var conf ReconciliationPolicyModel
 	res.Diagnostics.Append(req.Config.Get(ctx, &conf)...)
 	if res.Diagnostics.HasError() {
@@ -142,7 +149,7 @@ func (s *ReconciliationPolicy) ValidateConfig(ctx context.Context, req resource.
 	if _, ok := conf.LedgerQuery.UnderlyingValue().(types.Object); !ok {
 		res.Diagnostics.AddError("Invalid Ledger Query", "The ledger_query must be a valid JSON object.")
 	} else {
-		logger.Debug("Ledger query is valid")
+		logging.FromContext(ctx).Debug("Ledger query is valid")
 		_, err := conf.CreateConfig()
 		if err != nil {
 			res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for reconciliation policy: %s", err))
@@ -153,11 +160,6 @@ func (s *ReconciliationPolicy) ValidateConfig(ctx context.Context, req resource.
 
 // Create implements resource.Resource.
 func (s *ReconciliationPolicy) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	logger := s.logger.WithField("func", "Create")
-	logger.Debug("Creating reconciliation policy")
-	defer logger.Debug("Finished creating reconciliation policy")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var plan ReconciliationPolicyModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -189,11 +191,6 @@ func (s *ReconciliationPolicy) Create(ctx context.Context, req resource.CreateRe
 
 // Delete implements resource.Resource.
 func (s *ReconciliationPolicy) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	logger := s.logger.WithField("func", "Delete")
-	logger.Debug("Deleting reconciliation policy")
-	defer logger.Debug("Finished deleting reconciliation policy")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state ReconciliationPolicyModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -222,11 +219,6 @@ func (s *ReconciliationPolicy) Metadata(_ context.Context, req resource.Metadata
 
 // Read implements resource.Resource.
 func (s *ReconciliationPolicy) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
-	logger := s.logger.WithField("func", "Read")
-	logger.Debug("Reading reconciliation policy")
-	defer logger.Debug("Finished reading reconciliation policy")
-	ctx = logging.ContextWithLogger(ctx, logger)
-
 	var state ReconciliationPolicyModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -264,5 +256,5 @@ func (s *ReconciliationPolicy) Read(ctx context.Context, req resource.ReadReques
 
 // Update implements resource.Resource.
 func (s *ReconciliationPolicy) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	res.Diagnostics.AddWarning("Update Not Implemented", "The Update method for ReconciliationPolicy is not implemented. Please use Create or Delete to manage reconciliation policies.")
+	res.Diagnostics.AddWarning("Update Not Implemented", "The Update method for ReconciliationPolicy is not implemented. Recreating the resource.")
 }

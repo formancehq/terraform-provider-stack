@@ -6,7 +6,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/go-libs/v3/collectionutils"
-	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/pointer"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
@@ -14,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapdefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -25,8 +25,7 @@ var (
 )
 
 type Ledger struct {
-	logger logging.Logger
-	store  *internal.ModuleStore
+	store *internal.ModuleStore
 }
 
 type LedgerModel struct {
@@ -37,11 +36,9 @@ type LedgerModel struct {
 	Metadata types.Map `tfsdk:"metadata"`
 }
 
-func NewLedger(logger logging.Logger) func() resource.Resource {
+func NewLedger() func() resource.Resource {
 	return func() resource.Resource {
-		return &Ledger{
-			logger: logger,
-		}
+		return &Ledger{}
 	}
 }
 
@@ -54,6 +51,7 @@ var SchemaLedger = schema.Schema{
 		},
 		"bucket": schema.StringAttribute{
 			Optional:    true,
+			Computed:    true,
 			Description: "The bucket where the ledger data will be stored. If not provided, a default bucket will be used.",
 		},
 		// TODO: Handle features in the SDK
@@ -63,6 +61,8 @@ var SchemaLedger = schema.Schema{
 		// },
 		"metadata": schema.MapAttribute{
 			Optional:    true,
+			Computed:    true,
+			Default:     mapdefault.StaticValue(types.MapValueMust(types.StringType, map[string]attr.Value{})),
 			ElementType: types.StringType,
 			Description: "Metadata associated with the ledger, stored as key-value pairs. Advanced usage: See [Ledger Advanced Filtering](https://docs.formance.com/ledger/advanced/filtering) and [Ledger documentation](https://docs.formance.com/ledger/) for more information.",
 		},
@@ -118,7 +118,6 @@ func (s *Ledger) Configure(ctx context.Context, req resource.ConfigureRequest, r
 
 // Create implements resource.Resource.
 func (s *Ledger) Create(ctx context.Context, req resource.CreateRequest, res *resource.CreateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
 	var plan LedgerModel
 	res.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if res.Diagnostics.HasError() {
@@ -155,13 +154,28 @@ func (s *Ledger) Create(ctx context.Context, req resource.CreateRequest, res *re
 		return
 	}
 
+	l, err := ledgerSdk.GetLedger(ctx, operations.V2GetLedgerRequest{
+		Ledger: plan.Name.ValueString(),
+	})
+	if err != nil {
+		sdk.HandleStackError(ctx, err, &res.Diagnostics)
+		return
+	}
+
+	data := l.V2GetLedgerResponse.Data
+	plan.Name = types.StringValue(data.Name)
+	plan.Bucket = types.StringValue(data.Bucket)
+	plan.Metadata = types.MapValueMust(types.StringType,
+		collectionutils.ConvertMap(data.Metadata, func(v string) attr.Value {
+			return types.StringValue(v)
+		}),
+	)
+
 	res.Diagnostics.Append(res.State.Set(ctx, &plan)...)
 }
 
 // Delete implements resource.Resource.
 func (s *Ledger) Delete(ctx context.Context, req resource.DeleteRequest, res *resource.DeleteResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state LedgerModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -176,8 +190,6 @@ func (s *Ledger) Metadata(_ context.Context, req resource.MetadataRequest, resp 
 
 // Read implements resource.Resource.
 func (s *Ledger) Read(ctx context.Context, req resource.ReadRequest, res *resource.ReadResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state LedgerModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if res.Diagnostics.HasError() {
@@ -215,8 +227,6 @@ func (s *Ledger) Read(ctx context.Context, req resource.ReadRequest, res *resour
 
 // Update implements resource.Resource.
 func (s *Ledger) Update(ctx context.Context, req resource.UpdateRequest, res *resource.UpdateResponse) {
-	ctx = logging.ContextWithLogger(ctx, s.logger)
-
 	var state LedgerModel
 	var plan LedgerModel
 	res.Diagnostics.Append(req.State.Get(ctx, &state)...)
