@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
+	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -55,19 +56,21 @@ type PaymentsConnectorsModel struct {
 	Config      types.Dynamic `tfsdk:"config"`
 }
 
-func (m PaymentsConnectorsModel) CreateConfig() (operations.V3InstallConnectorRequest, error) {
+func (m PaymentsConnectorsModel) installConfig(ctx context.Context) (operations.V3InstallConnectorRequest, error) {
 	var snakeAS map[string]interface{}
 	if err := json.Unmarshal([]byte(m.Config.String()), &snakeAS); err != nil {
 		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
 	if err := json.Unmarshal([]byte(m.Credentials.String()), &snakeAS); err != nil {
-		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to unmarshal credentials: %w", err)
+		logging.FromContext(ctx).Error(err)
+		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to unmarshal credentials")
 	}
 
 	data, err := json.Marshal(snakeAS)
 	if err != nil {
-		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to marshal connector config: %w", err)
+		logging.FromContext(ctx).Error(err)
+		return operations.V3InstallConnectorRequest{}, fmt.Errorf("failed to marshal connector config")
 	}
 
 	provider := ""
@@ -83,7 +86,8 @@ func (m PaymentsConnectorsModel) CreateConfig() (operations.V3InstallConnectorRe
 	}
 
 	if err := config.V3InstallConnectorRequest.UnmarshalJSON(data); err != nil {
-		return config, err
+		logging.FromContext(ctx).Error(err)
+		return config, fmt.Errorf("failed to unmarshal config in V3InstallConnectorRequest")
 	}
 
 	return config, nil
@@ -215,7 +219,7 @@ func (s *PaymentsConnectors) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	config, err := plan.CreateConfig()
+	config, err := plan.installConfig(ctx)
 	if err != nil {
 		res.Diagnostics.AddError(
 			"Invalid Connector Configuration",
@@ -318,7 +322,7 @@ func (s *PaymentsConnectors) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	sdkPayments := s.store.Payments()
-	config, err := plan.CreateConfig()
+	config, err := plan.installConfig(ctx)
 	if err != nil {
 		res.Diagnostics.AddError(
 			"Invalid Connector Configuration",

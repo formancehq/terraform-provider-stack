@@ -1,4 +1,4 @@
-package resources_test
+package resources
 
 import (
 	"fmt"
@@ -6,8 +6,9 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
+	"github.com/formancehq/go-libs/v3/logging"
 	"github.com/formancehq/go-libs/v3/pointer"
-	"github.com/formancehq/terraform-provider-stack/internal/resources"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -18,17 +19,17 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 	t.Parallel()
 
 	type testCase struct {
-		plan              resources.PaymentsConnectorsModel
+		plan              PaymentsConnectorsModel
 		expectedConnector operations.V3InstallConnectorRequest
 	}
 
 	for _, tc := range []testCase{
 		{
-			plan: resources.PaymentsConnectorsModel{
-				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+			plan: PaymentsConnectorsModel{
+				Credentials: types.DynamicValue(NewDynamicObjectValue(map[string]attr.Value{
 					"apiKey": types.DynamicValue(types.StringValue("my-api-key")),
 				}).Value()),
-				Config: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+				Config: types.DynamicValue(NewDynamicObjectValue(map[string]attr.Value{
 					"endpoint":      types.DynamicValue(types.StringValue("https://api.example.com")),
 					"name":          types.DynamicValue(types.StringValue("Example Connector")),
 					"pageSize":      types.DynamicValue(types.Int64Value(100)),
@@ -52,13 +53,13 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 			},
 		},
 		{
-			plan: resources.PaymentsConnectorsModel{
-				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(
+			plan: PaymentsConnectorsModel{
+				Credentials: types.DynamicValue(NewDynamicObjectValue(
 					map[string]attr.Value{
 						"apiKey":          types.DynamicValue(types.StringValue("api-key-value")),
 						"webhookPassword": types.DynamicValue(types.StringValue("webhook-password")),
 					}).Value()),
-				Config: types.DynamicValue(resources.NewDynamicObjectValue(
+				Config: types.DynamicValue(NewDynamicObjectValue(
 					map[string]attr.Value{
 						"name":               types.DynamicValue(types.StringValue("Example Connector")),
 						"pageSize":           types.DynamicValue(types.Int64Value(50)),
@@ -90,7 +91,7 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s %s", t.Name(), "1"), func(t *testing.T) {
-			req, err := tc.plan.CreateConfig()
+			req, err := tc.plan.installConfig(logging.TestingContext())
 			if err != nil {
 				t.Fatalf("failed to create config: %v", err)
 			}
@@ -99,6 +100,22 @@ func TestPaymentsCreateConfigFromModel(t *testing.T) {
 			require.Empty(t, diff, "unexpected difference in connector config: %s", diff)
 		})
 	}
+}
+
+func TestPaymentsCreateConfigFromModel_Error(t *testing.T) {
+	t.Parallel()
+
+	plan := PaymentsConnectorsModel{
+		Credentials: types.DynamicValue(NewDynamicObjectValue(map[string]attr.Value{
+			"apiKey": types.DynamicValue(types.StringValue("my-api-key")),
+		}).Value()),
+		Config: types.DynamicValue(types.StringNull()),
+	}
+
+	_, err := plan.installConfig(logging.TestingContext())
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "failed to unmarshal config")
+	require.NotContains(t, err.Error(), "my-api-key")
 }
 
 func TestExtractKeys(t *testing.T) {
@@ -120,7 +137,7 @@ func TestExtractKeys(t *testing.T) {
 		t.Run(t.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			keys := resources.ExtractKeys(tc.m)
+			keys := ExtractKeys(tc.m)
 
 			require.ElementsMatch(t, tc.expectedKeys, keys)
 		})
@@ -151,7 +168,7 @@ func TestSanitizeUnknownKeys(t *testing.T) {
 	} {
 		t.Run(t.Name(), func(t *testing.T) {
 			t.Parallel()
-			d := resources.SanitizeUnknownKeys(tc.m, tc.allowedKeys)
+			d := SanitizeUnknownKeys(tc.m, tc.allowedKeys)
 			require.Equal(t, tc.expectedMap, d)
 
 		})
@@ -163,7 +180,7 @@ func TestPaymentsStateFromRequest(t *testing.T) {
 
 	type testCase struct {
 		request   *shared.V3GetConnectorConfigResponse
-		fromState resources.PaymentsConnectorsModel
+		fromState PaymentsConnectorsModel
 	}
 
 	for _, tc := range []testCase{
@@ -183,13 +200,13 @@ func TestPaymentsStateFromRequest(t *testing.T) {
 					},
 				},
 			},
-			fromState: resources.PaymentsConnectorsModel{
+			fromState: PaymentsConnectorsModel{
 				ID: types.StringValue("somevalue"),
-				Credentials: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+				Credentials: types.DynamicValue(NewDynamicObjectValue(map[string]attr.Value{
 					"apiKey":          types.StringValue("api-key-value"),
 					"webhookPassword": types.StringValue("webhook-password"),
 				}).Value()),
-				Config: types.DynamicValue(resources.NewDynamicObjectValue(map[string]attr.Value{
+				Config: types.DynamicValue(NewDynamicObjectValue(map[string]attr.Value{
 					"name":               types.StringValue("Example Connector"),
 					"pageSize":           types.Int64Value(50),
 					"pollingPeriod":      types.StringValue("2m"),
