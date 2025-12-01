@@ -21,6 +21,8 @@ type V2CreateTransactionRequest struct {
 	Force *bool `queryParam:"style=form,explode=true,name=force"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Schema version to use for validation
+	SchemaVersion *string `queryParam:"style=form,explode=true,name=schemaVersion"`
 }
 
 func (v *V2CreateTransactionRequest) GetIdempotencyKey() *string {
@@ -56,6 +58,13 @@ func (v *V2CreateTransactionRequest) GetLedger() string {
 		return ""
 	}
 	return v.Ledger
+}
+
+func (v *V2CreateTransactionRequest) GetSchemaVersion() *string {
+	if v == nil {
+		return nil
+	}
+	return v.SchemaVersion
 }
 
 type V2CreateTransactionResponse struct {

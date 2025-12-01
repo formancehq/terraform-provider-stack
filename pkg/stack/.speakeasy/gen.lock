@@ -1,15 +1,16 @@
 lockVersion: 2.0.0
 id: c8558e29-cc40-460f-b7ee-ccbe35392546
 management:
-  docChecksum: 77b16712c7c25faab1c91df177dd79a2
+  docChecksum: f04b337aaaf80ab4f2dd67b623c38caa
   docVersion: SDK_VERSION
   speakeasyVersion: 1.637.0
   generationVersion: 2.727.4
-  releaseVersion: 3.7.2
-  configChecksum: 7354a2fed4be489cb7e01e548917e13e
+  releaseVersion: 3.8.0
+  configChecksum: a66091540e9b0d399275b61e6db9c9d3
 features:
   go:
     additionalDependencies: 0.1.0
+    additionalProperties: 0.1.2
     bigint: 0.0.2
     constsAndDefaults: 0.1.12
     core: 3.12.0
@@ -22,6 +23,7 @@ features:
     globalSecurityCallbacks: 0.1.0
     globalServerURLs: 2.82.3
     ignores: 2.81.1
+    inputOutputModels: 2.83.0
     intellisenseMarkdownSupport: 0.1.0
     nameOverrides: 2.81.2
     nullables: 0.2.1
@@ -190,17 +192,20 @@ generatedFiles:
   - /pkg/models/operations/v2getledger.go
   - /pkg/models/operations/v2getledgerinfo.go
   - /pkg/models/operations/v2getpipelinestate.go
+  - /pkg/models/operations/v2getschema.go
   - /pkg/models/operations/v2getserverinfo.go
   - /pkg/models/operations/v2gettransaction.go
   - /pkg/models/operations/v2getvolumeswithbalances.go
   - /pkg/models/operations/v2getworkflow.go
   - /pkg/models/operations/v2importlogs.go
+  - /pkg/models/operations/v2insertschema.go
   - /pkg/models/operations/v2listaccounts.go
   - /pkg/models/operations/v2listexporters.go
   - /pkg/models/operations/v2listinstances.go
   - /pkg/models/operations/v2listledgers.go
   - /pkg/models/operations/v2listlogs.go
   - /pkg/models/operations/v2listpipelines.go
+  - /pkg/models/operations/v2listschemas.go
   - /pkg/models/operations/v2listtransactions.go
   - /pkg/models/operations/v2listtriggers.go
   - /pkg/models/operations/v2listtriggersoccurrences.go
@@ -528,6 +533,9 @@ generatedFiles:
   - /pkg/models/shared/v2bulkelementresult.go
   - /pkg/models/shared/v2bulkelementreverttransaction.go
   - /pkg/models/shared/v2bulkresponse.go
+  - /pkg/models/shared/v2chartaccountmetadata.go
+  - /pkg/models/shared/v2chartaccountrules.go
+  - /pkg/models/shared/v2chartsegment.go
   - /pkg/models/shared/v2configinforesponse.go
   - /pkg/models/shared/v2connector.go
   - /pkg/models/shared/v2createledgerrequest.go
@@ -573,6 +581,12 @@ generatedFiles:
   - /pkg/models/shared/v2readtriggerresponse.go
   - /pkg/models/shared/v2reverttransactionrequest.go
   - /pkg/models/shared/v2runworkflowresponse.go
+  - /pkg/models/shared/v2schema.go
+  - /pkg/models/shared/v2schemadata.go
+  - /pkg/models/shared/v2schemadatainput.go
+  - /pkg/models/shared/v2schemaresponse.go
+  - /pkg/models/shared/v2schemascursor.go
+  - /pkg/models/shared/v2schemascursorresponse.go
   - /pkg/models/shared/v2serverinfo.go
   - /pkg/models/shared/v2stage.go
   - /pkg/models/shared/v2stagedelay.go
@@ -918,6 +932,7 @@ generatedFiles:
   - docs/pkg/models/operations/paymentsgetserverinforesponse.md
   - docs/pkg/models/operations/paymentslistaccountsrequest.md
   - docs/pkg/models/operations/paymentslistaccountsresponse.md
+  - docs/pkg/models/operations/queryparamorder.md
   - docs/pkg/models/operations/readclientrequest.md
   - docs/pkg/models/operations/readclientresponse.md
   - docs/pkg/models/operations/readconnectorconfigrequest.md
@@ -952,6 +967,7 @@ generatedFiles:
   - docs/pkg/models/operations/sendeventrequest.md
   - docs/pkg/models/operations/sendeventrequestbody.md
   - docs/pkg/models/operations/sendeventresponse.md
+  - docs/pkg/models/operations/sort.md
   - docs/pkg/models/operations/testconfigrequest.md
   - docs/pkg/models/operations/testconfigresponse.md
   - docs/pkg/models/operations/testtriggerrequest.md
@@ -1041,6 +1057,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2getpipelinestaterequest.md
   - docs/pkg/models/operations/v2getpipelinestateresponse.md
   - docs/pkg/models/operations/v2getpipelinestateresponsebody.md
+  - docs/pkg/models/operations/v2getschemarequest.md
+  - docs/pkg/models/operations/v2getschemaresponse.md
   - docs/pkg/models/operations/v2getserverinforesponse.md
   - docs/pkg/models/operations/v2gettransactionrequest.md
   - docs/pkg/models/operations/v2gettransactionresponse.md
@@ -1050,6 +1068,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2getworkflowresponse.md
   - docs/pkg/models/operations/v2importlogsrequest.md
   - docs/pkg/models/operations/v2importlogsresponse.md
+  - docs/pkg/models/operations/v2insertschemarequest.md
+  - docs/pkg/models/operations/v2insertschemaresponse.md
   - docs/pkg/models/operations/v2listaccountsrequest.md
   - docs/pkg/models/operations/v2listaccountsresponse.md
   - docs/pkg/models/operations/v2listexporterscursor.md
@@ -1066,6 +1086,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2listpipelinesrequest.md
   - docs/pkg/models/operations/v2listpipelinesresponse.md
   - docs/pkg/models/operations/v2listpipelinesresponsebody.md
+  - docs/pkg/models/operations/v2listschemasrequest.md
+  - docs/pkg/models/operations/v2listschemasresponse.md
   - docs/pkg/models/operations/v2listtransactionsrequest.md
   - docs/pkg/models/operations/v2listtransactionsresponse.md
   - docs/pkg/models/operations/v2listtriggersoccurrencesrequest.md
@@ -1297,6 +1319,7 @@ generatedFiles:
   - docs/pkg/models/shared/debitwalletrequest.md
   - docs/pkg/models/shared/debitwalletresponse.md
   - docs/pkg/models/shared/descriptor.md
+  - docs/pkg/models/shared/dotself.md
   - docs/pkg/models/shared/dummypayconfig.md
   - docs/pkg/models/shared/error.md
   - docs/pkg/models/shared/errorcode.md
@@ -1535,6 +1558,9 @@ generatedFiles:
   - docs/pkg/models/shared/v2bulkelementreverttransaction.md
   - docs/pkg/models/shared/v2bulkelementreverttransactiondata.md
   - docs/pkg/models/shared/v2bulkresponse.md
+  - docs/pkg/models/shared/v2chartaccountmetadata.md
+  - docs/pkg/models/shared/v2chartaccountrules.md
+  - docs/pkg/models/shared/v2chartsegment.md
   - docs/pkg/models/shared/v2configinforesponse.md
   - docs/pkg/models/shared/v2connector.md
   - docs/pkg/models/shared/v2createledgerrequest.md
@@ -1595,6 +1621,12 @@ generatedFiles:
   - docs/pkg/models/shared/v2readtriggerresponse.md
   - docs/pkg/models/shared/v2reverttransactionrequest.md
   - docs/pkg/models/shared/v2runworkflowresponse.md
+  - docs/pkg/models/shared/v2schema.md
+  - docs/pkg/models/shared/v2schemadata.md
+  - docs/pkg/models/shared/v2schemadatainput.md
+  - docs/pkg/models/shared/v2schemaresponse.md
+  - docs/pkg/models/shared/v2schemascursor.md
+  - docs/pkg/models/shared/v2schemascursorresponse.md
   - docs/pkg/models/shared/v2serverinfo.md
   - docs/pkg/models/shared/v2stage.md
   - docs/pkg/models/shared/v2stagedelay.md
@@ -2256,6 +2288,7 @@ examples:
           continueOnFailure: true
           atomic: true
           parallel: true
+          schemaVersion: "v1.0.0"
       requestBody:
         application/json: [{"action": "DELETE_METADATA"}]
       responses:
@@ -2306,6 +2339,7 @@ examples:
           address: "users:001"
         query:
           dryRun: true
+          schemaVersion: "v1.0.0"
       requestBody:
         application/json: {"admin": "true"}
       responses:
@@ -2361,6 +2395,7 @@ examples:
         query:
           dryRun: true
           force: true
+          schemaVersion: "v1.0.0"
       requestBody:
         application/json: {"accountMetadata": {"key": {"admin": "true"}, "key1": {"admin": "true"}, "key2": {"admin": "true"}}, "metadata": {"admin": "true"}, "postings": [{"amount": 100, "asset": "COIN", "destination": "users:002", "source": "users:001"}], "reference": "ref:001", "script": {"plain": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n", "vars": {"user": "users:042"}}}
       responses:
@@ -2387,6 +2422,7 @@ examples:
           id: 1234
         query:
           dryRun: true
+          schemaVersion: "v1.0.0"
       requestBody:
         application/json: {"admin": "true"}
       responses:
@@ -2410,6 +2446,7 @@ examples:
           id: 1234
         query:
           dryRun: true
+          schemaVersion: "v1.0.0"
       responses:
         "201":
           application/json: {"data": {"id": 670435, "metadata": {"admin": "true"}, "postCommitEffectiveVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "postCommitVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "postings": [], "preCommitEffectiveVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "preCommitVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "reference": "ref:001", "reverted": true, "timestamp": "2025-01-07T04:49:40.482Z"}}
@@ -4285,6 +4322,42 @@ examples:
       responses:
         "200":
           application/json: {"data": {"active": true, "createdAt": "2024-02-08T09:52:13.212Z", "endpoint": "https://example.com", "eventTypes": ["TYPE1", "TYPE2"], "id": "93d1ccab-8f50-4b4b-8675-b377e04332d7", "secret": "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3", "updatedAt": "2024-05-15T05:29:40.289Z"}}
+        default:
+          application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
+  v2GetSchema:
+    speakeasy-default-v2-get-schema:
+      parameters:
+        path:
+          ledger: "ledger001"
+          version: "v1.0.0"
+      responses:
+        "200":
+          application/json: {"data": {"createdAt": "2023-01-01T00:00:00Z", "data": {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}}, "version": "v1.0.0"}}
+        default:
+          application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
+  v2InsertSchema:
+    speakeasy-default-v2-insert-schema:
+      parameters:
+        path:
+          ledger: "ledger001"
+          version: "v1.0.0"
+      requestBody:
+        application/json: {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}}
+      responses:
+        default:
+          application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
+  v2ListSchemas:
+    speakeasy-default-v2-list-schemas:
+      parameters:
+        path:
+          ledger: "ledger001"
+        query:
+          pageSize: 15
+          sort: "created_at"
+          order: "desc"
+      responses:
+        "200":
+          application/json: {"cursor": {"data": [], "hasMore": true, "pageSize": 47856}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
 examplesVersion: 1.0.2

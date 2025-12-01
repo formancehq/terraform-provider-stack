@@ -20,6 +20,8 @@ type V2AddMetadataOnTransactionRequest struct {
 	ID *big.Int `pathParam:"style=simple,explode=false,name=id"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Schema version to use for validation
+	SchemaVersion *string `queryParam:"style=form,explode=true,name=schemaVersion"`
 }
 
 func (v V2AddMetadataOnTransactionRequest) MarshalJSON() ([]byte, error) {
@@ -66,6 +68,13 @@ func (v *V2AddMetadataOnTransactionRequest) GetLedger() string {
 		return ""
 	}
 	return v.Ledger
+}
+
+func (v *V2AddMetadataOnTransactionRequest) GetSchemaVersion() *string {
+	if v == nil {
+		return nil
+	}
+	return v.SchemaVersion
 }
 
 type V2AddMetadataOnTransactionResponse struct {

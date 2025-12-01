@@ -22,6 +22,8 @@ type V2AddMetadataToAccountRequest struct {
 	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Schema version to use for validation
+	SchemaVersion *string `queryParam:"style=form,explode=true,name=schemaVersion"`
 }
 
 func (v *V2AddMetadataToAccountRequest) GetIdempotencyKey() *string {
@@ -57,6 +59,13 @@ func (v *V2AddMetadataToAccountRequest) GetLedger() string {
 		return ""
 	}
 	return v.Ledger
+}
+
+func (v *V2AddMetadataToAccountRequest) GetSchemaVersion() *string {
+	if v == nil {
+		return nil
+	}
+	return v.SchemaVersion
 }
 
 type V2AddMetadataToAccountResponse struct {

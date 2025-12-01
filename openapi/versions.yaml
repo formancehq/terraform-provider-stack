@@ -2,7 +2,7 @@ versions:
   base:
     version: "main"
   ledger:
-    version: "main"
+    version: "feat/schema"
   payments:
     version: "main"
   reconciliation:
