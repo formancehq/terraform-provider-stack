@@ -11,27 +11,27 @@ import (
 	"time"
 )
 
-// Order - Deprecated: Use sort param
-type Order string
+// QueryParamOrder - Deprecated: Use sort param
+type QueryParamOrder string
 
 const (
-	OrderEffective Order = "effective"
+	QueryParamOrderEffective QueryParamOrder = "effective"
 )
 
-func (e Order) ToPointer() *Order {
+func (e QueryParamOrder) ToPointer() *QueryParamOrder {
 	return &e
 }
-func (e *Order) UnmarshalJSON(data []byte) error {
+func (e *QueryParamOrder) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 	switch v {
 	case "effective":
-		*e = Order(v)
+		*e = QueryParamOrder(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for Order: %v", v)
+		return fmt.Errorf("invalid value for QueryParamOrder: %v", v)
 	}
 }
 
@@ -48,7 +48,7 @@ type V2ListTransactionsRequest struct {
 	// Deprecated: Use sort param
 	//
 	// Deprecated: This will be removed in a future release, please migrate away from it as soon as possible.
-	Order *Order `queryParam:"style=form,explode=true,name=order"`
+	Order *QueryParamOrder `queryParam:"style=form,explode=true,name=order"`
 	// The maximum number of results to return per page.
 	//
 	PageSize *int64         `queryParam:"style=form,explode=true,name=pageSize"`
@@ -93,7 +93,7 @@ func (v *V2ListTransactionsRequest) GetLedger() string {
 	return v.Ledger
 }
 
-func (v *V2ListTransactionsRequest) GetOrder() *Order {
+func (v *V2ListTransactionsRequest) GetOrder() *QueryParamOrder {
 	if v == nil {
 		return nil
 	}

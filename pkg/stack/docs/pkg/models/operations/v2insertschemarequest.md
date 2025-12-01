@@ -1,0 +1,10 @@
+# V2InsertSchemaRequest
+
+
+## Fields
+
+| Field                                                                       | Type                                                                        | Required                                                                    | Description                                                                 | Example                                                                     |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `V2SchemaData`                                                              | [shared.V2SchemaDataInput](../../../pkg/models/shared/v2schemadatainput.md) | :heavy_check_mark:                                                          | N/A                                                                         |                                                                             |
+| `Ledger`                                                                    | *string*                                                                    | :heavy_check_mark:                                                          | Name of the ledger.                                                         | ledger001                                                                   |
+| `Version`                                                                   | *string*                                                                    | :heavy_check_mark:                                                          | Schema version.                                                             | v1.0.0                                                                      |
