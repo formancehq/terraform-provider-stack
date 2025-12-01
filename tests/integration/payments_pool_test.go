@@ -1,8 +1,10 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -16,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
+	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel"
 
 	"github.com/formancehq/go-libs/v3/logging"
@@ -59,6 +62,58 @@ func TestPaymentsPool(t *testing.T) {
 		},
 	)
 
+	query := `{
+		"$and": [
+			{
+				"$match": {
+					"account": "accounts::pending"
+				}
+			},
+			{
+				"$or": [
+					{
+						"$gte": {
+							"balance": 1000
+						}
+					},
+					{
+						"$lte": {
+							"balance": 500
+						}
+					}
+				]
+			}
+		]
+	}`
+	queryAsMap := make(map[string]any)
+	require.NoError(t, json.Unmarshal([]byte(query), &queryAsMap))
+
+	queryUpdated := `{
+		"$and": [
+			{
+				"$match": {
+					"account": "accounts::another"
+				}
+			},
+			{
+				"$or": [
+					{
+						"$gte": {
+							"balance": 1000
+						}
+					},
+					{
+						"$lte": {
+							"balance": 500
+						}
+					}
+				]
+			}
+		]
+	}`
+	queryUpdatedAsMap := make(map[string]any)
+	require.NoError(t, json.Unmarshal([]byte(queryUpdated), &queryUpdatedAsMap))
+
 	// Module and sdk expectations
 	stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
 		GetVersionsResponse: &shared.GetVersionsResponse{
@@ -78,6 +133,7 @@ func TestPaymentsPool(t *testing.T) {
 		ID:           poolId,
 		Name:         "Example Pool",
 		PoolAccounts: []string{"account1", "account2"},
+		Query:        queryAsMap,
 		CreatedAt:    time.Now(),
 	}
 
@@ -108,12 +164,19 @@ func TestPaymentsPool(t *testing.T) {
 		},
 	}, nil)
 
+	paymentsSdk.EXPECT().UpdatePool(gomock.Any(), gomock.Cond(func(op operations.V3UpdatePoolQueryRequest) bool {
+		return strings.ReplaceAll(op.PoolID, "\"", "") == poolId && fmt.Sprintf("%v", op.V3UpdatePoolQueryRequest.Query) == fmt.Sprintf("%v", queryUpdatedAsMap)
+	})).Return(&operations.V3UpdatePoolQueryResponse{
+		StatusCode: 200,
+	}, nil)
+
 	paymentsSdk.EXPECT().RemoveAccountFromPool(gomock.Any(), gomock.Cond(func(r operations.V3RemoveAccountFromPoolRequest) bool {
 		return r.PoolID == poolId && r.AccountID == "account2"
 	})).Return(nil, nil)
 
 	// refresh state deletion
 	firstPool.PoolAccounts = []string{"account1"}
+	firstPool.Query = queryUpdatedAsMap
 	paymentsSdk.EXPECT().GetPool(gomock.Any(), operations.V3GetPoolRequest{
 		PoolID: poolId,
 	}).Return(&operations.V3GetPoolResponse{
@@ -149,6 +212,7 @@ func TestPaymentsPool(t *testing.T) {
 							"account1",
 							"account2",
 						]
+						query = ` + query + `
 					}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
@@ -187,6 +251,7 @@ func TestPaymentsPool(t *testing.T) {
 						accounts_ids = [
 							"account1",
 						]
+						query = ` + queryUpdated + `
 					}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{

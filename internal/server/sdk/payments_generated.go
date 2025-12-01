@@ -392,3 +392,42 @@ func (c *MockPaymentsSdkImplUpdateConnectorCall) DoAndReturn(f func(context.Cont
 	c.Call = c.Call.DoAndReturn(f)
 	return c
 }
+
+// UpdatePool mocks base method.
+func (m *MockPaymentsSdkImpl) UpdatePool(ctx context.Context, request operations.V3UpdatePoolQueryRequest) (*operations.V3UpdatePoolQueryResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePool", ctx, request)
+	ret0, _ := ret[0].(*operations.V3UpdatePoolQueryResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePool indicates an expected call of UpdatePool.
+func (mr *MockPaymentsSdkImplMockRecorder) UpdatePool(ctx, request any) *MockPaymentsSdkImplUpdatePoolCall {
+	mr.mock.ctrl.T.Helper()
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePool", reflect.TypeOf((*MockPaymentsSdkImpl)(nil).UpdatePool), ctx, request)
+	return &MockPaymentsSdkImplUpdatePoolCall{Call: call}
+}
+
+// MockPaymentsSdkImplUpdatePoolCall wrap *gomock.Call
+type MockPaymentsSdkImplUpdatePoolCall struct {
+	*gomock.Call
+}
+
+// Return rewrite *gomock.Call.Return
+func (c *MockPaymentsSdkImplUpdatePoolCall) Return(arg0 *operations.V3UpdatePoolQueryResponse, arg1 error) *MockPaymentsSdkImplUpdatePoolCall {
+	c.Call = c.Call.Return(arg0, arg1)
+	return c
+}
+
+// Do rewrite *gomock.Call.Do
+func (c *MockPaymentsSdkImplUpdatePoolCall) Do(f func(context.Context, operations.V3UpdatePoolQueryRequest) (*operations.V3UpdatePoolQueryResponse, error)) *MockPaymentsSdkImplUpdatePoolCall {
+	c.Call = c.Call.Do(f)
+	return c
+}
+
+// DoAndReturn rewrite *gomock.Call.DoAndReturn
+func (c *MockPaymentsSdkImplUpdatePoolCall) DoAndReturn(f func(context.Context, operations.V3UpdatePoolQueryRequest) (*operations.V3UpdatePoolQueryResponse, error)) *MockPaymentsSdkImplUpdatePoolCall {
+	c.Call = c.Call.DoAndReturn(f)
+	return c
+}

@@ -12,6 +12,7 @@ import (
 type PaymentsSdkImpl interface {
 	CreatePool(ctx context.Context, request *shared.V3CreatePoolRequest) (*operations.V3CreatePoolResponse, error)
 	GetPool(ctx context.Context, request operations.V3GetPoolRequest) (*operations.V3GetPoolResponse, error)
+	UpdatePool(ctx context.Context, request operations.V3UpdatePoolQueryRequest) (*operations.V3UpdatePoolQueryResponse, error)
 	DeletePool(ctx context.Context, request operations.V3DeletePoolRequest) (*operations.V3DeletePoolResponse, error)
 
 	AddAccountToPool(ctx context.Context, request operations.V3AddAccountToPoolRequest) (*operations.V3AddAccountToPoolResponse, error)
@@ -31,6 +32,10 @@ type defaultPaymentsSdk struct {
 
 func (s *defaultPaymentsSdk) CreatePool(ctx context.Context, request *shared.V3CreatePoolRequest) (*operations.V3CreatePoolResponse, error) {
 	return s.V3.CreatePool(ctx, request)
+}
+
+func (s *defaultPaymentsSdk) UpdatePool(ctx context.Context, request operations.V3UpdatePoolQueryRequest) (*operations.V3UpdatePoolQueryResponse, error) {
+	return s.V3.UpdatePoolQuery(ctx, request)
 }
 
 func (s *defaultPaymentsSdk) GetPool(ctx context.Context, request operations.V3GetPoolRequest) (*operations.V3GetPoolResponse, error) {
