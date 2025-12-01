@@ -1,0 +1,12 @@
+# V2CreateBulkRequest
+
+
+## Fields
+
+| Field                                                                 | Type                                                                  | Required                                                              | Description                                                           | Example                                                               |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `RequestBody`                                                         | [][shared.V2BulkElement](../../../pkg/models/shared/v2bulkelement.md) | :heavy_check_mark:                                                    | N/A                                                                   |                                                                       |
+| `Atomic`                                                              | **bool*                                                               | :heavy_minus_sign:                                                    | Make bulk atomic                                                      | true                                                                  |
+| `ContinueOnFailure`                                                   | **bool*                                                               | :heavy_minus_sign:                                                    | Continue on failure                                                   | true                                                                  |
+| `Ledger`                                                              | *string*                                                              | :heavy_check_mark:                                                    | Name of the ledger.                                                   | ledger001                                                             |
+| `Parallel`                                                            | **bool*                                                               | :heavy_minus_sign:                                                    | Process bulk elements in parallel                                     | true                                                                  |

@@ -1,0 +1,10 @@
+# StageSendSource
+
+
+## Fields
+
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `Account`                                                                                        | [*shared.StageSendDestinationAccount](../../../pkg/models/shared/stagesenddestinationaccount.md) | :heavy_minus_sign:                                                                               | N/A                                                                                              |
+| `Payment`                                                                                        | [*shared.StageSendSourcePayment](../../../pkg/models/shared/stagesendsourcepayment.md)           | :heavy_minus_sign:                                                                               | N/A                                                                                              |
+| `Wallet`                                                                                         | [*shared.StageSendDestinationWallet](../../../pkg/models/shared/stagesenddestinationwallet.md)   | :heavy_minus_sign:                                                                               | N/A                                                                                              |
