@@ -1,0 +1,77 @@
+{
+    "inputs": [
+        {
+            "inputFile": "./base.yaml"
+        },
+        {
+            "inputFile": "./auth/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/auth"
+            },
+            "dispute": {
+                "prefix": "auth"
+            }
+        },
+        {
+            "inputFile": "./gateway/openapi.yaml",
+            "dispute": {
+                "prefix": "gateway"
+            }
+        },
+        {
+            "inputFile": "./ledger/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/ledger"
+            },
+            "dispute": {
+                "prefix": "ledger"
+            }
+        },
+        {
+            "inputFile": "./payments/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/payments"
+            },
+            "dispute": {
+                "prefix": "payments"
+            }
+        },
+        {
+            "inputFile": "./wallets/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/wallets"
+            },
+            "dispute": {
+                "prefix": "wallets"
+            }
+        },
+        {
+            "inputFile": "./reconciliation/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/reconciliation"
+            },
+            "dispute": {
+                "prefix": "reconciliation"
+            }
+        },
+        {
+            "inputFile": "./flows/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/orchestration"
+            },
+            "dispute": {
+                "prefix": "flows"
+            }
+        },
+        {
+            "inputFile": "./webhooks/openapi.yaml",
+            "pathModification": {
+                "prepend": "/api/webhooks"
+            },
+            "dispute": {
+                "prefix": "webhooks"
+            }
+        }
+    ],
+    "output": "generate.json"
+}
