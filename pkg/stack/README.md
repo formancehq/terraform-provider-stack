@@ -227,14 +227,17 @@ func main() {
 * [GetLedger](docs/sdks/v2/README.md#getledger) - Get a ledger
 * [GetLedgerInfo](docs/sdks/v2/README.md#getledgerinfo) - Get information about a ledger
 * [GetPipelineState](docs/sdks/v2/README.md#getpipelinestate) - Get pipeline state
+* [GetSchema](docs/sdks/v2/README.md#getschema) - Get a schema for a ledger by version
 * [GetTransaction](docs/sdks/v2/README.md#gettransaction) - Get transaction from a ledger by its ID
 * [GetVolumesWithBalances](docs/sdks/v2/README.md#getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
 * [ImportLogs](docs/sdks/v2/README.md#importlogs)
+* [InsertSchema](docs/sdks/v2/README.md#insertschema) - Insert or update a schema for a ledger
 * [ListAccounts](docs/sdks/v2/README.md#listaccounts) - List accounts from a ledger
 * [ListExporters](docs/sdks/v2/README.md#listexporters) - List exporters
 * [ListLedgers](docs/sdks/v2/README.md#listledgers) - List ledgers
 * [ListLogs](docs/sdks/v2/README.md#listlogs) - List the logs from a ledger
 * [ListPipelines](docs/sdks/v2/README.md#listpipelines) - List pipelines
+* [ListSchemas](docs/sdks/v2/README.md#listschemas) - List all schemas for a ledger
 * [ListTransactions](docs/sdks/v2/README.md#listtransactions) - List transactions from a ledger
 * [ReadStats](docs/sdks/v2/README.md#readstats) - Get statistics from a ledger
 * [ResetPipeline](docs/sdks/v2/README.md#resetpipeline) - Reset pipeline
