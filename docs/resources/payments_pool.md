@@ -22,6 +22,7 @@ Resource for managing a Formance Payments Pool. For advanced usage and configura
 ### Optional
 
 - `accounts_ids` (List of String) The list of accounts IDs associated with the pool. For more information, see the [Payments documentation](https://docs.formance.com/payments/).
+- `query` (Dynamic) The query to filter payments associated with the pool. For more information, see the [Payments documentation](https://docs.formance.com/payments/).
 
 ### Read-Only
 
