@@ -11,7 +11,9 @@ import (
 	"github.com/formancehq/go-libs/v3/query"
 	"github.com/formancehq/terraform-provider-stack/internal"
 	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
+	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -19,8 +21,10 @@ import (
 )
 
 var (
-	_ resource.Resource              = &PaymentsPool{}
-	_ resource.ResourceWithConfigure = &PaymentsPool{}
+	_ resource.Resource                     = &PaymentsPool{}
+	_ resource.ResourceWithConfigure        = &PaymentsPool{}
+	_ resource.ResourceWithValidateConfig   = &PaymentsPool{}
+	_ resource.ResourceWithConfigValidators = &PaymentsPool{}
 )
 
 type PaymentsPool struct {
@@ -61,6 +65,20 @@ var SchemaPaymentsPool = schema.Schema{
 			Optional:    true,
 		},
 	},
+}
+
+// ConfigValidators implements resource.ResourceWithConfigValidators.
+func (s *PaymentsPool) ConfigValidators(context.Context) []resource.ConfigValidator {
+	return []resource.ConfigValidator{
+		resourcevalidator.Conflicting(
+			path.MatchRoot("accounts_ids"),
+			path.MatchRoot("query"),
+		),
+		resourcevalidator.AtLeastOneOf(
+			path.MatchRoot("accounts_ids"),
+			path.MatchRoot("query"),
+		),
+	}
 }
 
 // Schema implements resource.Resource.
@@ -216,12 +234,15 @@ func (s *PaymentsPool) Read(ctx context.Context, req resource.ReadRequest, res *
 
 	state.ID = types.StringValue(resp.V3GetPoolResponse.Data.ID)
 	state.Name = types.StringValue(resp.V3GetPoolResponse.Data.Name)
-	state.AccountsIds = types.ListValueMust(
-		types.StringType,
-		collectionutils.Map(resp.V3GetPoolResponse.Data.PoolAccounts, func(account string) attr.Value {
-			return types.StringValue(account)
-		}),
-	)
+	if len(resp.V3GetPoolResponse.Data.PoolAccounts) > 0 {
+		state.AccountsIds = types.ListValueMust(
+			types.StringType,
+			collectionutils.Map(resp.V3GetPoolResponse.Data.PoolAccounts, func(account string) attr.Value {
+				return types.StringValue(account)
+			}),
+		)
+	}
+
 	query := resp.V3GetPoolResponse.Data.Query
 	if len(query) > 0 {
 		tfValues := ConvertToAttrValues(query)

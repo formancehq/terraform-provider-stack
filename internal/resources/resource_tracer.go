@@ -15,29 +15,12 @@ import (
 )
 
 var (
-	_ resource.Resource                   = &ResourceTracer{}
-	_ resource.ResourceWithConfigure      = &ResourceTracer{}
-	_ resource.ResourceWithImportState    = &ResourceTracer{}
-	_ resource.ResourceWithValidateConfig = &ResourceTracer{}
+	_ resource.Resource                     = &ResourceTracer{}
+	_ resource.ResourceWithConfigure        = &ResourceTracer{}
+	_ resource.ResourceWithImportState      = &ResourceTracer{}
+	_ resource.ResourceWithValidateConfig   = &ResourceTracer{}
+	_ resource.ResourceWithConfigValidators = &ResourceTracer{}
 )
-
-func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
-	return func() resource.Resource {
-		return &ResourceTracer{
-			tracer:          tracer,
-			logger:          logger,
-			underlyingValue: res,
-		}
-	}
-
-}
-
-type ResourceTracer struct {
-	tracer          trace.Tracer
-	logger          logging.Logger
-	underlyingValue any
-}
-
 var (
 	ErrValidateConfig = fmt.Errorf("error during ValidateConfig")
 	ErrSchema         = fmt.Errorf("error during Schema")
@@ -71,6 +54,40 @@ func injectTraceContext(ctx context.Context, res any, funcName string) context.C
 		attribute.String("operation", strings.ToLower(funcName)),
 	)
 	return ctx
+}
+
+type ResourceTracer struct {
+	tracer          trace.Tracer
+	logger          logging.Logger
+	underlyingValue any
+}
+
+func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
+	return func() resource.Resource {
+		return &ResourceTracer{
+			tracer:          tracer,
+			logger:          logger,
+			underlyingValue: res,
+		}
+	}
+
+}
+
+// ConfigValidators implements resource.ResourceWithConfigValidators.
+func (r *ResourceTracer) ConfigValidators(context.Context) []resource.ConfigValidator {
+	operation := "ConfigValidators"
+	ctx := logging.ContextWithLogger(context.Background(), r.logger)
+	var validators []resource.ConfigValidator
+	if v, ok := r.underlyingValue.(resource.ResourceWithConfigValidators); ok {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
+			ctx = injectTraceContext(ctx, v, operation)
+			logging.FromContext(ctx).Debug(" call")
+			defer logging.FromContext(ctx).Debug(" completed")
+			validators = v.ConfigValidators(ctx)
+			return nil
+		})
+	}
+	return validators
 }
 
 // ValidateConfig implements resource.ResourceWithValidateConfig.
