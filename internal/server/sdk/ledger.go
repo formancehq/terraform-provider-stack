@@ -13,12 +13,23 @@ type LedgerSdkImpl interface {
 	GetLedger(ctx context.Context, request operations.V2GetLedgerRequest) (*operations.V2GetLedgerResponse, error)
 	DeleteLedger(ctx context.Context, name string) error
 	UpdateLedgerMetadata(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error)
+
+	GetSchema(ctx context.Context, request operations.V2GetSchemaRequest) (*operations.V2GetSchemaResponse, error)
+	InsertSchema(ctx context.Context, request operations.V2InsertSchemaRequest) (*operations.V2InsertSchemaResponse, error)
 }
 
 var _ LedgerSdkImpl = &defaultLedger{}
 
 type defaultLedger struct {
 	*formance.Ledger
+}
+
+func (s *defaultLedger) InsertSchema(ctx context.Context, request operations.V2InsertSchemaRequest) (*operations.V2InsertSchemaResponse, error) {
+	return s.V2.InsertSchema(ctx, request)
+}
+
+func (s *defaultLedger) GetSchema(ctx context.Context, request operations.V2GetSchemaRequest) (*operations.V2GetSchemaResponse, error) {
+	return s.V2.GetSchema(ctx, request)
 }
 
 func (s *defaultLedger) CreateLedger(ctx context.Context, request operations.V2CreateLedgerRequest) (*operations.V2CreateLedgerResponse, error) {
