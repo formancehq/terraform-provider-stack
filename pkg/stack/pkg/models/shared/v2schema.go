@@ -9,10 +9,10 @@ import (
 
 // V2Schema - Complete schema structure with metadata
 type V2Schema struct {
+	// Chart of account
+	Chart map[string]V2ChartSegment `json:"chart"`
 	// Schema creation timestamp
 	CreatedAt time.Time `json:"createdAt"`
-	// Schema data structure for ledger schemas
-	Data V2SchemaData `json:"data"`
 	// Schema version
 	Version string `json:"version"`
 }
@@ -22,10 +22,17 @@ func (v V2Schema) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2Schema) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"createdAt", "data", "version"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"chart", "createdAt", "version"}); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (v *V2Schema) GetChart() map[string]V2ChartSegment {
+	if v == nil {
+		return map[string]V2ChartSegment{}
+	}
+	return v.Chart
 }
 
 func (v *V2Schema) GetCreatedAt() time.Time {
@@ -33,13 +40,6 @@ func (v *V2Schema) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return v.CreatedAt
-}
-
-func (v *V2Schema) GetData() V2SchemaData {
-	if v == nil {
-		return V2SchemaData{}
-	}
-	return v.Data
 }
 
 func (v *V2Schema) GetVersion() string {

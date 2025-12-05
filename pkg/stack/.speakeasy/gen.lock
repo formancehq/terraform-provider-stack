@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: c8558e29-cc40-460f-b7ee-ccbe35392546
 management:
-  docChecksum: f04b337aaaf80ab4f2dd67b623c38caa
+  docChecksum: 871d4e81c90a81b6c62c7f14e0881bb3
   docVersion: SDK_VERSION
   speakeasyVersion: 1.637.0
   generationVersion: 2.727.4
-  releaseVersion: 3.8.1
-  configChecksum: 5d86f4f890a55ebe8bcefe36f465816c
+  releaseVersion: 3.10.0
+  configChecksum: cb4f98f2da321b5c347632b033791560
 features:
   go:
     additionalDependencies: 0.1.0
@@ -583,7 +583,6 @@ generatedFiles:
   - /pkg/models/shared/v2runworkflowresponse.go
   - /pkg/models/shared/v2schema.go
   - /pkg/models/shared/v2schemadata.go
-  - /pkg/models/shared/v2schemadatainput.go
   - /pkg/models/shared/v2schemaresponse.go
   - /pkg/models/shared/v2schemascursor.go
   - /pkg/models/shared/v2schemascursorresponse.go
@@ -1623,7 +1622,6 @@ generatedFiles:
   - docs/pkg/models/shared/v2runworkflowresponse.md
   - docs/pkg/models/shared/v2schema.md
   - docs/pkg/models/shared/v2schemadata.md
-  - docs/pkg/models/shared/v2schemadatainput.md
   - docs/pkg/models/shared/v2schemaresponse.md
   - docs/pkg/models/shared/v2schemascursor.md
   - docs/pkg/models/shared/v2schemascursorresponse.md
@@ -2011,6 +2009,7 @@ examples:
           metadata: {"key": "<value>"}
           balance: 2400
           cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+          sort: ["date:asc", "status:desc"]
       responses:
         "200":
           application/json: {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
@@ -2024,6 +2023,7 @@ examples:
         path:
           ledger: "ledger001"
           address: "users:001"
+          accountId: "XXX"
       responses:
         "200":
           application/json: {"data": {"address": "users:001", "balances": {"COIN": 100}, "metadata": {"admin": true, "a": {"nested": {"key": "value"}}}, "type": "virtual", "volumes": {"USD": {"balance": 90, "input": 100, "output": 10}, "EUR": {"balance": 90, "input": 100, "output": 10}}}}
@@ -2225,7 +2225,7 @@ examples:
           sort: "id:desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [{"addedAt": "2024-03-14T02:30:05.506Z", "bucket": "<value>", "metadata": {"admin": "true"}, "name": "<value>"}], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
+          application/json: {"cursor": {"data": [{"addedAt": "2024-03-14T02:30:05.506Z", "bucket": "<value>", "metadata": {"admin": "true"}, "name": "<value>"}], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2GetLedger:
@@ -2317,7 +2317,7 @@ examples:
           sort: "id:desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
+          application/json: {"cursor": {"data": [], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2GetAccount:
@@ -2384,7 +2384,7 @@ examples:
           sort: "id:desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
+          application/json: {"cursor": {"data": [], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2CreateTransaction:
@@ -2474,7 +2474,7 @@ examples:
           sort: "id:desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
+          application/json: {"cursor": {"data": [], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2ListLogs:
@@ -2488,7 +2488,7 @@ examples:
           sort: "id:desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
+          application/json: {"cursor": {"data": [], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2ImportLogs:
@@ -2513,7 +2513,7 @@ examples:
     speakeasy-default-v2-list-exporters:
       responses:
         "200":
-          application/json: {"cursor": {"cursor": {"data": [], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}}
+          application/json: {"cursor": {"cursor": {"data": [], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2CreateExporter:
@@ -2580,7 +2580,7 @@ examples:
           ledger: "ledger001"
       responses:
         "200":
-          application/json: {"cursor": {"cursor": {"data": [{"createdAt": "2023-07-10T16:30:37.234Z", "exporterID": "<id>", "id": "<id>", "ledger": "<value>"}], "hasMore": false, "next": "", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}}
+          application/json: {"cursor": {"cursor": {"data": [{"createdAt": "2023-07-10T16:30:37.234Z", "exporterID": "<id>", "id": "<id>", "ledger": "<value>"}], "hasMore": false, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 15, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2CreatePipeline:
@@ -4332,7 +4332,7 @@ examples:
           version: "v1.0.0"
       responses:
         "200":
-          application/json: {"data": {"createdAt": "2023-01-01T00:00:00Z", "data": {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}}, "version": "v1.0.0"}}
+          application/json: {"data": {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}, "createdAt": "2023-01-01T00:00:00Z", "version": "v1.0.0"}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2InsertSchema:
@@ -4357,7 +4357,7 @@ examples:
           order: "desc"
       responses:
         "200":
-          application/json: {"cursor": {"data": [], "hasMore": true, "pageSize": 47856}}
+          application/json: {"cursor": {"data": [], "hasMore": true, "next": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=", "pageSize": 47856, "previous": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
 examplesVersion: 1.0.2

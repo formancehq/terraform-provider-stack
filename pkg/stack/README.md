@@ -231,7 +231,7 @@ func main() {
 * [GetTransaction](docs/sdks/v2/README.md#gettransaction) - Get transaction from a ledger by its ID
 * [GetVolumesWithBalances](docs/sdks/v2/README.md#getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
 * [ImportLogs](docs/sdks/v2/README.md#importlogs)
-* [InsertSchema](docs/sdks/v2/README.md#insertschema) - Insert or update a schema for a ledger
+* [InsertSchema](docs/sdks/v2/README.md#insertschema) - Insert a schema for a ledger
 * [ListAccounts](docs/sdks/v2/README.md#listaccounts) - List accounts from a ledger
 * [ListExporters](docs/sdks/v2/README.md#listexporters) - List exporters
 * [ListLedgers](docs/sdks/v2/README.md#listledgers) - List ledgers

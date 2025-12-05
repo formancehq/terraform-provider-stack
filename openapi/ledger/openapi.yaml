@@ -1456,7 +1456,7 @@ paths:
           type: string
           example: v1.0.0
     post:
-      summary: Insert or update a schema for a ledger
+      summary: Insert a schema for a ledger
       operationId: v2InsertSchema
       x-speakeasy-name-override: InsertSchema
       tags:
@@ -2837,7 +2837,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/V2UpdateExporterRequest'
+              $ref: "#/components/schemas/V2UpdateExporterRequest"
       responses:
         "204":
           description: Exporter updated
@@ -3736,7 +3736,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -3767,7 +3767,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -3798,7 +3798,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -3829,7 +3829,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -3860,7 +3860,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -3905,7 +3905,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -4128,7 +4128,7 @@ components:
             - SET_METADATA
             - REVERTED_TRANSACTION
             - DELETE_METADATA
-            - UPDATED_SCHEMA
+            - INSERTED_SCHEMA
         data:
           type: object
           properties: {}
@@ -4486,7 +4486,7 @@ components:
           type: string
     V2ChartSegment:
       type: object
-      description: "Segment within a chart of account"
+      description: "Segment within a chart of accounts"
       properties:
         .self:
           type: object
@@ -4524,22 +4524,22 @@ components:
     V2Schema:
       type: object
       description: Complete schema structure with metadata
-      properties:
-        version:
-          type: string
-          description: Schema version
-          example: "v1.0.0"
-        createdAt:
-          type: string
-          format: date-time
-          description: Schema creation timestamp
-          example: "2023-01-01T00:00:00Z"
-        data:
-          $ref: "#/components/schemas/V2SchemaData"
-      required:
-        - version
-        - createdAt
-        - data
+      allOf:
+        - type: object
+          required:
+            - version
+            - createdAt
+          properties:
+            version:
+              type: string
+              description: Schema version
+              example: "v1.0.0"
+            createdAt:
+              type: string
+              format: date-time
+              description: Schema creation timestamp
+              example: "2023-01-01T00:00:00Z"
+        - $ref: "#/components/schemas/V2SchemaData"
     V2SchemaResponse:
       properties:
         data:
@@ -4562,8 +4562,12 @@ components:
             $ref: "#/components/schemas/V2Schema"
         hasMore:
           type: boolean
+        previous:
+          type: string
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         next:
           type: string
+          example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
         pageSize:
           type: integer
       type: object
@@ -4634,7 +4638,7 @@ components:
               example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ=
             data:
               type: array
               items:
@@ -4671,9 +4675,9 @@ components:
       required:
         - exporterID
     V2CreateExporterRequest:
-      $ref: '#/components/schemas/V2ExporterConfiguration'
+      $ref: "#/components/schemas/V2ExporterConfiguration"
     V2UpdateExporterRequest:
-      $ref: '#/components/schemas/V2ExporterConfiguration'
+      $ref: "#/components/schemas/V2ExporterConfiguration"
     V2PipelineConfiguration:
       properties:
         ledger:
