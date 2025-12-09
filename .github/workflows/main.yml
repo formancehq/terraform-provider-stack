@@ -81,7 +81,7 @@ jobs:
 
         env:
           PATH: ${PATH}:${PWD}/build
-          FORMANCE_CLOUD_API_ENDPOINT: https://app.staging.formance.cloud/api
+          FORMANCE_CLOUD_API_ENDPOINT: ${{ secrets.FORMANCE_CLOUD_API_ENDPOINT }}
           FORMANCE_CLOUD_CLIENT_ID: ${{ secrets.FORMANCE_CLOUD_CLIENT_ID }}
           FORMANCE_CLOUD_CLIENT_SECRET: ${{ secrets.FORMANCE_CLOUD_CLIENT_SECRET }}
           FORMANCE_CLOUD_REGION_NAME: ${{ secrets.FORMANCE_CLOUD_REGION_NAME }}
