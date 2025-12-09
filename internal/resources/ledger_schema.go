@@ -132,17 +132,15 @@ func (s *LedgerSchema) Create(ctx context.Context, req resource.CreateRequest, r
 	config := operations.V2InsertSchemaRequest{
 		Ledger:  plan.Ledger.ValueString(),
 		Version: plan.Version.ValueString(),
-		V2SchemaData: shared.V2SchemaDataInput{
+		V2SchemaData: shared.V2SchemaData{
 			Chart: schemaData,
 		},
 	}
-
 	ledgerSdk := s.store.Ledger()
 	s.store.CheckModuleHealth(ctx, &res.Diagnostics)
 	if res.Diagnostics.HasError() {
 		return
 	}
-
 	_, err = ledgerSdk.InsertSchema(ctx, config)
 	if err != nil {
 		sdk.HandleStackError(ctx, err, &res.Diagnostics)
@@ -185,7 +183,7 @@ func (s *LedgerSchema) Read(ctx context.Context, req resource.ReadRequest, res *
 		return
 	}
 
-	schema := readSchemaResponse.V2SchemaResponse.Data.Data.Chart
+	schema := readSchemaResponse.V2SchemaResponse.Data.Chart
 	if len(schema) >= 0 {
 		data, err := json.Marshal(schema)
 		if err != nil {

@@ -81,8 +81,8 @@ func (r *ResourceTracer) ConfigValidators(context.Context) []resource.ConfigVali
 	if v, ok := r.underlyingValue.(resource.ResourceWithConfigValidators); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(" call")
-			defer logging.FromContext(ctx).Debug(" completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			validators = v.ConfigValidators(ctx)
 			return nil
 		})
@@ -97,8 +97,8 @@ func (r *ResourceTracer) ValidateConfig(ctx context.Context, req resource.Valida
 	if v, ok := r.underlyingValue.(resource.ResourceWithValidateConfig); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(" call")
-			defer logging.FromContext(ctx).Debug(" completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.ValidateConfig(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrValidateConfig

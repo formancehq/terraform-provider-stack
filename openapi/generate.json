@@ -2432,7 +2432,7 @@
         }
       ],
       "post": {
-        "summary": "Insert or update a schema for a ledger",
+        "summary": "Insert a schema for a ledger",
         "operationId": "v2InsertSchema",
         "x-speakeasy-name-override": "InsertSchema",
         "tags": [
@@ -13565,7 +13565,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -13608,7 +13608,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -13651,7 +13651,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -13694,7 +13694,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -13737,7 +13737,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -13802,7 +13802,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -14113,7 +14113,7 @@
               "SET_METADATA",
               "REVERTED_TRANSACTION",
               "DELETE_METADATA",
-              "UPDATED_SCHEMA"
+              "INSERTED_SCHEMA"
             ]
           },
           "data": {
@@ -14679,7 +14679,7 @@
       },
       "V2ChartSegment": {
         "type": "object",
-        "description": "Segment within a chart of account",
+        "description": "Segment within a chart of accounts",
         "properties": {
           ".self": {
             "type": "object"
@@ -14737,26 +14737,30 @@
       "V2Schema": {
         "type": "object",
         "description": "Complete schema structure with metadata",
-        "properties": {
-          "version": {
-            "type": "string",
-            "description": "Schema version",
-            "example": "v1.0.0"
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "version",
+              "createdAt"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "description": "Schema version",
+                "example": "v1.0.0"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Schema creation timestamp",
+                "example": "2023-01-01T00:00:00Z"
+              }
+            }
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Schema creation timestamp",
-            "example": "2023-01-01T00:00:00Z"
-          },
-          "data": {
+          {
             "$ref": "#/components/schemas/V2SchemaData"
           }
-        },
-        "required": [
-          "version",
-          "createdAt",
-          "data"
         ]
       },
       "V2SchemaResponse": {
@@ -14792,8 +14796,13 @@
           "hasMore": {
             "type": "boolean"
           },
+          "previous": {
+            "type": "string",
+            "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          },
           "next": {
-            "type": "string"
+            "type": "string",
+            "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
           },
           "pageSize": {
             "type": "integer"
@@ -14891,7 +14900,7 @@
               },
               "next": {
                 "type": "string",
-                "example": ""
+                "example": "aW0gdmVuaWFtLCBxdWlzIG5vc3RydWQ="
               },
               "data": {
                 "type": "array",
@@ -16951,6 +16960,7 @@
       },
       "PoolRequest": {
         "type": "object",
+        "description": "Query and dynamic pools are available from Connectivity v3.1",
         "required": [
           "name"
         ],
@@ -16959,6 +16969,7 @@
             "type": "string"
           },
           "query": {
+            "description": "The same query than in ListAccount. Allowed properties are id, reference, connector_id, type, default_asset, name, psu_id, open_banking_connection_id and metadata.",
             "type": "object",
             "additionalProperties": true
           },
@@ -19343,6 +19354,7 @@
       },
       "V3CreatePoolRequest": {
         "type": "object",
+        "description": "Query and dynamic pools are available from Connectivity v3.1",
         "required": [
           "name"
         ],
@@ -19351,6 +19363,7 @@
             "type": "string"
           },
           "query": {
+            "description": "The same query than in ListAccount. Allowed properties are id, reference, connector_id, type, default_asset, name, psu_id, open_banking_connection_id and metadata.",
             "type": "object",
             "additionalProperties": true
           },

@@ -90,7 +90,7 @@ func TestLedgerSchema(t *testing.T) {
 		return cmp.Diff(op, operations.V2InsertSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.0",
-			V2SchemaData: shared.V2SchemaDataInput{
+			V2SchemaData: shared.V2SchemaData{
 				Chart: schema,
 			},
 		}) != ""
@@ -106,9 +106,7 @@ func TestLedgerSchema(t *testing.T) {
 		V2SchemaResponse: &shared.V2SchemaResponse{
 			Data: shared.V2Schema{
 				Version: "v1.0.0",
-				Data: shared.V2SchemaData{
-					Chart: schema,
-				},
+				Chart:   schema,
 			},
 		},
 	}, nil).Times(2)
@@ -129,7 +127,7 @@ func TestLedgerSchema(t *testing.T) {
 		return cmp.Diff(op, operations.V2InsertSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.1",
-			V2SchemaData: shared.V2SchemaDataInput{
+			V2SchemaData: shared.V2SchemaData{
 				Chart: schemaUpdated,
 			},
 		}) != ""
@@ -145,9 +143,7 @@ func TestLedgerSchema(t *testing.T) {
 		V2SchemaResponse: &shared.V2SchemaResponse{
 			Data: shared.V2Schema{
 				Version: "v1.0.1",
-				Data: shared.V2SchemaData{
-					Chart: schemaUpdated,
-				},
+				Chart:   schemaUpdated,
 			},
 		},
 	}, nil)

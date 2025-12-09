@@ -7,6 +7,7 @@ type V2SchemasCursor struct {
 	HasMore  bool       `json:"hasMore"`
 	Next     *string    `json:"next,omitempty"`
 	PageSize int64      `json:"pageSize"`
+	Previous *string    `json:"previous,omitempty"`
 }
 
 func (v *V2SchemasCursor) GetData() []V2Schema {
@@ -35,4 +36,11 @@ func (v *V2SchemasCursor) GetPageSize() int64 {
 		return 0
 	}
 	return v.PageSize
+}
+
+func (v *V2SchemasCursor) GetPrevious() *string {
+	if v == nil {
+		return nil
+	}
+	return v.Previous
 }

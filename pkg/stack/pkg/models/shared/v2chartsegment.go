@@ -9,7 +9,7 @@ import (
 type DotSelf struct {
 }
 
-// V2ChartSegment - Segment within a chart of account
+// V2ChartSegment - Segment within a chart of accounts
 type V2ChartSegment struct {
 	DotMetadata          map[string]V2ChartAccountMetadata `json:".metadata,omitempty"`
 	DotPattern           *string                           `json:".pattern,omitempty"`

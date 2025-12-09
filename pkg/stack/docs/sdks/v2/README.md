@@ -31,7 +31,7 @@
 * [GetTransaction](#gettransaction) - Get transaction from a ledger by its ID
 * [GetVolumesWithBalances](#getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
 * [ImportLogs](#importlogs)
-* [InsertSchema](#insertschema) - Insert or update a schema for a ledger
+* [InsertSchema](#insertschema) - Insert a schema for a ledger
 * [ListAccounts](#listaccounts) - List accounts from a ledger
 * [ListExporters](#listexporters) - List exporters
 * [ListLedgers](#listledgers) - List ledgers
@@ -1680,7 +1680,7 @@ func main() {
 
 ## InsertSchema
 
-Insert or update a schema for a ledger
+Insert a schema for a ledger
 
 ### Example Usage
 
@@ -1708,7 +1708,7 @@ func main() {
     )
 
     res, err := s.Ledger.V2.InsertSchema(ctx, operations.V2InsertSchemaRequest{
-        V2SchemaData: shared.V2SchemaDataInput{
+        V2SchemaData: shared.V2SchemaData{
             Chart: map[string]shared.V2ChartSegment{
                 "users": shared.V2ChartSegment{
                     AdditionalProperties: map[string]shared.V2ChartSegment{

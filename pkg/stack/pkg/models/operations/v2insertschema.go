@@ -8,16 +8,16 @@ import (
 )
 
 type V2InsertSchemaRequest struct {
-	V2SchemaData shared.V2SchemaDataInput `request:"mediaType=application/json"`
+	V2SchemaData shared.V2SchemaData `request:"mediaType=application/json"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Schema version.
 	Version string `pathParam:"style=simple,explode=false,name=version"`
 }
 
-func (v *V2InsertSchemaRequest) GetV2SchemaData() shared.V2SchemaDataInput {
+func (v *V2InsertSchemaRequest) GetV2SchemaData() shared.V2SchemaData {
 	if v == nil {
-		return shared.V2SchemaDataInput{}
+		return shared.V2SchemaData{}
 	}
 	return v.V2SchemaData
 }
