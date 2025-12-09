@@ -166,7 +166,7 @@ func (s *PaymentsPool) Create(ctx context.Context, req resource.CreateRequest, r
 
 	sdkPayments := s.store.Payments()
 	resp, err := sdkPayments.CreatePool(ctx, &shared.V3CreatePoolRequest{
-		Name: plan.Name.String(),
+		Name: plan.Name.ValueString(),
 		AccountIDs: collectionutils.Map(plan.AccountsIds.Elements(), func(account attr.Value) string {
 			return account.(types.String).ValueString()
 		}),
