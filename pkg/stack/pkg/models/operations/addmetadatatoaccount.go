@@ -46,6 +46,7 @@ type AddMetadataToAccountResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
+	Headers       map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -64,6 +65,13 @@ func (a *AddMetadataToAccountResponse) GetErrorResponse() *shared.ErrorResponse 
 		return nil
 	}
 	return a.ErrorResponse
+}
+
+func (a *AddMetadataToAccountResponse) GetHeaders() map[string][]string {
+	if a == nil {
+		return map[string][]string{}
+	}
+	return a.Headers
 }
 
 func (a *AddMetadataToAccountResponse) GetStatusCode() int {

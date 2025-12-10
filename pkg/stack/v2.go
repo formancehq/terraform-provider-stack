@@ -204,6 +204,8 @@ func (s *V2) AddMetadataOnTransaction(ctx context.Context, request operations.V2
 
 	switch {
 	case httpRes.StatusCode == 204:
+		res.Headers = httpRes.Header
+
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -416,6 +418,8 @@ func (s *V2) AddMetadataToAccount(ctx context.Context, request operations.V2AddM
 
 	switch {
 	case httpRes.StatusCode == 204:
+		res.Headers = httpRes.Header
+
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -1947,6 +1951,8 @@ func (s *V2) CreateTransaction(ctx context.Context, request operations.V2CreateT
 
 	switch {
 	case httpRes.StatusCode == 200:
+		res.Headers = httpRes.Header
+
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)
@@ -2169,6 +2175,8 @@ func (s *V2) DeleteAccountMetadata(ctx context.Context, request operations.V2Del
 
 	switch {
 	case httpRes.StatusCode == 204:
+		res.Headers = httpRes.Header
+
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -3189,6 +3197,8 @@ func (s *V2) DeleteTransactionMetadata(ctx context.Context, request operations.V
 
 	switch {
 	case httpRes.StatusCode == 204:
+		res.Headers = httpRes.Header
+
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -5671,6 +5681,8 @@ func (s *V2) InsertSchema(ctx context.Context, request operations.V2InsertSchema
 		req.Header.Set("Content-Type", reqContentType)
 	}
 
+	utils.PopulateHeaders(ctx, req, request, nil)
+
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err
 	}
@@ -5778,6 +5790,8 @@ func (s *V2) InsertSchema(ctx context.Context, request operations.V2InsertSchema
 
 	switch {
 	case httpRes.StatusCode == 204:
+		res.Headers = httpRes.Header
+
 	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
 		rawBody, err := utils.ConsumeRawBody(httpRes)
 		if err != nil {
@@ -8073,6 +8087,8 @@ func (s *V2) RevertTransaction(ctx context.Context, request operations.V2RevertT
 		req.Header.Set("Content-Type", reqContentType)
 	}
 
+	utils.PopulateHeaders(ctx, req, request, nil)
+
 	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
@@ -8184,6 +8200,8 @@ func (s *V2) RevertTransaction(ctx context.Context, request operations.V2RevertT
 
 	switch {
 	case httpRes.StatusCode == 201:
+		res.Headers = httpRes.Header
+
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)

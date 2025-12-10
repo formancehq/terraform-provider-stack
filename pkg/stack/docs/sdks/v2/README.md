@@ -608,14 +608,15 @@ func main() {
             },
             Reference: v3.Pointer("ref:001"),
             Script: &shared.V2PostTransactionScript{
-                Plain: "vars {\n" +
+                Plain: v3.Pointer("vars {\n" +
                 "account $user\n" +
                 "}\n" +
                 "send [COIN 10] (\n" +
                 "	source = @world\n" +
                 "	destination = $user\n" +
                 ")\n" +
-                "",
+                ""),
+                Template: v3.Pointer("CUSTOMER_DEPOSIT"),
                 Vars: map[string]string{
                     "user": "users:042",
                 },

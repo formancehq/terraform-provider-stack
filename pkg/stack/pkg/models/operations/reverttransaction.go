@@ -55,6 +55,7 @@ type RevertTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
+	Headers       map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -75,6 +76,13 @@ func (r *RevertTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
 		return nil
 	}
 	return r.ErrorResponse
+}
+
+func (r *RevertTransactionResponse) GetHeaders() map[string][]string {
+	if r == nil {
+		return map[string][]string{}
+	}
+	return r.Headers
 }
 
 func (r *RevertTransactionResponse) GetStatusCode() int {

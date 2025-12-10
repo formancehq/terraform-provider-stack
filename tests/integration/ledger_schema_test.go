@@ -3,6 +3,7 @@ package integration_test
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	formance "github.com/formancehq/formance-sdk-go/v3"
@@ -30,7 +31,7 @@ import (
 	"github.com/formancehq/terraform-provider-stack/pkg"
 )
 
-func TestLedgerSchema(t *testing.T) {
+func TestLedgerSchemaChart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	cloudSdk := sdk.NewMockCloudSDK(ctrl)
 	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
@@ -167,7 +168,7 @@ func TestLedgerSchema(t *testing.T) {
 					resource "stack_ledger_schema" "default" {
 						ledger = "test-ledger"
 						version = "v1.0.0"
-						schema = {
+						chart = {
 							"segment1": {
 								".self": {}
 							},
@@ -184,7 +185,7 @@ func TestLedgerSchema(t *testing.T) {
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
 						"stack_ledger_schema.default",
-						tfjsonpath.New(`schema`),
+						tfjsonpath.New(`chart`),
 						knownvalue.ObjectExact(map[string]knownvalue.Check{
 							"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
 								".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
@@ -221,7 +222,7 @@ func TestLedgerSchema(t *testing.T) {
 					resource "stack_ledger_schema" "default" {
 						ledger = "test-ledger"
 						version = "v1.0.1"
-						schema = {
+						chart = {
 							"segment3": {
 								".self": {}
 							},
@@ -238,7 +239,7 @@ func TestLedgerSchema(t *testing.T) {
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
 						"stack_ledger_schema.default",
-						tfjsonpath.New(`schema`),
+						tfjsonpath.New(`chart`),
 						knownvalue.ObjectExact(map[string]knownvalue.Check{
 							"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
 								".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
@@ -252,6 +253,257 @@ func TestLedgerSchema(t *testing.T) {
 							}),
 						}),
 					),
+					statecheck.ExpectKnownValue(
+						"stack_ledger_schema.default",
+						tfjsonpath.New("version"),
+						knownvalue.StringExact("v1.0.1"),
+					),
+					statecheck.ExpectKnownValue(
+						"stack_ledger_schema.default",
+						tfjsonpath.New("ledger"),
+						knownvalue.StringExact("test-ledger"),
+					),
+				},
+			},
+		},
+	})
+}
+func normalizeScript(s string) string {
+	// 1. Convert Windows CRLF to LF
+	s = strings.ReplaceAll(s, "\r\n", "\n")
+	// 2. Trim trailing whitespace on each line
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		lines[i] = strings.TrimRight(line, " \t")
+	}
+	// 3. Optionally, remove common leading indentation (if using heredoc with indent)
+	s = strings.Join(lines, "\n")
+	s = strings.TrimPrefix(s, "\n") // remove leading newline if your heredoc starts with \n
+	s = strings.TrimSuffix(s, "\n") // or keep trailing newline if your config uses one
+	s += "\n"                       // optionally ensure exactly one trailing newline — match what Terraform writes
+	return s
+}
+func TestLedgerSchemaTransactions(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	cloudSdk := sdk.NewMockCloudSDK(ctrl)
+	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
+	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
+	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
+	ledgerSchema := sdk.NewMockLedgerSdkImpl(ctrl)
+	stackId := uuid.NewString()
+	organizationId := uuid.NewString()
+
+	stackProvider := server.NewStackProvider(
+		otel.GetTracerProvider(),
+
+		logging.Testing().WithField("test", t.Name()),
+		server.FormanceStackEndpoint("dummy-endpoint"),
+		server.FormanceStackClientId("organization_dummy-client-id"),
+		server.FormanceStackClientSecret("dummy-client-secret"),
+		transport,
+		func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
+			return cloudSdk
+		},
+		tokenProvider,
+		func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
+			return stackTokenProvider
+		},
+		func(...formance.SDKOption) (sdk.StackSdkImpl, error) {
+			return stacksdk, nil
+		},
+	)
+
+	// Module and sdk expectations
+	stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
+		GetVersionsResponse: &shared.GetVersionsResponse{
+			Versions: []shared.Version{
+				{
+					Name:    "ledger",
+					Version: "develop",
+					Health:  true,
+				},
+			},
+		},
+	}, nil).AnyTimes()
+	stacksdk.EXPECT().Ledger().Return(ledgerSchema).AnyTimes()
+
+	transaction := map[string]shared.V2TransactionTemplate{
+		"customer_deposit": {
+			Description: pointer.For("Test transaction"),
+			Script: normalizeScript(`
+vars{}
+send [USD 100] (
+	source = @banks:$bankID:main
+	destination = @users:$userID:main
+)`),
+		},
+	}
+	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+			Ledger:  "test-ledger",
+			Version: "v1.0.0",
+			V2SchemaData: shared.V2SchemaData{
+				Transactions: transaction,
+			},
+		}) != ""
+	})).Return(&operations.V2InsertSchemaResponse{
+		StatusCode: http.StatusOK,
+	}, nil).Times(1)
+
+	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
+		Ledger:  "test-ledger",
+		Version: "v1.0.0",
+	}).Return(&operations.V2GetSchemaResponse{
+		StatusCode: http.StatusOK,
+		V2SchemaResponse: &shared.V2SchemaResponse{
+			Data: shared.V2Schema{
+				Version:      "v1.0.0",
+				Transactions: transaction,
+			},
+		},
+	}, nil).Times(2)
+
+	transactionUpdated := map[string]shared.V2TransactionTemplate{
+		"customer_deposit": {
+			Description: pointer.For("Test transaction"),
+			Script: normalizeScript(`
+vars{}
+send [USD 100] (
+	source = @banks:$bankID:wallet-001
+	destination = @users:$userID:wallet-001
+)
+	`),
+		},
+	}
+	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+			Ledger:  "test-ledger",
+			Version: "v1.0.1",
+			V2SchemaData: shared.V2SchemaData{
+				Transactions: transactionUpdated,
+			},
+		}) != ""
+	})).Return(&operations.V2InsertSchemaResponse{
+		StatusCode: http.StatusOK,
+	}, nil)
+
+	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
+		Ledger:  "test-ledger",
+		Version: "v1.0.1",
+	}).Return(&operations.V2GetSchemaResponse{
+		StatusCode: http.StatusOK,
+		V2SchemaResponse: &shared.V2SchemaResponse{
+			Data: shared.V2Schema{
+				Version:      "v1.0.1",
+				Transactions: transactionUpdated,
+			},
+		},
+	}, nil)
+	// testCases
+	resource.ParallelTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
+			"stack": providerserver.NewProtocol6WithError(stackProvider()),
+		},
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.SkipBelow(tfversion.Version0_15_0),
+		},
+		Steps: []resource.TestStep{
+			{
+				Config: `
+					provider "stack" {
+						stack_id = "` + stackId + `"
+						organization_id = "` + organizationId + `"
+						uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
+					}
+
+					resource "stack_ledger_schema" "default" {
+						ledger = "test-ledger"
+						version = "v1.0.0"
+						transactions = {
+							customer_deposit = {
+								description = "Test transaction"
+								script = <<-EOT
+									vars{}
+									send [USD 100] (
+										source = @banks:$bankID:main
+										destination = @users:$userID:main
+									)
+								EOT
+							}
+						}
+					}
+				`,
+				ConfigStateChecks: []statecheck.StateCheck{
+					// statecheck.ExpectKnownValue(
+					// 	"stack_ledger_schema.default",
+					// 	tfjsonpath.New(`chart`),
+					// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 		"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+					// 		}),
+					// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 					"default": knownvalue.StringExact("test"),
+					// 				}),
+					// 			}),
+					// 		}),
+					// 	}),
+					// ),
+					statecheck.ExpectKnownValue(
+						"stack_ledger_schema.default",
+						tfjsonpath.New("version"),
+						knownvalue.StringExact("v1.0.0"),
+					),
+					statecheck.ExpectKnownValue(
+						"stack_ledger_schema.default",
+						tfjsonpath.New("ledger"),
+						knownvalue.StringExact("test-ledger"),
+					),
+				},
+			},
+			{
+				Config: `
+								provider "stack" {
+									stack_id = "` + stackId + `"
+									organization_id = "` + organizationId + `"
+									uri = "` + fmt.Sprintf("https://%s-%s.formance.cloud/api", organizationId, stackId) + `"
+								}
+
+								resource "stack_ledger_schema" "default" {
+									ledger = "test-ledger"
+									version = "v1.0.1"
+									transactions = {
+										customer_deposit = {
+											description = "Test transaction"
+											script = <<-EOT
+												vars{}
+												send [USD 100] (
+													source = @banks:$bankID:wallet-001
+													destination = @users:$userID:wallet-001
+												)
+											EOT
+										}
+									}
+								}
+							`,
+				ConfigStateChecks: []statecheck.StateCheck{
+					// statecheck.ExpectKnownValue(
+					// 	"stack_ledger_schema.default",
+					// 	tfjsonpath.New(`chart`),
+					// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 		"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+					// 		}),
+					// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+					// 					"default": knownvalue.StringExact("test"),
+					// 				}),
+					// 			}),
+					// 		}),
+					// 	}),
+					// ),
 					statecheck.ExpectKnownValue(
 						"stack_ledger_schema.default",
 						tfjsonpath.New("version"),

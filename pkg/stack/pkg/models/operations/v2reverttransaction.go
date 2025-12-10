@@ -10,6 +10,8 @@ import (
 )
 
 type V2RevertTransactionRequest struct {
+	// Use an idempotency key
+	IdempotencyKey             *string                            `header:"style=simple,explode=false,name=Idempotency-Key"`
 	V2RevertTransactionRequest *shared.V2RevertTransactionRequest `request:"mediaType=application/json"`
 	// Revert transaction at effective date of the original tx
 	AtEffectiveDate *bool `queryParam:"style=form,explode=true,name=atEffectiveDate"`
@@ -34,6 +36,13 @@ func (v *V2RevertTransactionRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (v *V2RevertTransactionRequest) GetIdempotencyKey() *string {
+	if v == nil {
+		return nil
+	}
+	return v.IdempotencyKey
 }
 
 func (v *V2RevertTransactionRequest) GetV2RevertTransactionRequest() *shared.V2RevertTransactionRequest {
@@ -88,6 +97,7 @@ func (v *V2RevertTransactionRequest) GetSchemaVersion() *string {
 type V2RevertTransactionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
+	Headers     map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -103,6 +113,13 @@ func (v *V2RevertTransactionResponse) GetContentType() string {
 		return ""
 	}
 	return v.ContentType
+}
+
+func (v *V2RevertTransactionResponse) GetHeaders() map[string][]string {
+	if v == nil {
+		return map[string][]string{}
+	}
+	return v.Headers
 }
 
 func (v *V2RevertTransactionResponse) GetStatusCode() int {

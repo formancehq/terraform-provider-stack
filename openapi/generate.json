@@ -928,6 +928,15 @@
         "responses": {
           "204": {
             "description": "No Content",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -1541,6 +1550,15 @@
         "responses": {
           "200": {
             "description": "OK",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -1676,6 +1694,15 @@
         "responses": {
           "204": {
             "description": "No Content",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -1741,6 +1768,15 @@
         "responses": {
           "201": {
             "description": "OK",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -2438,6 +2474,16 @@
         "tags": [
           "ledger.v2"
         ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -2450,7 +2496,16 @@
         },
         "responses": {
           "204": {
-            "description": "Schema inserted successfully"
+            "description": "Schema inserted successfully",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            }
           },
           "default": {
             "description": "Error",
@@ -3209,6 +3264,15 @@
         "responses": {
           "204": {
             "description": "No Content",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -3282,6 +3346,15 @@
         "responses": {
           "204": {
             "description": "Key deleted",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -3621,6 +3694,15 @@
         "responses": {
           "200": {
             "description": "OK",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -3803,6 +3885,15 @@
         "responses": {
           "204": {
             "description": "No Content",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -3879,6 +3970,15 @@
         "responses": {
           "204": {
             "description": "Key deleted",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {}
           },
           "default": {
@@ -3967,6 +4067,14 @@
               "type": "string",
               "example": "v1.0.0"
             }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -3981,6 +4089,15 @@
         "responses": {
           "201": {
             "description": "OK",
+            "headers": {
+              "Idempotency-Hit": {
+                "description": "Indicates that the request was processed using an idempotency key that was already used",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -14004,6 +14121,9 @@
           },
           "postCommitEffectiveVolumes": {
             "$ref": "#/components/schemas/V2AggregatedVolumes"
+          },
+          "template": {
+            "type": "string"
           }
         },
         "required": [
@@ -14033,6 +14153,10 @@
           "script": {
             "type": "object",
             "properties": {
+              "template": {
+                "type": "string",
+                "example": "CUSTOMER_DEPOSIT"
+              },
               "plain": {
                 "type": "string",
                 "example": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
@@ -14047,18 +14171,10 @@
                   "user": "users:042"
                 }
               }
-            },
-            "required": [
-              "plain"
-            ]
+            }
           },
           "runtime": {
-            "description": "The numscript runtime used to execute the script. Uses \"machine\" by default, unless the \"--experimental-numscript-interpreter\" feature flag is passed.",
-            "type": "string",
-            "enum": [
-              "experimental-interpreter",
-              "machine"
-            ]
+            "$ref": "#/components/schemas/Runtime"
           },
           "reference": {
             "type": "string",
@@ -14722,12 +14838,47 @@
           }
         }
       },
+      "Runtime": {
+        "type": "string",
+        "description": "The numscript runtime used to execute the script. Uses \"machine\" by default, unless the \"--experimental-numscript-interpreter\" feature flag is passed.",
+        "enum": [
+          "experimental-interpreter",
+          "machine"
+        ]
+      },
+      "V2TransactionTemplate": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "runtime": {
+            "$ref": "#/components/schemas/Runtime"
+          }
+        },
+        "required": [
+          "script"
+        ]
+      },
+      "V2TransactionTemplates": {
+        "type": "object",
+        "description": "Transaction templates",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/V2TransactionTemplate"
+        }
+      },
       "V2SchemaData": {
         "type": "object",
         "description": "Schema data structure for ledger schemas",
         "properties": {
           "chart": {
             "$ref": "#/components/schemas/V2ChartOfAccounts"
+          },
+          "transactions": {
+            "$ref": "#/components/schemas/V2TransactionTemplates"
           }
         },
         "required": [

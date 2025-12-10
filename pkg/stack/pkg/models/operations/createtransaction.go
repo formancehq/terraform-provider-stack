@@ -45,6 +45,7 @@ type CreateTransactionResponse struct {
 	ContentType string
 	// Error
 	ErrorResponse *shared.ErrorResponse
+	Headers       map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -65,6 +66,13 @@ func (c *CreateTransactionResponse) GetErrorResponse() *shared.ErrorResponse {
 		return nil
 	}
 	return c.ErrorResponse
+}
+
+func (c *CreateTransactionResponse) GetHeaders() map[string][]string {
+	if c == nil {
+		return map[string][]string{}
+	}
+	return c.Headers
 }
 
 func (c *CreateTransactionResponse) GetStatusCode() int {

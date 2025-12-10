@@ -20,6 +20,7 @@ type V2Transaction struct {
 	Reference                  *string                        `json:"reference,omitempty"`
 	Reverted                   bool                           `json:"reverted"`
 	RevertedAt                 *time.Time                     `json:"revertedAt,omitempty"`
+	Template                   *string                        `json:"template,omitempty"`
 	Timestamp                  time.Time                      `json:"timestamp"`
 	UpdatedAt                  *time.Time                     `json:"updatedAt,omitempty"`
 }
@@ -110,6 +111,13 @@ func (v *V2Transaction) GetRevertedAt() *time.Time {
 		return nil
 	}
 	return v.RevertedAt
+}
+
+func (v *V2Transaction) GetTemplate() *string {
+	if v == nil {
+		return nil
+	}
+	return v.Template
 }
 
 func (v *V2Transaction) GetTimestamp() time.Time {

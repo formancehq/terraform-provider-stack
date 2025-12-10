@@ -2,7 +2,7 @@ versions:
   base:
     version: "main"
   ledger:
-    version: "feat/schema"
+    version: "feat/transaction_templates"
   payments:
     version: "main"
   reconciliation:
