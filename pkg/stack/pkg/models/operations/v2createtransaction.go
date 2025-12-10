@@ -70,6 +70,7 @@ func (v *V2CreateTransactionRequest) GetSchemaVersion() *string {
 type V2CreateTransactionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
+	Headers     map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -85,6 +86,13 @@ func (v *V2CreateTransactionResponse) GetContentType() string {
 		return ""
 	}
 	return v.ContentType
+}
+
+func (v *V2CreateTransactionResponse) GetHeaders() map[string][]string {
+	if v == nil {
+		return map[string][]string{}
+	}
+	return v.Headers
 }
 
 func (v *V2CreateTransactionResponse) GetStatusCode() int {

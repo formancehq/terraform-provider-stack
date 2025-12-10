@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: c8558e29-cc40-460f-b7ee-ccbe35392546
 management:
-  docChecksum: 871d4e81c90a81b6c62c7f14e0881bb3
+  docChecksum: 2b48320275c722aec2e6e9e3d0960c0b
   docVersion: SDK_VERSION
   speakeasyVersion: 1.637.0
   generationVersion: 2.727.4
-  releaseVersion: 3.10.0
-  configChecksum: cb4f98f2da321b5c347632b033791560
+  releaseVersion: 3.10.1
+  configChecksum: b05e5daca187f715fdcc9891c62a6a75
 features:
   go:
     additionalDependencies: 0.1.0
@@ -449,6 +449,7 @@ generatedFiles:
   - /pkg/models/shared/reconciliationresponse.go
   - /pkg/models/shared/reconciliationscursorresponse.go
   - /pkg/models/shared/reversetransferinitiationrequest.go
+  - /pkg/models/shared/runtime.go
   - /pkg/models/shared/runworkflowresponse.go
   - /pkg/models/shared/script.go
   - /pkg/models/shared/scriptresponse.go
@@ -606,6 +607,7 @@ generatedFiles:
   - /pkg/models/shared/v2testtriggerresponse.go
   - /pkg/models/shared/v2transaction.go
   - /pkg/models/shared/v2transactionscursorresponse.go
+  - /pkg/models/shared/v2transactiontemplate.go
   - /pkg/models/shared/v2trigger.go
   - /pkg/models/shared/v2triggerdata.go
   - /pkg/models/shared/v2triggeroccurrence.go
@@ -1646,6 +1648,7 @@ generatedFiles:
   - docs/pkg/models/shared/v2transaction.md
   - docs/pkg/models/shared/v2transactionscursorresponse.md
   - docs/pkg/models/shared/v2transactionscursorresponsecursor.md
+  - docs/pkg/models/shared/v2transactiontemplate.md
   - docs/pkg/models/shared/v2trigger.md
   - docs/pkg/models/shared/v2triggerdata.md
   - docs/pkg/models/shared/v2triggeroccurrence.md
@@ -2397,7 +2400,7 @@ examples:
           force: true
           schemaVersion: "v1.0.0"
       requestBody:
-        application/json: {"accountMetadata": {"key": {"admin": "true"}, "key1": {"admin": "true"}, "key2": {"admin": "true"}}, "metadata": {"admin": "true"}, "postings": [{"amount": 100, "asset": "COIN", "destination": "users:002", "source": "users:001"}], "reference": "ref:001", "script": {"plain": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n", "vars": {"user": "users:042"}}}
+        application/json: {"accountMetadata": {"key": {"admin": "true"}, "key1": {"admin": "true"}, "key2": {"admin": "true"}}, "metadata": {"admin": "true"}, "postings": [{"amount": 100, "asset": "COIN", "destination": "users:002", "source": "users:001"}], "reference": "ref:001", "script": {"plain": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n", "template": "CUSTOMER_DEPOSIT", "vars": {"user": "users:042"}}}
       responses:
         "200":
           application/json: {"data": {"id": 339560, "metadata": {"admin": "true"}, "postCommitEffectiveVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "postCommitVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "postings": [{"amount": 100, "asset": "COIN", "destination": "users:002", "source": "users:001"}], "preCommitEffectiveVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "preCommitVolumes": {"orders:1": {"USD": {"balance": 90, "input": 100, "output": 10}}, "orders:2": {"USD": {"balance": 90, "input": 100, "output": 10}}}, "reference": "ref:001", "reverted": true, "timestamp": "2024-06-10T07:40:23.819Z"}}

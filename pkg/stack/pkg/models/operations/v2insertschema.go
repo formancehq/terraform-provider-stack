@@ -8,11 +8,20 @@ import (
 )
 
 type V2InsertSchemaRequest struct {
-	V2SchemaData shared.V2SchemaData `request:"mediaType=application/json"`
+	// Use an idempotency key
+	IdempotencyKey *string             `header:"style=simple,explode=false,name=Idempotency-Key"`
+	V2SchemaData   shared.V2SchemaData `request:"mediaType=application/json"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Schema version.
 	Version string `pathParam:"style=simple,explode=false,name=version"`
+}
+
+func (v *V2InsertSchemaRequest) GetIdempotencyKey() *string {
+	if v == nil {
+		return nil
+	}
+	return v.IdempotencyKey
 }
 
 func (v *V2InsertSchemaRequest) GetV2SchemaData() shared.V2SchemaData {
@@ -39,6 +48,7 @@ func (v *V2InsertSchemaRequest) GetVersion() string {
 type V2InsertSchemaResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
+	Headers     map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -52,6 +62,13 @@ func (v *V2InsertSchemaResponse) GetContentType() string {
 		return ""
 	}
 	return v.ContentType
+}
+
+func (v *V2InsertSchemaResponse) GetHeaders() map[string][]string {
+	if v == nil {
+		return map[string][]string{}
+	}
+	return v.Headers
 }
 
 func (v *V2InsertSchemaResponse) GetStatusCode() int {

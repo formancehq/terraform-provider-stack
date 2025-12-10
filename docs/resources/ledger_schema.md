@@ -18,5 +18,10 @@ Resource for managing a Formance Ledger Schema. For advanced usage and configura
 ### Required
 
 - `ledger` (String) The name of the ledger.
-- `schema` (Dynamic) The schema definition in JSON format.
 - `version` (String) The version of the schema.
+
+### Optional
+
+- `chart` (Dynamic) The chart of account definition in JSON format.
+- `idempotency_key` (String) The idempotency key of the schema.
+- `transactions` (Dynamic) The transaction templates defined in the schema.
