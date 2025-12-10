@@ -157,6 +157,84 @@ func (c *MockLedgerSdkImplGetLedgerCall) DoAndReturn(f func(context.Context, ope
 	return c
 }
 
+// GetSchema mocks base method.
+func (m *MockLedgerSdkImpl) GetSchema(ctx context.Context, request operations.V2GetSchemaRequest) (*operations.V2GetSchemaResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSchema", ctx, request)
+	ret0, _ := ret[0].(*operations.V2GetSchemaResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSchema indicates an expected call of GetSchema.
+func (mr *MockLedgerSdkImplMockRecorder) GetSchema(ctx, request any) *MockLedgerSdkImplGetSchemaCall {
+	mr.mock.ctrl.T.Helper()
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSchema", reflect.TypeOf((*MockLedgerSdkImpl)(nil).GetSchema), ctx, request)
+	return &MockLedgerSdkImplGetSchemaCall{Call: call}
+}
+
+// MockLedgerSdkImplGetSchemaCall wrap *gomock.Call
+type MockLedgerSdkImplGetSchemaCall struct {
+	*gomock.Call
+}
+
+// Return rewrite *gomock.Call.Return
+func (c *MockLedgerSdkImplGetSchemaCall) Return(arg0 *operations.V2GetSchemaResponse, arg1 error) *MockLedgerSdkImplGetSchemaCall {
+	c.Call = c.Call.Return(arg0, arg1)
+	return c
+}
+
+// Do rewrite *gomock.Call.Do
+func (c *MockLedgerSdkImplGetSchemaCall) Do(f func(context.Context, operations.V2GetSchemaRequest) (*operations.V2GetSchemaResponse, error)) *MockLedgerSdkImplGetSchemaCall {
+	c.Call = c.Call.Do(f)
+	return c
+}
+
+// DoAndReturn rewrite *gomock.Call.DoAndReturn
+func (c *MockLedgerSdkImplGetSchemaCall) DoAndReturn(f func(context.Context, operations.V2GetSchemaRequest) (*operations.V2GetSchemaResponse, error)) *MockLedgerSdkImplGetSchemaCall {
+	c.Call = c.Call.DoAndReturn(f)
+	return c
+}
+
+// InsertSchema mocks base method.
+func (m *MockLedgerSdkImpl) InsertSchema(ctx context.Context, request operations.V2InsertSchemaRequest) (*operations.V2InsertSchemaResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertSchema", ctx, request)
+	ret0, _ := ret[0].(*operations.V2InsertSchemaResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertSchema indicates an expected call of InsertSchema.
+func (mr *MockLedgerSdkImplMockRecorder) InsertSchema(ctx, request any) *MockLedgerSdkImplInsertSchemaCall {
+	mr.mock.ctrl.T.Helper()
+	call := mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertSchema", reflect.TypeOf((*MockLedgerSdkImpl)(nil).InsertSchema), ctx, request)
+	return &MockLedgerSdkImplInsertSchemaCall{Call: call}
+}
+
+// MockLedgerSdkImplInsertSchemaCall wrap *gomock.Call
+type MockLedgerSdkImplInsertSchemaCall struct {
+	*gomock.Call
+}
+
+// Return rewrite *gomock.Call.Return
+func (c *MockLedgerSdkImplInsertSchemaCall) Return(arg0 *operations.V2InsertSchemaResponse, arg1 error) *MockLedgerSdkImplInsertSchemaCall {
+	c.Call = c.Call.Return(arg0, arg1)
+	return c
+}
+
+// Do rewrite *gomock.Call.Do
+func (c *MockLedgerSdkImplInsertSchemaCall) Do(f func(context.Context, operations.V2InsertSchemaRequest) (*operations.V2InsertSchemaResponse, error)) *MockLedgerSdkImplInsertSchemaCall {
+	c.Call = c.Call.Do(f)
+	return c
+}
+
+// DoAndReturn rewrite *gomock.Call.DoAndReturn
+func (c *MockLedgerSdkImplInsertSchemaCall) DoAndReturn(f func(context.Context, operations.V2InsertSchemaRequest) (*operations.V2InsertSchemaResponse, error)) *MockLedgerSdkImplInsertSchemaCall {
+	c.Call = c.Call.DoAndReturn(f)
+	return c
+}
+
 // UpdateLedgerMetadata mocks base method.
 func (m *MockLedgerSdkImpl) UpdateLedgerMetadata(ctx context.Context, request operations.V2UpdateLedgerMetadataRequest) (*operations.V2UpdateLedgerMetadataResponse, error) {
 	m.ctrl.T.Helper()

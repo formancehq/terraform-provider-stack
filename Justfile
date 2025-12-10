@@ -98,8 +98,25 @@ delete-all-stack force="true":
   # Suppression de chaque stack
   for stack in $stacks; do
     if [[ "${force:-false}" == "true" ]]; then
-      fctl stacks delete "$stack" --force
+      fctl stacks delete "$stack" --force --confirm
     else
-      fctl stacks delete "$stack"
+      fctl stacks delete "$stack" --confirm
     fi
   done
+
+
+generate-stack-client:
+  #/usr/bin/env bash
+  set -euo pipefail
+  stack_version=$(yq e ".versions.base.version" ./openapi/versions.yaml)
+  curl -o ./openapi/base.yaml https://raw.githubusercontent.com/formancehq/stack/refs/heads/main/releases/base.yaml
+  for module in ledger payments reconciliation wallets flows webhooks auth gateway; do \
+    mkdir -p ./openapi/${module}; \
+    VERSION=$(yq e ".versions.${module}.version" ./openapi/versions.yaml); \
+    curl -o ./openapi/${module}/openapi.yaml https://raw.githubusercontent.com/formancehq/${module}/refs/heads/${VERSION}/openapi.yaml; \
+  done
+  yq -i '.paths."/versions".get.security = [{"Authorization": []}]' openapi/gateway/openapi.yaml
+  curl -o ./openapi/openapi-overlay.yaml https://raw.githubusercontent.com/formancehq/formance-sdk-typescript/refs/heads/main/overlay.yaml
+  npx -y openapi-merge-cli -c openapi/openapi-merge.json
+  speakeasy overlay apply -s openapi/generate.json -o openapi/openapi-overlay.yaml --out openapi/build.json
+  speakeasy generate sdk -s openapi/build.json -o ./pkg/stack -l go

@@ -30,21 +30,6 @@ func HandleStackError(ctx context.Context, err error, diag *diag.Diagnostics) {
 		if e.ErrorMessage != "" {
 			details = append(details, "Message: "+e.ErrorMessage)
 		}
-	case *sdkerrors.V3ErrorResponse:
-		details = append(details, "Error Code: "+string(e.ErrorCode))
-		if e.Details != nil {
-			details = append(details, "Details: "+*e.Details)
-		}
-
-		if e.ErrorMessage != "" {
-			details = append(details, "Message: "+e.ErrorMessage)
-		}
-	case *sdkerrors.V2Error:
-		details = append(details, "Error Code: "+string(e.ErrorCode))
-		if e.ErrorMessage != "" {
-			details = append(details, "Message: "+e.ErrorMessage)
-		}
-
 	default:
 		details = append(details, errors.ErrUnsupported.Error(), err.Error())
 	}

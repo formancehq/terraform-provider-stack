@@ -1,0 +1,19 @@
+versions:
+  base:
+    version: "main"
+  ledger:
+    version: "feat/transaction_templates"
+  payments:
+    version: "main"
+  reconciliation:
+    version: "main"
+  wallets:
+    version: "main"
+  flows:
+    version: "main"
+  webhooks:
+    version: "main"
+  auth:
+    version: "main"
+  gateway:
+    version: "main"

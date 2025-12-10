@@ -15,29 +15,12 @@ import (
 )
 
 var (
-	_ resource.Resource                   = &ResourceTracer{}
-	_ resource.ResourceWithConfigure      = &ResourceTracer{}
-	_ resource.ResourceWithImportState    = &ResourceTracer{}
-	_ resource.ResourceWithValidateConfig = &ResourceTracer{}
+	_ resource.Resource                     = &ResourceTracer{}
+	_ resource.ResourceWithConfigure        = &ResourceTracer{}
+	_ resource.ResourceWithImportState      = &ResourceTracer{}
+	_ resource.ResourceWithValidateConfig   = &ResourceTracer{}
+	_ resource.ResourceWithConfigValidators = &ResourceTracer{}
 )
-
-func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
-	return func() resource.Resource {
-		return &ResourceTracer{
-			tracer:          tracer,
-			logger:          logger,
-			underlyingValue: res,
-		}
-	}
-
-}
-
-type ResourceTracer struct {
-	tracer          trace.Tracer
-	logger          logging.Logger
-	underlyingValue any
-}
-
 var (
 	ErrValidateConfig = fmt.Errorf("error during ValidateConfig")
 	ErrSchema         = fmt.Errorf("error during Schema")
@@ -50,6 +33,10 @@ var (
 )
 
 func injectTraceContext(ctx context.Context, res any, funcName string) context.Context {
+	name := reflect.TypeOf(res).Elem().Name()
+	ctx = logging.ContextWithField(ctx, "resource", strings.ToLower(name))
+	ctx = logging.ContextWithField(ctx, "operation", strings.ToLower(funcName))
+
 	span := trace.SpanFromContext(ctx)
 	if !span.SpanContext().IsValid() {
 		return ctx
@@ -62,9 +49,6 @@ func injectTraceContext(ctx context.Context, res any, funcName string) context.C
 		ctx = logging.ContextWithField(ctx, k, v)
 	}
 
-	name := reflect.TypeOf(res).Elem().Name()
-	ctx = logging.ContextWithField(ctx, "resource", strings.ToLower(name))
-	ctx = logging.ContextWithField(ctx, "operation", strings.ToLower(funcName))
 	span.SetAttributes(
 		attribute.String("resource", strings.ToLower(name)),
 		attribute.String("operation", strings.ToLower(funcName)),
@@ -72,15 +56,49 @@ func injectTraceContext(ctx context.Context, res any, funcName string) context.C
 	return ctx
 }
 
+type ResourceTracer struct {
+	tracer          trace.Tracer
+	logger          logging.Logger
+	underlyingValue any
+}
+
+func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
+	return func() resource.Resource {
+		return &ResourceTracer{
+			tracer:          tracer,
+			logger:          logger,
+			underlyingValue: res,
+		}
+	}
+
+}
+
+// ConfigValidators implements resource.ResourceWithConfigValidators.
+func (r *ResourceTracer) ConfigValidators(context.Context) []resource.ConfigValidator {
+	operation := "ConfigValidators"
+	ctx := logging.ContextWithLogger(context.Background(), r.logger)
+	var validators []resource.ConfigValidator
+	if v, ok := r.underlyingValue.(resource.ResourceWithConfigValidators); ok {
+		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
+			ctx = injectTraceContext(ctx, v, operation)
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
+			validators = v.ConfigValidators(ctx)
+			return nil
+		})
+	}
+	return validators
+}
+
 // ValidateConfig implements resource.ResourceWithValidateConfig.
 func (r *ResourceTracer) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
-	ctx = logging.ContextWithLogger(ctx, r.logger)
 	operation := "ValidateConfig"
+	ctx = logging.ContextWithLogger(ctx, r.logger)
 	if v, ok := r.underlyingValue.(resource.ResourceWithValidateConfig); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.ValidateConfig(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrValidateConfig
@@ -97,8 +115,8 @@ func (r *ResourceTracer) ImportState(ctx context.Context, req resource.ImportSta
 	if v, ok := r.underlyingValue.(resource.ResourceWithImportState); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.ImportState(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrImportState
@@ -115,8 +133,8 @@ func (r *ResourceTracer) Configure(ctx context.Context, req resource.ConfigureRe
 	if v, ok := r.underlyingValue.(resource.ResourceWithConfigure); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Configure(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrConfigure
@@ -133,8 +151,8 @@ func (r *ResourceTracer) Create(ctx context.Context, req resource.CreateRequest,
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Create(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrCreate
@@ -151,8 +169,8 @@ func (r *ResourceTracer) Delete(ctx context.Context, req resource.DeleteRequest,
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Delete(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrDelete
@@ -169,8 +187,8 @@ func (r *ResourceTracer) Metadata(ctx context.Context, req resource.MetadataRequ
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Metadata(ctx, req, resp)
 			return nil
 		})
@@ -184,8 +202,8 @@ func (r *ResourceTracer) Read(ctx context.Context, req resource.ReadRequest, res
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Read(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrRead
@@ -218,8 +236,8 @@ func (r *ResourceTracer) Update(ctx context.Context, req resource.UpdateRequest,
 	if v, ok := r.underlyingValue.(resource.Resource); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {
 			ctx = injectTraceContext(ctx, v, operation)
-			logging.FromContext(ctx).Debug(operation + " called")
-			defer logging.FromContext(ctx).Debug(operation + " completed")
+			logging.FromContext(ctx).Debug("call")
+			defer logging.FromContext(ctx).Debug("completed")
 			v.Update(ctx, req, resp)
 			if resp.Diagnostics.HasError() {
 				return ErrUpdate
