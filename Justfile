@@ -106,7 +106,7 @@ delete-all-stack force="true":
 
 
 generate-stack-client:
-  #/usr/bin/env bash
+  #!/usr/bin/env bash
   set -euo pipefail
   stack_version=$(yq e ".versions.base.version" ./openapi/versions.yaml)
   curl -o ./openapi/base.yaml https://raw.githubusercontent.com/formancehq/stack/refs/heads/main/releases/base.yaml
