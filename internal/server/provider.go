@@ -214,15 +214,9 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		),
 	}
 
-	cli, err := p.stackSdkFactory(opts...)
-	if err != nil {
-		resp.Diagnostics.AddError("Unable to create stack client", err.Error())
-		return
-	}
-
 	store := internal.Store{
 		Stack:             stack,
-		StackSdkImpl:      cli,
+		StackSdkImpl:      p.stackSdkFactory(opts...),
 		CloudSDK:          cloudSDK,
 		WaitModuleTimeout: 2 * time.Minute,
 	}

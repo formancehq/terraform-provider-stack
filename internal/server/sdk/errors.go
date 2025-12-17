@@ -6,21 +6,11 @@ import (
 	"strings"
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/sdkerrors"
-	"github.com/formancehq/terraform-provider-stack/pkg"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 func HandleStackError(ctx context.Context, err error, diag *diag.Diagnostics) {
 	var details []string
-
-	resp := pkg.ResponseFromContext(ctx)
-	if resp != nil {
-		traceparent := resp.Header.Get("Traceparent")
-		if traceparent != "" {
-			details = append(details, "Traceparent: "+traceparent)
-		}
-	}
-
 	switch e := err.(type) {
 	case *sdkerrors.V2ErrorResponse:
 		details = append(details, "Error Code: "+string(e.ErrorCode))

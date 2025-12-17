@@ -74,9 +74,9 @@ func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func
 }
 
 // ConfigValidators implements resource.ResourceWithConfigValidators.
-func (r *ResourceTracer) ConfigValidators(context.Context) []resource.ConfigValidator {
+func (r *ResourceTracer) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
 	operation := "ConfigValidators"
-	ctx := logging.ContextWithLogger(context.Background(), r.logger)
+	ctx = logging.ContextWithLogger(ctx, r.logger)
 	var validators []resource.ConfigValidator
 	if v, ok := r.underlyingValue.(resource.ResourceWithConfigValidators); ok {
 		_ = tracing.TraceError(ctx, r.tracer, operation, func(ctx context.Context) error {

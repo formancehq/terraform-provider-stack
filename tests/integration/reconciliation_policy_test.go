@@ -56,8 +56,8 @@ func TestReconciliationPolicy(t *testing.T) {
 		func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
 			return stackTokenProvider
 		},
-		func(...formance.SDKOption) (sdk.StackSdkImpl, error) {
-			return stacksdk, nil
+		func(...formance.SDKOption) sdk.StackSdkImpl {
+			return stacksdk
 		},
 	)
 
