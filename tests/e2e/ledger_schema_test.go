@@ -53,16 +53,11 @@ func TestLedgerSchemaChart(t *testing.T) {
 							ledger = stack_ledger.default.name
 							version = "v1.0.0"
 							chart = {
-								"test" = {
-									"$segment1" = {
-										".pattern" = "^[0-9]{10}$"
-									}
-								}
-								"segment2" = {
-									".metadata" = {
-										"test" = {
-											"default" = "test"
-										}
+								"banks"={
+									"$iban"={
+										".pattern"="DE*"
+										main=null
+										
 									}
 								}
 							}
@@ -146,7 +141,6 @@ func TestLedgerSchemaTransactions(t *testing.T) {
 	})
 
 }
-
 
 // TOfix(aini encoding ??): invalid template customer_deposit: compilation error: \\u001b[31m--\\u003e\\u001b[0m error:1:6\\n  \\u001b[34m|\\u001b[0m\\n\\u001b[31m1 | \\u001b[0m\\u001b[90mvars {\\u001b[0m}\\u001b[90m\\n\\u001b[0m  \\u001b[34m|\\u001b[0m       \\u001b[31m^\\u001b[0m extraneous input '}' expecting NEWLINE\\n\\u001b[31m--\\u003e\\u001b[0m error:2:0\\n  \\u001b[34m|\\u001b[0m\\n\\u001b[31m2 | \\u001b[0m\\u001b[90m\\u001b[0msend\\u001b[90m [USD 100] (\\n\\u001b[0m  \\u001b[34m|\\u001b[0m \
 // \u001b[31m^^^\\u001b[0m mismatched input 'send' expecting {'account', 'asset', 'number', 'monetary', 'portion', 'string'}\\n\"}\n

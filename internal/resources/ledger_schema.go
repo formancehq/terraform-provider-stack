@@ -155,7 +155,7 @@ func (s *LedgerSchema) ValidateConfig(ctx context.Context, req resource.Validate
 			logging.FromContext(ctx).Debug("Ledger query is valid")
 			_, err := conf.parseSchema()
 			if err != nil {
-				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for reconciliation policy: %s", err))
+				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for ledger schema: %s", err))
 			}
 		}
 	}
@@ -167,7 +167,7 @@ func (s *LedgerSchema) ValidateConfig(ctx context.Context, req resource.Validate
 			logging.FromContext(ctx).Debug("Ledger query is valid")
 			_, err := conf.parseTransaction()
 			if err != nil {
-				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for reconciliation policy: %s", err))
+				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for ledger schema: %s", err))
 			}
 		}
 	}
