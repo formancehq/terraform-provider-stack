@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/terraform-provider-cloud/pkg"
-	cloud "github.com/formancehq/terraform-provider-cloud/pkg/membership_client"
+	membershipclient "github.com/formancehq/terraform-provider-cloud/pkg/membership_client"
 	"github.com/formancehq/terraform-provider-cloud/pkg/membership_client/pkg/models/operations"
 )
 
@@ -18,7 +18,7 @@ type CloudSDK interface {
 var _ CloudSDK = &sdkImpl{}
 
 type sdkImpl struct {
-	sdk *cloud.FormanceCloud
+	sdk *membershipclient.FormanceCloud
 }
 
 // GetStack implements CloudSDK.
@@ -33,7 +33,7 @@ func (s *sdkImpl) ListModules(ctx context.Context, organizationID string, stackI
 
 type CloudFactory func(creds pkg.Creds, transport http.RoundTripper) CloudSDK
 
-func NewCloudSDK() CloudFactory {
+func NewCloudSDK(opts ...membershipclient.SDKOption) CloudFactory {
 	return func(creds pkg.Creds, transport http.RoundTripper) CloudSDK {
 		tp := pkg.NewTokenProvider(transport, creds)
 		return &sdkImpl{sdk: pkg.NewSDK(creds.Endpoint(), transport, tp)}

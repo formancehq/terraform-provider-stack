@@ -35,12 +35,10 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef h1:yrhbW231+FUOUrrKGsDhUyqhWFIjFv4TLtoP6L6HJgc=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef/go.mod h1:faThzFZoF/9uEZQgifklAespL+quZ1CnTTF63+mG950=
-github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218022008-3cc623659f0c h1:CklQjEX6hxcgxCsCZ+HVGRx4IbYk9dcjwQrPyk4XO1U=
-github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218022008-3cc623659f0c/go.mod h1:dSEaqXVe36LslYcbuDnbHUj3eHsgTd92dCs9c6dJ+b4=
-github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218022008-3cc623659f0c h1:wN0jCBfzqWLbzTz0Bitw1S+jpvtPYIAQrwAleCuu3a8=
-github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218022008-3cc623659f0c/go.mod h1:y8TBUrzu/ltoHMnJs6r/7Hj9jkdhueJamIfJzmgG5mY=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251209152917-c1a47e71f09d h1:39VO2JdFyfrZUtYsG09CHslNF4fUEc1LwiqUQGEWdLU=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251209152917-c1a47e71f09d/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
+github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218031007-c2a13246aaf9 h1:UQ3tqGxD15yPP9GkMrfAopod6a/m7KeKCFJFN6nsJwE=
+github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218031007-c2a13246aaf9/go.mod h1:dSEaqXVe36LslYcbuDnbHUj3eHsgTd92dCs9c6dJ+b4=
+github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218031007-c2a13246aaf9 h1:+yn/ulgEt+CJnSi4IsyL9A63g5nZ3nB/2981qKHbT9g=
+github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218031007-c2a13246aaf9/go.mod h1:y8TBUrzu/ltoHMnJs6r/7Hj9jkdhueJamIfJzmgG5mY=
 github.com/go-chi/chi/v5 v5.2.2 h1:CMwsvRVTbXVytCk1Wd72Zy1LAsAh9GxMmSNWLHCG618=
 github.com/go-chi/chi/v5 v5.2.2/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 h1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=
@@ -333,8 +331,6 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
-gopkg.in/validator.v2 v2.0.1 h1:xF0KWyGWXm/LM2G1TrEjqOu4pa6coO9AlWSf3msVfDY=
-gopkg.in/validator.v2 v2.0.1/go.mod h1:lIUZBlB3Im4s/eYp39Ry/wkR02yOPhZ9IwIRBjuPuG8=
 gopkg.in/warnings.v0 v0.1.2 h1:wFXVbFY8DY5/xOe1ECiWdKCzZlxgshcYVNkBHstARME=
 gopkg.in/warnings.v0 v0.1.2/go.mod h1:jksf8JmL6Qr/oQM2OXTHunEvvTAsrWBLb6OOjuVWRNI=
 gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=

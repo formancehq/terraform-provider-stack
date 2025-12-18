@@ -45,9 +45,9 @@ func (s *defaultStackSdk) Reconciliation() ReconciliationSdkImpl {
 
 type StackSdkFactory func(opts ...formance.SDKOption) StackSdkImpl
 
-func NewStackSdk() StackSdkFactory {
-	return func(opts ...formance.SDKOption) StackSdkImpl {
-		c := formance.New(opts...)
+func NewStackSdk(opts ...formance.SDKOption) StackSdkFactory {
+	return func(internalOpts ...formance.SDKOption) StackSdkImpl {
+		c := formance.New(append(internalOpts, opts...)...)
 		return &defaultStackSdk{
 			Formance:              c,
 			LedgerSdkImpl:         newLedgerSdk(c.Ledger),

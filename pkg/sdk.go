@@ -1,8 +1,6 @@
 package pkg
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 )
@@ -13,35 +11,7 @@ type stackHttpTransport struct {
 	underlyingTransport http.RoundTripper
 }
 
-func generateTraceID() string {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(fmt.Sprintf("failed to generate trace ID: %v", err))
-	}
-	return hex.EncodeToString(b)
-}
-
-func generateSpanID() string {
-	b := make([]byte, 8)
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(fmt.Sprintf("failed to generate span ID: %v", err))
-	}
-	return hex.EncodeToString(b)
-}
-
-func injectTraceparentHeader(request *http.Request) {
-	traceID := generateTraceID()
-	spanID := generateSpanID()
-	traceFlags := "01" // sampled
-
-	traceparent := "00-" + traceID + "-" + spanID + "-" + traceFlags
-	request.Header.Set("Traceparent", traceparent)
-}
-
 func (s *stackHttpTransport) RoundTrip(request *http.Request) (*http.Response, error) {
-	injectTraceparentHeader(request)
 	token, err := s.tokenProvider.StackSecurityToken(request.Context())
 	if err != nil {
 		return nil, fmt.Errorf("failed to get stack security token: %w", err)
