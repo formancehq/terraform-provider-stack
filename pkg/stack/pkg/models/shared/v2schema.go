@@ -14,7 +14,7 @@ type V2Schema struct {
 	// Schema creation timestamp
 	CreatedAt time.Time `json:"createdAt"`
 	// Transaction templates
-	Transactions map[string]V2TransactionTemplate `json:"transactions,omitempty"`
+	Transactions map[string]V2TransactionTemplate `json:"transactions"`
 	// Schema version
 	Version string `json:"version"`
 }
@@ -24,7 +24,7 @@ func (v V2Schema) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2Schema) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"chart", "createdAt", "version"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"chart", "createdAt", "transactions", "version"}); err != nil {
 		return err
 	}
 	return nil
@@ -46,7 +46,7 @@ func (v *V2Schema) GetCreatedAt() time.Time {
 
 func (v *V2Schema) GetTransactions() map[string]V2TransactionTemplate {
 	if v == nil {
-		return nil
+		return map[string]V2TransactionTemplate{}
 	}
 	return v.Transactions
 }

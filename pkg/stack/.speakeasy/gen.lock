@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: c8558e29-cc40-460f-b7ee-ccbe35392546
 management:
-  docChecksum: 2b48320275c722aec2e6e9e3d0960c0b
+  docChecksum: fa777b64fcba0be5c7952240226d9acb
   docVersion: SDK_VERSION
   speakeasyVersion: 1.637.0
   generationVersion: 2.727.4
-  releaseVersion: 3.10.1
-  configChecksum: b05e5daca187f715fdcc9891c62a6a75
+  releaseVersion: 3.12.0
+  configChecksum: aead3fac9c0a4e4b0c33f1b4bc2035a4
 features:
   go:
     additionalDependencies: 0.1.0
@@ -4335,7 +4335,7 @@ examples:
           version: "v1.0.0"
       responses:
         "200":
-          application/json: {"data": {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}, "createdAt": "2023-01-01T00:00:00Z", "version": "v1.0.0"}}
+          application/json: {"data": {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}, "createdAt": "2023-01-01T00:00:00Z", "transactions": {"key": {"script": "<value>"}}, "version": "v1.0.0"}}
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
   v2InsertSchema:
@@ -4345,7 +4345,7 @@ examples:
           ledger: "ledger001"
           version: "v1.0.0"
       requestBody:
-        application/json: {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}}
+        application/json: {"chart": {"users": {"$userID": {".pattern": "^[0-9]{16}$"}}}, "transactions": {"key": {"script": "<value>"}}}
       responses:
         default:
           application/json: {"details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9", "errorCode": "VALIDATION", "errorMessage": "[VALIDATION] invalid 'cursor' query param"}
