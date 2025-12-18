@@ -32,49 +32,51 @@ import (
 )
 
 func TestReconciliationPolicy(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	cloudSdk := sdk.NewMockCloudSDK(ctrl)
-	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
-	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
-	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
-	reconciliationSdk := sdk.NewMockReconciliationSdkImpl(ctrl)
-	stackId := uuid.NewString()
-	organizationId := uuid.NewString()
+	t.Parallel()
+	t.Run(t.Name(), func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		cloudSdk := sdk.NewMockCloudSDK(ctrl)
+		tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
+		stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
+		stacksdk := sdk.NewMockStackSdkImpl(ctrl)
+		reconciliationSdk := sdk.NewMockReconciliationSdkImpl(ctrl)
+		stackId := uuid.NewString()
+		organizationId := uuid.NewString()
 
-	stackProvider := server.NewStackProvider(
-		otel.GetTracerProvider(),
+		stackProvider := server.NewStackProvider(
+			otel.GetTracerProvider(),
 
-		logging.Testing().WithField("test", "payments_connectors"),
-		server.FormanceStackEndpoint("dummy-endpoint"),
-		server.FormanceStackClientId("organization_dummy-client-id"),
-		server.FormanceStackClientSecret("dummy-client-secret"),
-		transport,
-		func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
-			return cloudSdk
-		},
-		tokenProvider,
-		func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
-			return stackTokenProvider
-		},
-		func(...formance.SDKOption) (sdk.StackSdkImpl, error) {
-			return stacksdk, nil
-		},
-	)
+			logging.Testing().WithField("test", "payments_connectors"),
+			server.FormanceStackEndpoint("dummy-endpoint"),
+			server.FormanceStackClientId("organization_dummy-client-id"),
+			server.FormanceStackClientSecret("dummy-client-secret"),
+			transport,
+			func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
+				return cloudSdk
+			},
+			tokenProvider,
+			func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
+				return stackTokenProvider
+			},
+			func(...formance.SDKOption) sdk.StackSdkImpl {
+				return stacksdk
+			},
+		)
 
-	stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
-		GetVersionsResponse: &shared.GetVersionsResponse{
-			Versions: []shared.Version{
-				{
-					Name:    "reconciliation",
-					Version: "develop",
-					Health:  true,
+		stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
+			GetVersionsResponse: &shared.GetVersionsResponse{
+				Versions: []shared.Version{
+					{
+						Name:    "reconciliation",
+						Version: "develop",
+						Health:  true,
+					},
 				},
 			},
-		},
-	}, nil).AnyTimes()
-	stacksdk.EXPECT().Reconciliation().Return(reconciliationSdk).AnyTimes()
+		}, nil).AnyTimes()
+		stacksdk.EXPECT().Reconciliation().Return(reconciliationSdk).AnyTimes()
 
-	qry := `{
+		qry := `{
 		"$and": [
 			{
 				"$match": {
@@ -98,53 +100,53 @@ func TestReconciliationPolicy(t *testing.T) {
 		]
 	}`
 
-	m := make(map[string]any)
-	require.NoError(t, json.Unmarshal([]byte(qry), &m), "Failed to unmarshal ledger query")
-	policyId := uuid.NewString()
-	policy := shared.Policy{
-		Name:           "Test Policy",
-		LedgerName:     "test-ledger",
-		PaymentsPoolID: "test-payments-pool",
-		ID:             policyId,
-		LedgerQuery:    m,
-		CreatedAt:      time.Now(),
-	}
-	// Init state
-	reconciliationSdk.EXPECT().CreatePolicy(gomock.Any(), shared.PolicyRequest{
-		LedgerName:     policy.LedgerName,
-		Name:           policy.Name,
-		PaymentsPoolID: policy.PaymentsPoolID,
-		LedgerQuery:    policy.LedgerQuery,
-	}).Return(&operations.CreatePolicyResponse{
-		PolicyResponse: &shared.PolicyResponse{
-			Data: policy,
-		},
-	}, nil)
+		m := make(map[string]any)
+		require.NoError(t, json.Unmarshal([]byte(qry), &m), "Failed to unmarshal ledger query")
+		policyId := uuid.NewString()
+		policy := shared.Policy{
+			Name:           "Test Policy",
+			LedgerName:     "test-ledger",
+			PaymentsPoolID: "test-payments-pool",
+			ID:             policyId,
+			LedgerQuery:    m,
+			CreatedAt:      time.Now(),
+		}
+		// Init state
+		reconciliationSdk.EXPECT().CreatePolicy(gomock.Any(), shared.PolicyRequest{
+			LedgerName:     policy.LedgerName,
+			Name:           policy.Name,
+			PaymentsPoolID: policy.PaymentsPoolID,
+			LedgerQuery:    policy.LedgerQuery,
+		}).Return(&operations.CreatePolicyResponse{
+			PolicyResponse: &shared.PolicyResponse{
+				Data: policy,
+			},
+		}, nil)
 
-	// refresh state deletion
-	reconciliationSdk.EXPECT().GetPolicy(gomock.Any(), operations.GetPolicyRequest{
-		PolicyID: policyId,
-	}).Return(&operations.GetPolicyResponse{
-		PolicyResponse: &shared.PolicyResponse{
-			Data: policy,
-		},
-	}, nil)
+		// refresh state deletion
+		reconciliationSdk.EXPECT().GetPolicy(gomock.Any(), operations.GetPolicyRequest{
+			PolicyID: policyId,
+		}).Return(&operations.GetPolicyResponse{
+			PolicyResponse: &shared.PolicyResponse{
+				Data: policy,
+			},
+		}, nil)
 
-	reconciliationSdk.EXPECT().DeletePolicy(gomock.Any(), operations.DeletePolicyRequest{
-		PolicyID: policyId,
-	}).Return(nil, nil)
+		reconciliationSdk.EXPECT().DeletePolicy(gomock.Any(), operations.DeletePolicyRequest{
+			PolicyID: policyId,
+		}).Return(nil, nil)
 
-	// testCases
-	resource.ParallelTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"stack": providerserver.NewProtocol6WithError(stackProvider()),
-		},
-		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
-			tfversion.SkipBelow(tfversion.Version0_15_0),
-		},
-		Steps: []resource.TestStep{
-			{
-				Config: `
+		// testCases
+		resource.ParallelTest(t, resource.TestCase{
+			ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
+				"stack": providerserver.NewProtocol6WithError(stackProvider()),
+			},
+			TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+				tfversion.SkipBelow(tfversion.Version0_15_0),
+			},
+			Steps: []resource.TestStep{
+				{
+					Config: `
 					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
@@ -180,41 +182,42 @@ func TestReconciliationPolicy(t *testing.T) {
 						}
 					}
 				`,
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("id"), knownvalue.StringExact(policyId)),
-					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_name"), knownvalue.StringExact(policy.LedgerName)),
-					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("name"), knownvalue.StringExact(policy.Name)),
-					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("payments_pool_id"), knownvalue.StringExact(policy.PaymentsPoolID)),
-					statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_query"), knownvalue.MapExact(
-						map[string]knownvalue.Check{
-							"$and": knownvalue.TupleExact(
-								[]knownvalue.Check{
-									knownvalue.ObjectExact(map[string]knownvalue.Check{
-										"$match": knownvalue.ObjectExact(map[string]knownvalue.Check{
-											"account": knownvalue.StringExact("accounts::pending"),
+					ConfigStateChecks: []statecheck.StateCheck{
+						statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("id"), knownvalue.StringExact(policyId)),
+						statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_name"), knownvalue.StringExact(policy.LedgerName)),
+						statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("name"), knownvalue.StringExact(policy.Name)),
+						statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("payments_pool_id"), knownvalue.StringExact(policy.PaymentsPoolID)),
+						statecheck.ExpectKnownValue("stack_reconciliation_policy.policy", tfjsonpath.New("ledger_query"), knownvalue.MapExact(
+							map[string]knownvalue.Check{
+								"$and": knownvalue.TupleExact(
+									[]knownvalue.Check{
+										knownvalue.ObjectExact(map[string]knownvalue.Check{
+											"$match": knownvalue.ObjectExact(map[string]knownvalue.Check{
+												"account": knownvalue.StringExact("accounts::pending"),
+											}),
+										}),
+										knownvalue.ObjectExact(map[string]knownvalue.Check{
+											"$or": knownvalue.TupleExact(
+												[]knownvalue.Check{
+													knownvalue.ObjectExact(map[string]knownvalue.Check{
+														"$gte": knownvalue.ObjectExact(map[string]knownvalue.Check{
+															"balance": knownvalue.Int64Exact(1000),
+														}),
+													}),
+													knownvalue.ObjectExact(map[string]knownvalue.Check{
+														"$lte": knownvalue.ObjectExact(map[string]knownvalue.Check{
+															"balance": knownvalue.Int64Exact(500),
+														}),
+													}),
+												},
+											),
 										}),
 									}),
-									knownvalue.ObjectExact(map[string]knownvalue.Check{
-										"$or": knownvalue.TupleExact(
-											[]knownvalue.Check{
-												knownvalue.ObjectExact(map[string]knownvalue.Check{
-													"$gte": knownvalue.ObjectExact(map[string]knownvalue.Check{
-														"balance": knownvalue.Int64Exact(1000),
-													}),
-												}),
-												knownvalue.ObjectExact(map[string]knownvalue.Check{
-													"$lte": knownvalue.ObjectExact(map[string]knownvalue.Check{
-														"balance": knownvalue.Int64Exact(500),
-													}),
-												}),
-											},
-										),
-									}),
-								}),
-						}),
-					),
+							}),
+						),
+					},
 				},
 			},
-		},
+		})
 	})
 }

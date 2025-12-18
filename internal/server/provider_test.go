@@ -113,8 +113,8 @@ func TestProviderConfigure(t *testing.T) {
 				func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
 					return stackTokenProvider
 				},
-				func(...formance.SDKOption) (sdk.StackSdkImpl, error) {
-					return stacksdk, nil
+				func(...formance.SDKOption) sdk.StackSdkImpl {
+					return stacksdk
 				},
 			)()
 
@@ -136,7 +136,6 @@ func TestProviderConfigure(t *testing.T) {
 						"organization_id":      tftypes.NewValue(tftypes.String, organizationId),
 						"uri":                  tftypes.NewValue(tftypes.String, stackUri),
 						"wait_module_duration": tftypes.NewValue(tftypes.String, nil),
-						"retry_config":         tftypes.NewValue(schemaType["retry_config"], nil),
 						"cloud": tftypes.NewValue(schemaType["cloud"], map[string]tftypes.Value{
 							"client_id":     tftypes.NewValue(tftypes.String, tc.ClientId),
 							"client_secret": tftypes.NewValue(tftypes.String, tc.ClientSecret),

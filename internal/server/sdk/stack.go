@@ -5,7 +5,6 @@ import (
 
 	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/operations"
-	"github.com/formancehq/terraform-provider-stack/pkg"
 )
 
 //go:generate mockgen -typed -destination=stack_generated.go -package=sdk . StackSdkImpl
@@ -44,23 +43,17 @@ func (s *defaultStackSdk) Reconciliation() ReconciliationSdkImpl {
 	return s.ReconciliationSdkImpl
 }
 
-type StackSdkFactory func(opts ...formance.SDKOption) (StackSdkImpl, error)
+type StackSdkFactory func(opts ...formance.SDKOption) StackSdkImpl
 
-func NewStackSdk() StackSdkFactory {
-	return func(opts ...formance.SDKOption) (StackSdkImpl, error) {
-		client, err := pkg.NewStackClient(
-			opts...,
-		)
-		if err != nil {
-			return nil, err
-		}
-
+func NewStackSdk(opts ...formance.SDKOption) StackSdkFactory {
+	return func(internalOpts ...formance.SDKOption) StackSdkImpl {
+		c := formance.New(append(internalOpts, opts...)...)
 		return &defaultStackSdk{
-			Formance:              client,
-			LedgerSdkImpl:         newLedgerSdk(client.Ledger),
-			PaymentsSdkImpl:       newPaymentsSdk(client.Payments),
-			WebhooksSdkImpl:       newWebhooksSdk(client.Webhooks),
-			ReconciliationSdkImpl: newReconciliationSdk(client.Reconciliation),
-		}, nil
+			Formance:              c,
+			LedgerSdkImpl:         newLedgerSdk(c.Ledger),
+			PaymentsSdkImpl:       newPaymentsSdk(c.Payments),
+			WebhooksSdkImpl:       newWebhooksSdk(c.Webhooks),
+			ReconciliationSdkImpl: newReconciliationSdk(c.Reconciliation),
+		}
 	}
 }
