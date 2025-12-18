@@ -35,10 +35,12 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef h1:yrhbW231+FUOUrrKGsDhUyqhWFIjFv4TLtoP6L6HJgc=
 github.com/formancehq/go-libs/v3 v3.0.0-20250522193102-7361760ee4ef/go.mod h1:faThzFZoF/9uEZQgifklAespL+quZ1CnTTF63+mG950=
-github.com/formancehq/terraform-provider-cloud v0.0.9 h1:pMJ3+wqR7UcCjW5C/I2z/OuJwcqjro7mvE7lCAqypQQ=
-github.com/formancehq/terraform-provider-cloud v0.0.9/go.mod h1:Ir6dH6BmmYlK382kN9bPKyjBaRGIi0G6ELXdvl5ITro=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251017143225-b1b55e0a27cf h1:LJPoyWejBp3zEcnywFj38u13bmsa6CdvGtnytyIa0FE=
-github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251017143225-b1b55e0a27cf/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
+github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218022008-3cc623659f0c h1:CklQjEX6hxcgxCsCZ+HVGRx4IbYk9dcjwQrPyk4XO1U=
+github.com/formancehq/terraform-provider-cloud v0.0.10-0.20251218022008-3cc623659f0c/go.mod h1:dSEaqXVe36LslYcbuDnbHUj3eHsgTd92dCs9c6dJ+b4=
+github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218022008-3cc623659f0c h1:wN0jCBfzqWLbzTz0Bitw1S+jpvtPYIAQrwAleCuu3a8=
+github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218022008-3cc623659f0c/go.mod h1:y8TBUrzu/ltoHMnJs6r/7Hj9jkdhueJamIfJzmgG5mY=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251209152917-c1a47e71f09d h1:39VO2JdFyfrZUtYsG09CHslNF4fUEc1LwiqUQGEWdLU=
+github.com/formancehq/terraform-provider-cloud/sdk v0.0.0-20251209152917-c1a47e71f09d/go.mod h1:BPadWn65X8E98UJVy7c4Drz+HEm0nqob/5JvDRDV8Mw=
 github.com/go-chi/chi/v5 v5.2.2 h1:CMwsvRVTbXVytCk1Wd72Zy1LAsAh9GxMmSNWLHCG618=
 github.com/go-chi/chi/v5 v5.2.2/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 h1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=

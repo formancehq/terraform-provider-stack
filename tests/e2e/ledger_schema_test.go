@@ -53,11 +53,16 @@ func TestLedgerSchemaChart(t *testing.T) {
 							ledger = stack_ledger.default.name
 							version = "v1.0.0"
 							chart = {
-								"banks"={
-									"$iban"={
-										".pattern"="DE*"
-										main=null
-										
+								"test" = {
+									"$segment1" = {
+										".pattern" = "^[0-9]{10}$"
+									}
+								}
+								"segment2" = {
+									".metadata" = {
+										"test" = {
+											"default" = "test"
+										}
 									}
 								}
 							}

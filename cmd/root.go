@@ -53,7 +53,6 @@ func (a *App) CobraCommand() *cobra.Command {
 
 	a.Flags(cmd.PersistentFlags())
 	server.AddFlags(cmd.Flags())
-	cmd.PersistentFlags().Bool(LogDebugFlag, false, "Enable debug logging")
 
 	cmd.AddCommand(a.SubCommands()...)
 
@@ -79,10 +78,6 @@ func logToFile() (io.Writer, error) {
 	return file, nil
 }
 
-const (
-	LogDebugFlag = "log-debug"
-)
-
 func (app *App) preRunE(cmd *cobra.Command, args []string) error {
 	file, err := logToFile()
 	if err != nil {
@@ -91,8 +86,7 @@ func (app *App) preRunE(cmd *cobra.Command, args []string) error {
 
 	json, _ := cmd.Flags().GetBool(logging.JsonFormattingLoggerFlag)
 	otelTraces, _ := cmd.Flags().GetString(otlptraces.OtelTracesExporterFlag)
-	logDebug, _ := cmd.Flags().GetBool(LogDebugFlag)
-	logger := logging.NewDefaultLogger(file, logDebug, json, otelTraces != "")
+	logger := logging.NewDefaultLogger(file, service.IsDebug(cmd), json, otelTraces != "")
 	cmd.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
 	logging.FromContext(cmd.Context()).Debugf("PreRunE %s", internal.ServiceName)
 

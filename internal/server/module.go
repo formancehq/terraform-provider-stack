@@ -42,14 +42,14 @@ func NewModule(ctx context.Context, flagset *pflag.FlagSet) fx.Option {
 		fx.Supply(fx.Annotate(transport, fx.As(new(http.RoundTripper)))),
 		fx.Provide(sdk.NewCloudSDK),
 		fx.Provide(pkg.NewTokenProviderFn),
-		fx.Provide(cloudpkg.NewTokenProviderFactory),
-		fx.Provide(sdk.NewStackSdk),
+		fx.Provide(func() cloudpkg.TokenProviderFactory {
+			return cloudpkg.NewTokenProvider
+		}), fx.Provide(sdk.NewStackSdk),
 		fx.Provide(NewStackProvider),
 		fx.Provide(NewAPI),
 		fx.Invoke(func(lc fx.Lifecycle, server *API, shutdowner fx.Shutdowner) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					debug, _ := flagset.GetBool(service.DebugFlag)
 					go func() {
 						if err := server.Run(ctx, debug); err != nil {
 							if err := shutdowner.Shutdown(); err != nil {

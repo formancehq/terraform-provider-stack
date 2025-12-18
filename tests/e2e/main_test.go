@@ -1,6 +1,7 @@
 package e2e_test
 
 import (
+	"context"
 	"flag"
 	"net/http"
 	"os"
@@ -23,6 +24,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 var (
@@ -62,8 +65,16 @@ func TestMain(m *testing.M) {
 
 	flag.Parse()
 
-	var transport http.RoundTripper
+	var (
+		transport http.RoundTripper
+		tp        trace.TracerProvider
+	)
 	if testing.Verbose() {
+		p := sdktrace.NewTracerProvider()
+		tp = p
+		defer func() {
+			_ = p.ForceFlush(context.Background())
+		}()
 		transport = httpclient.NewDebugHTTPTransport(
 			otlp.NewRoundTripper(http.DefaultTransport, true),
 		)
@@ -71,7 +82,7 @@ func TestMain(m *testing.M) {
 		transport = otlp.NewRoundTripper(http.DefaultTransport, false)
 	}
 	StackProvider = server.NewStackProvider(
-		otel.GetTracerProvider(),
+		tp,
 		logging.Testing(),
 		server.FormanceStackEndpoint(endpoint),
 		server.FormanceStackClientId(clientID),
@@ -89,7 +100,9 @@ func TestMain(m *testing.M) {
 		clientID,
 		clientSecret,
 		transport,
-		cloudpkg.NewCloudSDK(),
+		func() cloudpkg.CloudFactory {
+			return cloudpkg.NewCloudSDK
+		}(),
 		cloudpkg.NewTokenProvider,
 	)
 

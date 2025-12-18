@@ -32,133 +32,136 @@ import (
 )
 
 func TestLedgerSchemaChart(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	cloudSdk := sdk.NewMockCloudSDK(ctrl)
-	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
-	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
-	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
-	ledgerSchema := sdk.NewMockLedgerSdkImpl(ctrl)
-	stackId := uuid.NewString()
-	organizationId := uuid.NewString()
+	t.Parallel()
 
-	stackProvider := server.NewStackProvider(
-		otel.GetTracerProvider(),
+	t.Run(t.Name(), func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		cloudSdk := sdk.NewMockCloudSDK(ctrl)
+		tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
+		stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
+		stacksdk := sdk.NewMockStackSdkImpl(ctrl)
+		ledgerSchema := sdk.NewMockLedgerSdkImpl(ctrl)
+		stackId := uuid.NewString()
+		organizationId := uuid.NewString()
 
-		logging.Testing().WithField("test", t.Name()),
-		server.FormanceStackEndpoint("dummy-endpoint"),
-		server.FormanceStackClientId("organization_dummy-client-id"),
-		server.FormanceStackClientSecret("dummy-client-secret"),
-		transport,
-		func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
-			return cloudSdk
-		},
-		tokenProvider,
-		func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
-			return stackTokenProvider
-		},
-		func(...formance.SDKOption) sdk.StackSdkImpl {
-			return stacksdk
-		},
-	)
+		stackProvider := server.NewStackProvider(
+			otel.GetTracerProvider(),
 
-	// Module and sdk expectations
-	stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
-		GetVersionsResponse: &shared.GetVersionsResponse{
-			Versions: []shared.Version{
-				{
-					Name:    "ledger",
-					Version: "develop",
-					Health:  true,
+			logging.Testing().WithField("test", t.Name()),
+			server.FormanceStackEndpoint("dummy-endpoint"),
+			server.FormanceStackClientId("organization_dummy-client-id"),
+			server.FormanceStackClientSecret("dummy-client-secret"),
+			transport,
+			func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
+				return cloudSdk
+			},
+			tokenProvider,
+			func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
+				return stackTokenProvider
+			},
+			func(...formance.SDKOption) sdk.StackSdkImpl {
+				return stacksdk
+			},
+		)
+
+		// Module and sdk expectations
+		stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
+			GetVersionsResponse: &shared.GetVersionsResponse{
+				Versions: []shared.Version{
+					{
+						Name:    "ledger",
+						Version: "develop",
+						Health:  true,
+					},
 				},
 			},
-		},
-	}, nil).AnyTimes()
-	stacksdk.EXPECT().Ledger().Return(ledgerSchema).AnyTimes()
+		}, nil).AnyTimes()
+		stacksdk.EXPECT().Ledger().Return(ledgerSchema).AnyTimes()
 
-	schema := map[string]shared.V2ChartSegment{
-		"segment1": {
-			DotSelf: &shared.DotSelf{},
-		},
-		"segment2": {
-			DotMetadata: map[string]shared.V2ChartAccountMetadata{
-				"test": {
-					Default: pointer.For("test"),
+		schema := map[string]shared.V2ChartSegment{
+			"segment1": {
+				DotSelf: &shared.DotSelf{},
+			},
+			"segment2": {
+				DotMetadata: map[string]shared.V2ChartAccountMetadata{
+					"test": {
+						Default: pointer.For("test"),
+					},
 				},
 			},
-		},
-	}
-	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
-		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+		}
+		ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+			return cmp.Diff(op, operations.V2InsertSchemaRequest{
+				Ledger:  "test-ledger",
+				Version: "v1.0.0",
+				V2SchemaData: shared.V2SchemaData{
+					Chart: schema,
+				},
+			}) != ""
+		})).Return(&operations.V2InsertSchemaResponse{
+			StatusCode: http.StatusOK,
+		}, nil).Times(1)
+
+		ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.0",
-			V2SchemaData: shared.V2SchemaData{
-				Chart: schema,
-			},
-		}) != ""
-	})).Return(&operations.V2InsertSchemaResponse{
-		StatusCode: http.StatusOK,
-	}, nil).Times(1)
-
-	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
-		Ledger:  "test-ledger",
-		Version: "v1.0.0",
-	}).Return(&operations.V2GetSchemaResponse{
-		StatusCode: http.StatusOK,
-		V2SchemaResponse: &shared.V2SchemaResponse{
-			Data: shared.V2Schema{
-				Version: "v1.0.0",
-				Chart:   schema,
-			},
-		},
-	}, nil).Times(2)
-
-	schemaUpdated := map[string]shared.V2ChartSegment{
-		"segment3": {
-			DotSelf: &shared.DotSelf{},
-		},
-		"segment2": {
-			DotMetadata: map[string]shared.V2ChartAccountMetadata{
-				"test": {
-					Default: pointer.For("test"),
+		}).Return(&operations.V2GetSchemaResponse{
+			StatusCode: http.StatusOK,
+			V2SchemaResponse: &shared.V2SchemaResponse{
+				Data: shared.V2Schema{
+					Version: "v1.0.0",
+					Chart:   schema,
 				},
 			},
-		},
-	}
-	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
-		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+		}, nil).Times(2)
+
+		schemaUpdated := map[string]shared.V2ChartSegment{
+			"segment3": {
+				DotSelf: &shared.DotSelf{},
+			},
+			"segment2": {
+				DotMetadata: map[string]shared.V2ChartAccountMetadata{
+					"test": {
+						Default: pointer.For("test"),
+					},
+				},
+			},
+		}
+		ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+			return cmp.Diff(op, operations.V2InsertSchemaRequest{
+				Ledger:  "test-ledger",
+				Version: "v1.0.1",
+				V2SchemaData: shared.V2SchemaData{
+					Chart: schemaUpdated,
+				},
+			}) != ""
+		})).Return(&operations.V2InsertSchemaResponse{
+			StatusCode: http.StatusOK,
+		}, nil)
+
+		ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.1",
-			V2SchemaData: shared.V2SchemaData{
-				Chart: schemaUpdated,
+		}).Return(&operations.V2GetSchemaResponse{
+			StatusCode: http.StatusOK,
+			V2SchemaResponse: &shared.V2SchemaResponse{
+				Data: shared.V2Schema{
+					Version: "v1.0.1",
+					Chart:   schemaUpdated,
+				},
 			},
-		}) != ""
-	})).Return(&operations.V2InsertSchemaResponse{
-		StatusCode: http.StatusOK,
-	}, nil)
-
-	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
-		Ledger:  "test-ledger",
-		Version: "v1.0.1",
-	}).Return(&operations.V2GetSchemaResponse{
-		StatusCode: http.StatusOK,
-		V2SchemaResponse: &shared.V2SchemaResponse{
-			Data: shared.V2Schema{
-				Version: "v1.0.1",
-				Chart:   schemaUpdated,
+		}, nil)
+		// testCases
+		resource.ParallelTest(t, resource.TestCase{
+			ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
+				"stack": providerserver.NewProtocol6WithError(stackProvider()),
 			},
-		},
-	}, nil)
-	// testCases
-	resource.ParallelTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"stack": providerserver.NewProtocol6WithError(stackProvider()),
-		},
-		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
-			tfversion.SkipBelow(tfversion.Version0_15_0),
-		},
-		Steps: []resource.TestStep{
-			{
-				Config: `
+			TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+				tfversion.SkipBelow(tfversion.Version0_15_0),
+			},
+			Steps: []resource.TestStep{
+				{
+					Config: `
 					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
@@ -182,37 +185,37 @@ func TestLedgerSchemaChart(t *testing.T) {
 						}
 					}
 				`,
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New(`chart`),
-						knownvalue.ObjectExact(map[string]knownvalue.Check{
-							"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
-								".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
-							}),
-							"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
-								".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
-									"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
-										"default": knownvalue.StringExact("test"),
+					ConfigStateChecks: []statecheck.StateCheck{
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New(`chart`),
+							knownvalue.ObjectExact(map[string]knownvalue.Check{
+								"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
+									".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+								}),
+								"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+									".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+										"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+											"default": knownvalue.StringExact("test"),
+										}),
 									}),
 								}),
 							}),
-						}),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("version"),
-						knownvalue.StringExact("v1.0.0"),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("ledger"),
-						knownvalue.StringExact("test-ledger"),
-					),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("version"),
+							knownvalue.StringExact("v1.0.0"),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("ledger"),
+							knownvalue.StringExact("test-ledger"),
+						),
+					},
 				},
-			},
-			{
-				Config: `
+				{
+					Config: `
 					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
@@ -236,36 +239,37 @@ func TestLedgerSchemaChart(t *testing.T) {
 						}
 					}
 				`,
-				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New(`chart`),
-						knownvalue.ObjectExact(map[string]knownvalue.Check{
-							"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
-								".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
-							}),
-							"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
-								".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
-									"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
-										"default": knownvalue.StringExact("test"),
+					ConfigStateChecks: []statecheck.StateCheck{
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New(`chart`),
+							knownvalue.ObjectExact(map[string]knownvalue.Check{
+								"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
+									".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+								}),
+								"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+									".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+										"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+											"default": knownvalue.StringExact("test"),
+										}),
 									}),
 								}),
 							}),
-						}),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("version"),
-						knownvalue.StringExact("v1.0.1"),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("ledger"),
-						knownvalue.StringExact("test-ledger"),
-					),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("version"),
+							knownvalue.StringExact("v1.0.1"),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("ledger"),
+							knownvalue.StringExact("test-ledger"),
+						),
+					},
 				},
 			},
-		},
+		})
 	})
 }
 func normalizeScript(s string) string {
@@ -284,132 +288,134 @@ func normalizeScript(s string) string {
 	return s
 }
 func TestLedgerSchemaTransactions(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	cloudSdk := sdk.NewMockCloudSDK(ctrl)
-	tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
-	stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
-	stacksdk := sdk.NewMockStackSdkImpl(ctrl)
-	ledgerSchema := sdk.NewMockLedgerSdkImpl(ctrl)
-	stackId := uuid.NewString()
-	organizationId := uuid.NewString()
+	t.Parallel()
+	t.Run(t.Name(), func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		cloudSdk := sdk.NewMockCloudSDK(ctrl)
+		tokenProvider, _ := testprovider.NewMockTokenProvider(ctrl)
+		stackTokenProvider := pkg.NewMockTokenProviderImpl(ctrl)
+		stacksdk := sdk.NewMockStackSdkImpl(ctrl)
+		ledgerSchema := sdk.NewMockLedgerSdkImpl(ctrl)
+		stackId := uuid.NewString()
+		organizationId := uuid.NewString()
 
-	stackProvider := server.NewStackProvider(
-		otel.GetTracerProvider(),
+		stackProvider := server.NewStackProvider(
+			otel.GetTracerProvider(),
 
-		logging.Testing().WithField("test", t.Name()),
-		server.FormanceStackEndpoint("dummy-endpoint"),
-		server.FormanceStackClientId("organization_dummy-client-id"),
-		server.FormanceStackClientSecret("dummy-client-secret"),
-		transport,
-		func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
-			return cloudSdk
-		},
-		tokenProvider,
-		func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
-			return stackTokenProvider
-		},
-		func(...formance.SDKOption) sdk.StackSdkImpl {
-			return stacksdk
-		},
-	)
+			logging.Testing().WithField("test", t.Name()),
+			server.FormanceStackEndpoint("dummy-endpoint"),
+			server.FormanceStackClientId("organization_dummy-client-id"),
+			server.FormanceStackClientSecret("dummy-client-secret"),
+			transport,
+			func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
+				return cloudSdk
+			},
+			tokenProvider,
+			func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
+				return stackTokenProvider
+			},
+			func(...formance.SDKOption) sdk.StackSdkImpl {
+				return stacksdk
+			},
+		)
 
-	// Module and sdk expectations
-	stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
-		GetVersionsResponse: &shared.GetVersionsResponse{
-			Versions: []shared.Version{
-				{
-					Name:    "ledger",
-					Version: "develop",
-					Health:  true,
+		// Module and sdk expectations
+		stacksdk.EXPECT().GetVersions(gomock.Any()).Return(&operations.GetVersionsResponse{
+			GetVersionsResponse: &shared.GetVersionsResponse{
+				Versions: []shared.Version{
+					{
+						Name:    "ledger",
+						Version: "develop",
+						Health:  true,
+					},
 				},
 			},
-		},
-	}, nil).AnyTimes()
-	stacksdk.EXPECT().Ledger().Return(ledgerSchema).AnyTimes()
+		}, nil).AnyTimes()
+		stacksdk.EXPECT().Ledger().Return(ledgerSchema).AnyTimes()
 
-	transaction := map[string]shared.V2TransactionTemplate{
-		"customer_deposit": {
-			Description: pointer.For("Test transaction"),
-			Script: normalizeScript(`
+		transaction := map[string]shared.V2TransactionTemplate{
+			"customer_deposit": {
+				Description: pointer.For("Test transaction"),
+				Script: normalizeScript(`
 vars{}
 send [USD 100] (
 	source = @banks:$bankID:main
 	destination = @users:$userID:main
 )`),
-		},
-	}
-	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
-		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+			},
+		}
+		ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+			return cmp.Diff(op, operations.V2InsertSchemaRequest{
+				Ledger:  "test-ledger",
+				Version: "v1.0.0",
+				V2SchemaData: shared.V2SchemaData{
+					Transactions: transaction,
+				},
+			}) != ""
+		})).Return(&operations.V2InsertSchemaResponse{
+			StatusCode: http.StatusOK,
+		}, nil).Times(1)
+
+		ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.0",
-			V2SchemaData: shared.V2SchemaData{
-				Transactions: transaction,
+		}).Return(&operations.V2GetSchemaResponse{
+			StatusCode: http.StatusOK,
+			V2SchemaResponse: &shared.V2SchemaResponse{
+				Data: shared.V2Schema{
+					Version:      "v1.0.0",
+					Transactions: transaction,
+				},
 			},
-		}) != ""
-	})).Return(&operations.V2InsertSchemaResponse{
-		StatusCode: http.StatusOK,
-	}, nil).Times(1)
+		}, nil).Times(2)
 
-	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
-		Ledger:  "test-ledger",
-		Version: "v1.0.0",
-	}).Return(&operations.V2GetSchemaResponse{
-		StatusCode: http.StatusOK,
-		V2SchemaResponse: &shared.V2SchemaResponse{
-			Data: shared.V2Schema{
-				Version:      "v1.0.0",
-				Transactions: transaction,
-			},
-		},
-	}, nil).Times(2)
-
-	transactionUpdated := map[string]shared.V2TransactionTemplate{
-		"customer_deposit": {
-			Description: pointer.For("Test transaction"),
-			Script: normalizeScript(`
+		transactionUpdated := map[string]shared.V2TransactionTemplate{
+			"customer_deposit": {
+				Description: pointer.For("Test transaction"),
+				Script: normalizeScript(`
 vars{}
 send [USD 100] (
 	source = @banks:$bankID:wallet-001
 	destination = @users:$userID:wallet-001
 )
 	`),
-		},
-	}
-	ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
-		return cmp.Diff(op, operations.V2InsertSchemaRequest{
+			},
+		}
+		ledgerSchema.EXPECT().InsertSchema(gomock.Any(), gomock.Cond(func(op operations.V2InsertSchemaRequest) bool {
+			return cmp.Diff(op, operations.V2InsertSchemaRequest{
+				Ledger:  "test-ledger",
+				Version: "v1.0.1",
+				V2SchemaData: shared.V2SchemaData{
+					Transactions: transactionUpdated,
+				},
+			}) != ""
+		})).Return(&operations.V2InsertSchemaResponse{
+			StatusCode: http.StatusOK,
+		}, nil)
+
+		ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
 			Ledger:  "test-ledger",
 			Version: "v1.0.1",
-			V2SchemaData: shared.V2SchemaData{
-				Transactions: transactionUpdated,
+		}).Return(&operations.V2GetSchemaResponse{
+			StatusCode: http.StatusOK,
+			V2SchemaResponse: &shared.V2SchemaResponse{
+				Data: shared.V2Schema{
+					Version:      "v1.0.1",
+					Transactions: transactionUpdated,
+				},
 			},
-		}) != ""
-	})).Return(&operations.V2InsertSchemaResponse{
-		StatusCode: http.StatusOK,
-	}, nil)
-
-	ledgerSchema.EXPECT().GetSchema(gomock.Any(), operations.V2GetSchemaRequest{
-		Ledger:  "test-ledger",
-		Version: "v1.0.1",
-	}).Return(&operations.V2GetSchemaResponse{
-		StatusCode: http.StatusOK,
-		V2SchemaResponse: &shared.V2SchemaResponse{
-			Data: shared.V2Schema{
-				Version:      "v1.0.1",
-				Transactions: transactionUpdated,
+		}, nil)
+		// testCases
+		resource.ParallelTest(t, resource.TestCase{
+			ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
+				"stack": providerserver.NewProtocol6WithError(stackProvider()),
 			},
-		},
-	}, nil)
-	// testCases
-	resource.ParallelTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
-			"stack": providerserver.NewProtocol6WithError(stackProvider()),
-		},
-		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
-			tfversion.SkipBelow(tfversion.Version0_15_0),
-		},
-		Steps: []resource.TestStep{
-			{
-				Config: `
+			TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+				tfversion.SkipBelow(tfversion.Version0_15_0),
+			},
+			Steps: []resource.TestStep{
+				{
+					Config: `
 					provider "stack" {
 						stack_id = "` + stackId + `"
 						organization_id = "` + organizationId + `"
@@ -433,37 +439,37 @@ send [USD 100] (
 						}
 					}
 				`,
-				ConfigStateChecks: []statecheck.StateCheck{
-					// statecheck.ExpectKnownValue(
-					// 	"stack_ledger_schema.default",
-					// 	tfjsonpath.New(`chart`),
-					// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 		"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
-					// 		}),
-					// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 					"default": knownvalue.StringExact("test"),
-					// 				}),
-					// 			}),
-					// 		}),
-					// 	}),
-					// ),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("version"),
-						knownvalue.StringExact("v1.0.0"),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("ledger"),
-						knownvalue.StringExact("test-ledger"),
-					),
+					ConfigStateChecks: []statecheck.StateCheck{
+						// statecheck.ExpectKnownValue(
+						// 	"stack_ledger_schema.default",
+						// 	tfjsonpath.New(`chart`),
+						// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 		"segment1": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+						// 		}),
+						// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 					"default": knownvalue.StringExact("test"),
+						// 				}),
+						// 			}),
+						// 		}),
+						// 	}),
+						// ),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("version"),
+							knownvalue.StringExact("v1.0.0"),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("ledger"),
+							knownvalue.StringExact("test-ledger"),
+						),
+					},
 				},
-			},
-			{
-				Config: `
+				{
+					Config: `
 								provider "stack" {
 									stack_id = "` + stackId + `"
 									organization_id = "` + organizationId + `"
@@ -487,35 +493,36 @@ send [USD 100] (
 									}
 								}
 							`,
-				ConfigStateChecks: []statecheck.StateCheck{
-					// statecheck.ExpectKnownValue(
-					// 	"stack_ledger_schema.default",
-					// 	tfjsonpath.New(`chart`),
-					// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 		"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
-					// 		}),
-					// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
-					// 					"default": knownvalue.StringExact("test"),
-					// 				}),
-					// 			}),
-					// 		}),
-					// 	}),
-					// ),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("version"),
-						knownvalue.StringExact("v1.0.1"),
-					),
-					statecheck.ExpectKnownValue(
-						"stack_ledger_schema.default",
-						tfjsonpath.New("ledger"),
-						knownvalue.StringExact("test-ledger"),
-					),
+					ConfigStateChecks: []statecheck.StateCheck{
+						// statecheck.ExpectKnownValue(
+						// 	"stack_ledger_schema.default",
+						// 	tfjsonpath.New(`chart`),
+						// 	knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 		"segment3": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 			".self": knownvalue.ObjectExact(map[string]knownvalue.Check{}),
+						// 		}),
+						// 		"segment2": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 			".metadata": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 				"test": knownvalue.ObjectExact(map[string]knownvalue.Check{
+						// 					"default": knownvalue.StringExact("test"),
+						// 				}),
+						// 			}),
+						// 		}),
+						// 	}),
+						// ),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("version"),
+							knownvalue.StringExact("v1.0.1"),
+						),
+						statecheck.ExpectKnownValue(
+							"stack_ledger_schema.default",
+							tfjsonpath.New("ledger"),
+							knownvalue.StringExact("test-ledger"),
+						),
+					},
 				},
 			},
-		},
+		})
 	})
 }
