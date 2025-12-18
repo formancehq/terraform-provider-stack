@@ -1719,6 +1719,11 @@ func main() {
                     },
                 },
             },
+            Transactions: map[string]shared.V2TransactionTemplate{
+                "key": shared.V2TransactionTemplate{
+                    Script: "<value>",
+                },
+            },
         },
         Ledger: "ledger001",
         Version: "v1.0.0",

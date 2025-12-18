@@ -14892,7 +14892,8 @@
           }
         },
         "required": [
-          "chart"
+          "chart",
+          "transactions"
         ]
       },
       "V2Schema": {
