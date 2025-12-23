@@ -2,6 +2,8 @@ package sdk
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/formancehq/formance-sdk-go/v3/pkg/models/sdkerrors"
@@ -9,18 +11,30 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+type Error struct {
+	ErrorCode    string `json:"errorCode"`
+	ErrorMessage string `json:"errorMessage"`
+}
+
 func HandleStackError(ctx context.Context, err error, diag *diag.Diagnostics) {
-	sharedError := &sdkerrors.V2ErrorResponse{
+	sharedError := &Error{
 		ErrorCode:    "INTERNAL",
-		ErrorMessage: "unexpected error",
+		ErrorMessage: err.Error(),
 	}
-	switch e := err.(type) {
-	case *sdkerrors.V2ErrorResponse:
-		sharedError = e
+
+	tmp := &sdkerrors.SDKError{}
+	if errors.As(err, &tmp) {
+		err = errors.New(tmp.Body)
+	}
+
+	errResponse := &Error{}
+	if e := json.Unmarshal([]byte(err.Error()), errResponse); e == nil {
+		sharedError = errResponse
 	}
 	span := trace.SpanFromContext(ctx)
 	if span.SpanContext().IsValid() {
-		diag.AddError("traceparent", fmt.Sprintf("%s-%s", span.SpanContext().TraceID(), span.SpanContext().SpanID()))
+		traceparent := fmt.Sprintf("%s-%s", span.SpanContext().TraceID().String(), span.SpanContext().SpanID().String())
+		sharedError.ErrorMessage = fmt.Sprintf("[Traceparent: %s] %s", traceparent, sharedError.ErrorMessage)
 	}
 	diag.AddError(
 		string(sharedError.ErrorCode),
