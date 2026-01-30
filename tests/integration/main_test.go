@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/go-libs/v3/httpclient"
 	"github.com/formancehq/go-libs/v3/otlp"
+	"github.com/formancehq/terraform-provider-stack/internal/server/sdk"
 )
 
 var transport http.RoundTripper
@@ -24,4 +25,10 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	os.Exit(code)
+}
+
+func newCloudSdkMockT(mock *sdk.MockCloudSDK) sdk.CloudFactory {
+	return func(endpoint string, transport http.RoundTripper) sdk.CloudSDK {
+		return mock
+	}
 }

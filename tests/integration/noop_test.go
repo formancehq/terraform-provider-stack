@@ -75,9 +75,8 @@ func TestNoop(t *testing.T) {
 				server.FormanceStackClientId(tc.clientId),
 				server.FormanceStackClientSecret(tc.clientSecret),
 				transport,
-				func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
-					return cloudSdk
-				},
+				newCloudSdkMockT(cloudSdk),
+
 				tokenProvider,
 				func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
 					return stackTokenProvider

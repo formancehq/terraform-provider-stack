@@ -35,8 +35,8 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/go-libs/v3 v3.6.0 h1:sRPrpPPxBP0Q/bFWSxbuOtkLt3zrVsowQ3oNVoNHaYY=
 github.com/formancehq/go-libs/v3 v3.6.0/go.mod h1:zWgFos2lhuunwk6YqXscMEokOKvEeH6Et5VjTyaF9mM=
-github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260123154004-61ba88bf03e9 h1:3Jwh0HwFZev+Ue3mLSE7jl7Lb1Bkqet5AG4QfBqTq4Y=
-github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260123154004-61ba88bf03e9/go.mod h1:m4+AH1Z3DImkCi2xs9dndTET7XcZa/9JgsEQaEp5PME=
+github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260130151603-5937e78f7123 h1:oaVC8CmoV+6E4+hjN2GHWrO+p0vjKdknqUm2hBzNfXY=
+github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260130151603-5937e78f7123/go.mod h1:m4+AH1Z3DImkCi2xs9dndTET7XcZa/9JgsEQaEp5PME=
 github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218031007-c2a13246aaf9 h1:+yn/ulgEt+CJnSi4IsyL9A63g5nZ3nB/2981qKHbT9g=
 github.com/formancehq/terraform-provider-cloud/pkg/membership_client v0.0.0-20251218031007-c2a13246aaf9/go.mod h1:y8TBUrzu/ltoHMnJs6r/7Hj9jkdhueJamIfJzmgG5mY=
 github.com/go-chi/chi/v5 v5.2.3 h1:WQIt9uxdsAbgIYgid+BpYc+liqQZGMHRaUwp0JUcvdE=

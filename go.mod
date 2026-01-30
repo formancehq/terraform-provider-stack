@@ -114,7 +114,7 @@ require (
 )
 
 require (
-	github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260123154004-61ba88bf03e9
+	github.com/formancehq/terraform-provider-cloud v0.0.12-0.20260130151603-5937e78f7123
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/hashicorp/terraform-plugin-testing v1.13.1

@@ -11,10 +11,10 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/formancehq/terraform-provider-stack/pkg/otlp"
 	"github.com/zitadel/oidc/v3/pkg/client"
-	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"golang.org/x/oauth2"
 )
 
@@ -75,49 +75,6 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 		return p.token, nil
 	}
 
-	form := url.Values{
-		"grant_type":         []string{string(oidc.GrantTypeTokenExchange)},
-		"audience":           []string{fmt.Sprintf("stack://%s/%s", p.stack.OrganizationId, p.stack.Id)},
-		"subject_token":      []string{token.AccessToken},
-		"subject_token_type": []string{"urn:ietf:params:oauth:token-type:access_token"},
-	}
-
-	membershipDiscoveryConfiguration, err := client.Discover(ctx, p.creds.Endpoint(), p.client)
-	if err != nil {
-		return nil, fmt.Errorf("unable to discover membership configuration: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, membershipDiscoveryConfiguration.TokenEndpoint,
-		bytes.NewBufferString(form.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(p.creds.ClientId(), p.creds.ClientSecret())
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	ret, err := p.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("unable to exchange token: %w", err)
-	}
-
-	defer func() {
-		if err := ret.Body.Close(); err != nil {
-			panic(err)
-		}
-	}()
-	if ret.StatusCode != http.StatusOK {
-		data, err := io.ReadAll(ret.Body)
-		if err != nil {
-			panic(err)
-		}
-		return nil, errors.New(string(data))
-	}
-
-	securityToken := oauth2.Token{}
-	if err := json.NewDecoder(ret.Body).Decode(&securityToken); err != nil {
-		return nil, err
-	}
-
 	baseUri, err := url.Parse(p.stack.Uri)
 	if err != nil {
 		return nil, fmt.Errorf("invalid stack Uri %s: %w", p.stack.Uri, err)
@@ -127,9 +84,9 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 		return nil, fmt.Errorf("invalid stack Uri %s: %w", p.stack.Uri, err)
 	}
 
-	form = url.Values{
+	form := url.Values{
 		"grant_type": []string{"urn:ietf:params:oauth:grant-type:jwt-bearer"},
-		"assertion":  []string{securityToken.AccessToken},
+		"assertion":  []string{token.AccessToken},
 		"scope":      []string{"openid email"},
 	}
 
@@ -138,14 +95,14 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 		return nil, fmt.Errorf("unable to discover stack configuration: %w", err)
 	}
 
-	req, err = http.NewRequestWithContext(ctx, http.MethodPost, stackDiscoveryConfiguration.TokenEndpoint,
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, stackDiscoveryConfiguration.TokenEndpoint,
 		bytes.NewBufferString(form.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("unable to create request for token exchange: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	ret, err = p.client.Do(req)
+	ret, err := p.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("unable to exchange security token: %w", err)
 	}
@@ -167,6 +124,7 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 	if err := json.NewDecoder(ret.Body).Decode(&stackToken); err != nil {
 		return nil, err
 	}
+	logging.FromContext(ctx).Info("StackToken ", p.token.AccessToken)
 
 	p.token.AccessToken = stackToken.AccessToken
 	p.token.RefreshToken = stackToken.RefreshToken

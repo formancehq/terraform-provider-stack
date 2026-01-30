@@ -191,8 +191,8 @@ func (p *FormanceStackProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	cloudtp := p.cloudtokenFactory(p.transport, creds)
-	cloudSDK := p.cloudFactory(creds, cloudpkg.NewTransport(p.transport, cloudtp))
+	cloudtp := p.cloudtokenFactory(p.transport, creds, cloudpkg.ScopeStack, cloudpkg.WithResource(fmt.Sprintf("stack://%s/%s|stack:Read stack:Write", data.OrganizationId.ValueString(), data.StackId.ValueString())))
+	cloudSDK := p.cloudFactory(creds.Endpoint(), cloudpkg.NewTransport(p.transport, cloudtp))
 	stack := pkg.Stack{
 		Id:             data.StackId.ValueString(),
 		OrganizationId: data.OrganizationId.ValueString(),

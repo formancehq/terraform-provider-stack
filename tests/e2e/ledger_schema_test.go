@@ -82,7 +82,6 @@ func TestLedgerSchemaChart(t *testing.T) {
 
 func TestLedgerSchemaTransactions(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
-
 		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 			"cloud": providerserver.NewProtocol6WithError(CloudProvider()),
 			"stack": providerserver.NewProtocol6WithError(StackProvider()),
