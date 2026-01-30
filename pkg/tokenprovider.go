@@ -71,6 +71,8 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 		return nil, fmt.Errorf("unable to refresh token: %w", err)
 	}
 
+	p.token.Lock()
+	defer p.token.Unlock()
 	if time.Now().Before(p.token.Expiry) {
 		return p.token, nil
 	}
