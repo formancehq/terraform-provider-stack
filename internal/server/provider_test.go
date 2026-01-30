@@ -60,6 +60,12 @@ func getSchemaTypes(schema schema.Schema) map[string]tftypes.Type {
 	return attributeTypes
 }
 
+func newCloudSdkMockT(mock *sdk.MockCloudSDK) sdk.CloudFactory {
+	return func(endpoint string, transport http.RoundTripper) sdk.CloudSDK {
+		return mock
+	}
+}
+
 func TestProviderConfigure(t *testing.T) {
 	t.Parallel()
 	type testCase struct {
@@ -106,9 +112,7 @@ func TestProviderConfigure(t *testing.T) {
 				"organization_client_id",
 				"client_secret",
 				http.DefaultTransport,
-				func(creds cloudpkg.Creds, transport http.RoundTripper) sdk.CloudSDK {
-					return cloudSdk
-				},
+				newCloudSdkMockT(cloudSdk),
 				tokenProvider,
 				func(transport http.RoundTripper, creds cloudpkg.Creds, tokenProvider cloudpkg.TokenProviderImpl, stack pkg.Stack) pkg.TokenProviderImpl {
 					return stackTokenProvider

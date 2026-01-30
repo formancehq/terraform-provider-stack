@@ -31,11 +31,10 @@ func (s *sdkImpl) ListModules(ctx context.Context, organizationID string, stackI
 	return s.sdk.ListModules(ctx, organizationID, stackID)
 }
 
-type CloudFactory func(creds pkg.Creds, transport http.RoundTripper) CloudSDK
+type CloudFactory func(endpoitn string, transport http.RoundTripper) CloudSDK
 
 func NewCloudSDK(opts ...membershipclient.SDKOption) CloudFactory {
-	return func(creds pkg.Creds, transport http.RoundTripper) CloudSDK {
-		tp := pkg.NewTokenProvider(transport, creds)
-		return &sdkImpl{sdk: pkg.NewSDK(creds.Endpoint(), transport, tp)}
+	return func(endpoint string, transport http.RoundTripper) CloudSDK {
+		return &sdkImpl{sdk: pkg.NewSDK(endpoint, transport)}
 	}
 }

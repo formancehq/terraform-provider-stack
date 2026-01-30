@@ -104,6 +104,16 @@ delete-all-stack force="true":
     fi
   done
 
+delete-in-cluster-stack:
+  #!/bin/bash
+  set -euo pipefail
+
+  # Récupération des IDs des stacks
+  stacks=$(kubectl get stacks -o jsonpath='{.items[*].metadata.name}')
+  # Suppression de chaque stack
+  for stack in $stacks; do
+    kubectl delete stack "$stack" --wait=false
+  done
 
 generate-stack-client:
   #!/usr/bin/env bash
