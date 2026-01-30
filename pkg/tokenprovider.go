@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/formancehq/go-libs/v3/logging"
 	cloudpkg "github.com/formancehq/terraform-provider-cloud/pkg"
 	"github.com/formancehq/terraform-provider-stack/pkg/otlp"
 	"github.com/zitadel/oidc/v3/pkg/client"
@@ -126,7 +125,6 @@ func (p *TokenProvider) StackSecurityToken(ctx context.Context) (*cloudpkg.Token
 	if err := json.NewDecoder(ret.Body).Decode(&stackToken); err != nil {
 		return nil, err
 	}
-	logging.FromContext(ctx).Info("StackToken ", p.token.AccessToken)
 
 	p.token.AccessToken = stackToken.AccessToken
 	p.token.RefreshToken = stackToken.RefreshToken
