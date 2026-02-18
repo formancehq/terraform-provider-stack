@@ -2,7 +2,7 @@
 
 package shared
 
-type ClientOptions struct {
+type CreateClientRequest struct {
 	Description            *string           `json:"description,omitempty"`
 	Metadata               map[string]string `json:"metadata,omitempty"`
 	Name                   string            `json:"name"`
@@ -13,56 +13,56 @@ type ClientOptions struct {
 	Trusted                *bool             `json:"trusted,omitempty"`
 }
 
-func (c *ClientOptions) GetDescription() *string {
+func (c *CreateClientRequest) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *ClientOptions) GetMetadata() map[string]string {
+func (c *CreateClientRequest) GetMetadata() map[string]string {
 	if c == nil {
 		return nil
 	}
 	return c.Metadata
 }
 
-func (c *ClientOptions) GetName() string {
+func (c *CreateClientRequest) GetName() string {
 	if c == nil {
 		return ""
 	}
 	return c.Name
 }
 
-func (c *ClientOptions) GetPostLogoutRedirectUris() []string {
+func (c *CreateClientRequest) GetPostLogoutRedirectUris() []string {
 	if c == nil {
 		return nil
 	}
 	return c.PostLogoutRedirectUris
 }
 
-func (c *ClientOptions) GetPublic() *bool {
+func (c *CreateClientRequest) GetPublic() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.Public
 }
 
-func (c *ClientOptions) GetRedirectUris() []string {
+func (c *CreateClientRequest) GetRedirectUris() []string {
 	if c == nil {
 		return nil
 	}
 	return c.RedirectUris
 }
 
-func (c *ClientOptions) GetScopes() []string {
+func (c *CreateClientRequest) GetScopes() []string {
 	if c == nil {
 		return nil
 	}
 	return c.Scopes
 }
 
-func (c *ClientOptions) GetTrusted() *bool {
+func (c *CreateClientRequest) GetTrusted() *bool {
 	if c == nil {
 		return nil
 	}

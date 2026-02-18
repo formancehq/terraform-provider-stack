@@ -9,6 +9,17 @@ import (
 type DotSelf struct {
 }
 
+func (d DotSelf) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(d, "", false)
+}
+
+func (d *DotSelf) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &d, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
 // V2ChartSegment - Segment within a chart of accounts
 type V2ChartSegment struct {
 	DotMetadata          map[string]V2ChartAccountMetadata `json:".metadata,omitempty"`

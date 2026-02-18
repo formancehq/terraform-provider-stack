@@ -24,7 +24,7 @@ func (f FlowsPaymentAdjustment) MarshalJSON() ([]byte, error) {
 }
 
 func (f *FlowsPaymentAdjustment) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &f, "", false, []string{"absolute", "amount", "date", "raw", "status"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &f, "", false, nil); err != nil {
 		return err
 	}
 	return nil

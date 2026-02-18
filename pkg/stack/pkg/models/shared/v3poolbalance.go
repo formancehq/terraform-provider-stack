@@ -18,7 +18,7 @@ func (v V3PoolBalance) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3PoolBalance) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"amount", "asset"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

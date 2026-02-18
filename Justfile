@@ -6,7 +6,7 @@ default:
 pc: pre-commit
 
 [group('qa')]
-pre-commit: tidy lint lint-integration generate
+pre-commit: generate tidy lint lint-integration
 
 [group('qa')]
 lint:
@@ -36,7 +36,7 @@ coverage:
   @go tool cover -func=coverage/coverage_merged.txt
 
 [group('test')]
-generate:
+generate: generate-stack-client
   @go generate ./...
 
 [group('test')]
@@ -120,7 +120,9 @@ generate-stack-client:
   set -euo pipefail
   stack_version=$(yq e ".versions.base.version" ./openapi/versions.yaml)
   curl -o ./openapi/base.yaml https://raw.githubusercontent.com/formancehq/stack/refs/heads/main/releases/base.yaml
-  for module in ledger payments reconciliation wallets flows webhooks auth gateway; do \
+  
+  # TODO(ledger): V2QueryParams use `sort` parameter inside a body
+  for module in payments reconciliation wallets flows webhooks auth gateway; do \
     mkdir -p ./openapi/${module}; \
     VERSION=$(yq e ".versions.${module}.version" ./openapi/versions.yaml); \
     curl -o ./openapi/${module}/openapi.yaml https://raw.githubusercontent.com/formancehq/${module}/refs/heads/${VERSION}/openapi.yaml; \
@@ -128,5 +130,5 @@ generate-stack-client:
   yq -i '.paths."/versions".get.security = [{"Authorization": []}]' openapi/gateway/openapi.yaml
   curl -o ./openapi/openapi-overlay.yaml https://raw.githubusercontent.com/formancehq/formance-sdk-typescript/refs/heads/main/overlay.yaml
   npx -y openapi-merge-cli -c openapi/openapi-merge.json
-  speakeasy overlay apply -s openapi/generate.json -o openapi/openapi-overlay.yaml --out openapi/build.json
-  speakeasy generate sdk -s openapi/build.json -o ./pkg/stack -l go
+  speakeasy overlay apply -s openapi/generate.json -o openapi/openapi-overlay.yaml --out openapi/build.yaml
+  cd pkg/stack && speakeasy run --skip-versioning --frozen-workflow-lockfile

@@ -23,7 +23,7 @@ func (v V3Instance) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3Instance) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"connectorID", "createdAt", "id", "scheduleID", "terminated", "updatedAt"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

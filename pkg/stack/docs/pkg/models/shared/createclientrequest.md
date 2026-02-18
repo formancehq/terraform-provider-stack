@@ -1,4 +1,4 @@
-# ClientOptions
+# CreateClientRequest
 
 
 ## Fields

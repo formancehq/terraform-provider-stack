@@ -4526,6 +4526,179 @@
         ]
       }
     },
+    "/api/ledger/v2/{ledger}/queries/{id}/run": {
+      "post": {
+        "tags": [
+          "ledger.v2"
+        ],
+        "summary": "Run a query template",
+        "description": "Run a query template on a ledger",
+        "operationId": "v2RunQuery",
+        "x-speakeasy-name-override": "RunQuery",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          },
+          {
+            "name": "schemaVersion",
+            "in": "query",
+            "required": true,
+            "description": "Schema version to use for validation",
+            "schema": {
+              "type": "string",
+              "example": "v1.0.0"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Query template ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "CUSTOMER_DEPOSIT"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "pit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "deprecated": true,
+            "description": "Deprecated: Use sort param",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "effective"
+              ]
+            }
+          },
+          {
+            "name": "reverse",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/sort"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "$ref": "#/components/schemas/V2QueryParams"
+                  },
+                  "vars": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/V2TransactionsCursorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/V2AccountsCursorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/V2LogsCursorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/V2VolumesWithBalanceCursorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V2ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "ledger:read"
+            ]
+          }
+        ]
+      }
+    },
     "/api/ledger/v2/_/exporters": {
       "get": {
         "summary": "List exporters",
@@ -13743,6 +13916,12 @@
           "cursor"
         ],
         "properties": {
+          "resource": {
+            "type": "string",
+            "enum": [
+              "accounts"
+            ]
+          },
           "cursor": {
             "type": "object",
             "required": [
@@ -13786,6 +13965,12 @@
           "cursor"
         ],
         "properties": {
+          "resource": {
+            "type": "string",
+            "enum": [
+              "transactions"
+            ]
+          },
           "cursor": {
             "type": "object",
             "required": [
@@ -13829,6 +14014,12 @@
           "cursor"
         ],
         "properties": {
+          "resource": {
+            "type": "string",
+            "enum": [
+              "logs"
+            ]
+          },
           "cursor": {
             "type": "object",
             "required": [
@@ -13894,6 +14085,12 @@
           "cursor"
         ],
         "properties": {
+          "resource": {
+            "type": "string",
+            "enum": [
+              "volumes"
+            ]
+          },
           "cursor": {
             "type": "object",
             "required": [
@@ -14215,11 +14412,13 @@
       },
       "V2Log": {
         "type": "object",
+        "description": "Represents an immutable log entry in the ledger. Each log captures an atomic operation\nwith its full payload, enabling audit trails and event sourcing patterns.\nThe data field structure depends on the log type.\n",
         "properties": {
           "id": {
             "type": "integer",
             "format": "bigint",
             "minimum": 0,
+            "description": "Unique sequential identifier for this log entry within the ledger",
             "example": 1234
           },
           "type": {
@@ -14230,24 +14429,42 @@
               "REVERTED_TRANSACTION",
               "DELETE_METADATA",
               "INSERTED_SCHEMA"
-            ]
+            ],
+            "description": "The type of operation this log represents"
           },
           "data": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": true
+            "description": "The payload of the log entry. Structure depends on the log type:\n- NEW_TRANSACTION: V2LogDataNewTransaction\n- SET_METADATA: V2LogDataSetMetadata\n- REVERTED_TRANSACTION: V2LogDataRevertedTransaction\n- DELETE_METADATA: V2LogDataDeleteMetadata\n- INSERTED_SCHEMA: V2LogDataInsertedSchema\n",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V2LogDataNewTransaction"
+              },
+              {
+                "$ref": "#/components/schemas/V2LogDataSetMetadata"
+              },
+              {
+                "$ref": "#/components/schemas/V2LogDataRevertedTransaction"
+              },
+              {
+                "$ref": "#/components/schemas/V2LogDataDeleteMetadata"
+              },
+              {
+                "$ref": "#/components/schemas/V2LogDataInsertedSchema"
+              }
+            ]
           },
           "hash": {
             "type": "string",
+            "description": "SHA256 hash of the log entry, chained from the previous log for integrity verification",
             "example": "9ee060170400f556b7e1575cb13f9db004f150a08355c7431c62bc639166431e"
           },
           "date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Timestamp when the operation was recorded"
           },
           "schemaVersion": {
             "type": "string",
-            "description": "Schema version used for validation",
+            "description": "Schema version used for validation when the log was created",
             "example": "v1.0.0"
           }
         },
@@ -14257,6 +14474,260 @@
           "data",
           "hash",
           "date"
+        ]
+      },
+      "V2LogTransaction": {
+        "type": "object",
+        "description": "Transaction structure as it appears in log payloads",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "bigint",
+            "minimum": 0
+          },
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/V2Posting"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/V2Metadata"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "insertedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revertedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reverted": {
+            "type": "boolean",
+            "description": "Indicates if the transaction has been reverted"
+          },
+          "template": {
+            "type": "string",
+            "description": "Transaction template used"
+          },
+          "postCommitVolumes": {
+            "$ref": "#/components/schemas/V2AggregatedVolumes"
+          },
+          "postCommitEffectiveVolumes": {
+            "$ref": "#/components/schemas/V2AggregatedVolumes"
+          },
+          "preCommitVolumes": {
+            "$ref": "#/components/schemas/V2AggregatedVolumes"
+          },
+          "preCommitEffectiveVolumes": {
+            "$ref": "#/components/schemas/V2AggregatedVolumes"
+          }
+        },
+        "required": [
+          "id",
+          "postings",
+          "metadata",
+          "timestamp",
+          "reverted"
+        ]
+      },
+      "V2LogDataNewTransaction": {
+        "type": "object",
+        "description": "Payload for NEW_TRANSACTION log entries. Contains the created transaction and any account metadata set during creation.",
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/V2LogTransaction"
+          },
+          "accountMetadata": {
+            "type": "object",
+            "description": "Metadata applied to accounts involved in the transaction",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/V2Metadata"
+            }
+          }
+        },
+        "required": [
+          "transaction",
+          "accountMetadata"
+        ],
+        "example": {
+          "transaction": {
+            "id": 1234,
+            "postings": [
+              {
+                "source": "world",
+                "destination": "users:001",
+                "amount": 100,
+                "asset": "USD/2"
+              }
+            ],
+            "metadata": {},
+            "timestamp": "2024-01-15T10:30:00Z",
+            "insertedAt": "2024-01-15T10:30:00Z",
+            "reverted": false
+          },
+          "accountMetadata": {
+            "users:001": {
+              "created_by": "system"
+            }
+          }
+        }
+      },
+      "V2LogDataSetMetadata": {
+        "type": "object",
+        "description": "Payload for SET_METADATA log entries. Contains the target entity and the metadata that was set.",
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT",
+              "TRANSACTION"
+            ],
+            "description": "Type of the target entity"
+          },
+          "targetId": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Account address (when targetType is ACCOUNT)"
+              },
+              {
+                "type": "integer",
+                "format": "bigint",
+                "description": "Transaction ID (when targetType is TRANSACTION)"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/V2Metadata"
+          }
+        },
+        "required": [
+          "targetType",
+          "targetId",
+          "metadata"
+        ],
+        "example": {
+          "targetType": "ACCOUNT",
+          "targetId": "users:001",
+          "metadata": {
+            "status": "active",
+            "tier": "premium"
+          }
+        }
+      },
+      "V2LogDataRevertedTransaction": {
+        "type": "object",
+        "description": "Payload for REVERTED_TRANSACTION log entries. Contains both the original reverted transaction and the new reverting transaction.",
+        "properties": {
+          "revertedTransaction": {
+            "$ref": "#/components/schemas/V2LogTransaction",
+            "description": "The original transaction that was reverted"
+          },
+          "transaction": {
+            "$ref": "#/components/schemas/V2LogTransaction",
+            "description": "The new reverting transaction created to cancel the original"
+          }
+        },
+        "required": [
+          "revertedTransaction",
+          "transaction"
+        ],
+        "example": {
+          "revertedTransaction": {
+            "id": 1234,
+            "postings": [
+              {
+                "source": "world",
+                "destination": "users:001",
+                "amount": 100,
+                "asset": "USD/2"
+              }
+            ],
+            "metadata": {},
+            "timestamp": "2024-01-15T10:30:00Z",
+            "reverted": true
+          },
+          "transaction": {
+            "id": 1235,
+            "postings": [
+              {
+                "source": "users:001",
+                "destination": "world",
+                "amount": 100,
+                "asset": "USD/2"
+              }
+            ],
+            "metadata": {
+              "revert": "1234"
+            },
+            "timestamp": "2024-01-15T11:00:00Z",
+            "reverted": false
+          }
+        }
+      },
+      "V2LogDataDeleteMetadata": {
+        "type": "object",
+        "description": "Payload for DELETE_METADATA log entries. Contains the target entity and the metadata key that was deleted.",
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT",
+              "TRANSACTION"
+            ],
+            "description": "Type of the target entity"
+          },
+          "targetId": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Account address (when targetType is ACCOUNT)"
+              },
+              {
+                "type": "integer",
+                "format": "bigint",
+                "description": "Transaction ID (when targetType is TRANSACTION)"
+              }
+            ]
+          },
+          "key": {
+            "type": "string",
+            "description": "The metadata key that was deleted"
+          }
+        },
+        "required": [
+          "targetType",
+          "targetId",
+          "key"
+        ],
+        "example": {
+          "targetType": "ACCOUNT",
+          "targetId": "users:001",
+          "key": "temporary_flag"
+        }
+      },
+      "V2LogDataInsertedSchema": {
+        "type": "object",
+        "description": "Payload for INSERTED_SCHEMA log entries. Contains the schema that was inserted into the ledger.",
+        "properties": {
+          "schema": {
+            "$ref": "#/components/schemas/V2Schema"
+          }
+        },
+        "required": [
+          "schema"
         ]
       },
       "V2CreateTransactionResponse": {
@@ -14870,6 +15341,142 @@
           "$ref": "#/components/schemas/V2TransactionTemplate"
         }
       },
+      "V2QueryTemplateVar": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "V2QueryResource": {
+        "type": "string",
+        "enum": [
+          "transactions",
+          "accounts",
+          "logs",
+          "volumes"
+        ]
+      },
+      "V2QueryParams": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100
+          },
+          "cursor": {
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
+            "type": "string",
+            "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+          },
+          "expand": {
+            "type": "string",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pit": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sort": {
+            "type": "string",
+            "example": "id:desc"
+          }
+        },
+        "oneOf": [
+          {
+            "x-speakeasy-name-override": "QueryTemplateAccountParams",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "accounts"
+                ]
+              }
+            }
+          },
+          {
+            "x-speakeasy-name-override": "QueryTemplateTransactionParams",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "transactions"
+                ]
+              }
+            }
+          },
+          {
+            "x-speakeasy-name-override": "QueryTemplateLogParams",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "logs"
+                ]
+              }
+            }
+          },
+          {
+            "x-speakeasy-name-override": "QueryTemplateVolumeParams",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "enum": [
+                  "volumes"
+                ]
+              },
+              "insertionDate": {
+                "type": "boolean"
+              },
+              "groupBy": {
+                "type": "integer"
+              }
+            }
+          }
+        ]
+      },
+      "V2QueryTemplate": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "resource": {
+            "$ref": "#/components/schemas/V2QueryResource"
+          },
+          "params": {
+            "$ref": "#/components/schemas/V2QueryParams"
+          },
+          "vars": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/V2QueryTemplateVar"
+            }
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "V2QueryTemplates": {
+        "type": "object",
+        "description": "Query templates",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/V2QueryTemplate"
+        }
+      },
       "V2SchemaData": {
         "type": "object",
         "description": "Schema data structure for ledger schemas",
@@ -14879,6 +15486,9 @@
           },
           "transactions": {
             "$ref": "#/components/schemas/V2TransactionTemplates"
+          },
+          "queries": {
+            "$ref": "#/components/schemas/V2QueryTemplates"
           }
         },
         "required": [
@@ -16083,7 +16693,7 @@
             "type": "string",
             "example": "60s",
             "description": "The frequency at which the connector will fetch transactions",
-            "default": "120s"
+            "default": "30m"
           },
           "endpoint": {
             "type": "string",
@@ -16124,7 +16734,7 @@
             "type": "string",
             "example": "60s",
             "description": "The frequency at which the connector will try to fetch new BalanceTransaction objects from Adyen API.\n",
-            "default": "120s"
+            "default": "30m"
           }
         }
       },
@@ -19621,7 +20231,6 @@
           "id",
           "name",
           "createdAt",
-          "type",
           "poolAccounts"
         ],
         "properties": {
@@ -19793,6 +20402,7 @@
             "Column": "#/components/schemas/V3ColumnConfig",
             "Currencycloud": "#/components/schemas/V3CurrencycloudConfig",
             "Dummypay": "#/components/schemas/V3DummypayConfig",
+            "Fireblocks": "#/components/schemas/V3FireblocksConfig",
             "Generic": "#/components/schemas/V3GenericConfig",
             "Increase": "#/components/schemas/V3IncreaseConfig",
             "Mangopay": "#/components/schemas/V3MangopayConfig",
@@ -19824,6 +20434,9 @@
           },
           {
             "$ref": "#/components/schemas/V3DummypayConfig"
+          },
+          {
+            "$ref": "#/components/schemas/V3FireblocksConfig"
           },
           {
             "$ref": "#/components/schemas/V3GenericConfig"
@@ -19927,7 +20540,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -19969,7 +20583,8 @@
             "type": "string"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20010,7 +20625,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20090,6 +20706,42 @@
           }
         }
       },
+      "V3FireblocksConfig": {
+        "type": "object",
+        "required": [
+          "name",
+          "apiKey",
+          "privateKey"
+        ],
+        "properties": {
+          "apiKey": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pageSize": {
+            "type": "integer",
+            "default": 25,
+            "deprecated": true,
+            "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
+          },
+          "pollingPeriod": {
+            "type": "string",
+            "default": "30m"
+          },
+          "privateKey": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "default": "Fireblocks"
+          }
+        }
+      },
       "V3GenericConfig": {
         "type": "object",
         "required": [
@@ -20114,7 +20766,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20147,7 +20800,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20186,7 +20840,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20222,7 +20877,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20258,7 +20914,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20379,7 +21036,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20410,7 +21068,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -20476,7 +21135,8 @@
             "x-speakeasy-deprecation-message": "From v3.1, this parameter will be ignored"
           },
           "pollingPeriod": {
-            "type": "string"
+            "type": "string",
+            "default": "30m"
           },
           "provider": {
             "type": "string",
@@ -25333,7 +25993,7 @@
       "sort": {
         "name": "sort",
         "in": "query",
-        "description": "Sort results using a field name and order (ascending or descending). \nFormat: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.\n",
+        "description": "Sort results using a field name and order (ascending or descending). Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.\n",
         "required": false,
         "schema": {
           "type": "string",

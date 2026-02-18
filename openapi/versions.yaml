@@ -2,7 +2,7 @@ versions:
   base:
     version: "main"
   ledger:
-    version: "feat/transaction_templates"
+    version: "feat/query_templates"
   payments:
     version: "main"
   reconciliation:

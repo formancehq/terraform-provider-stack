@@ -1,5 +1,4 @@
-# FormancePaymentsV1
-(*Payments.V1*)
+# Payments.V1
 
 ## Overview
 
@@ -836,7 +835,25 @@ func main() {
         log.Fatal(err)
     }
     if res.TaskResponse != nil {
-        // handle response
+        switch res.TaskResponse.Data.Type {
+            case shared.TaskResponseDataTypeTaskStripe:
+                // res.TaskResponse.Data.TaskStripe is populated
+            case shared.TaskResponseDataTypeTaskWise:
+                // res.TaskResponse.Data.TaskWise is populated
+            case shared.TaskResponseDataTypeTaskCurrencyCloud:
+                // res.TaskResponse.Data.TaskCurrencyCloud is populated
+            case shared.TaskResponseDataTypeTaskDummyPay:
+                // res.TaskResponse.Data.TaskDummyPay is populated
+            case shared.TaskResponseDataTypeTaskModulr:
+                // res.TaskResponse.Data.TaskModulr is populated
+            case shared.TaskResponseDataTypeTaskBankingCircle:
+                // res.TaskResponse.Data.TaskBankingCircle is populated
+            case shared.TaskResponseDataTypeTaskMangoPay:
+                // res.TaskResponse.Data.TaskMangoPay is populated
+            case shared.TaskResponseDataTypeTaskMoneycorp:
+                // res.TaskResponse.Data.TaskMoneycorp is populated
+        }
+
     }
 }
 ```
@@ -897,7 +914,25 @@ func main() {
         log.Fatal(err)
     }
     if res.TaskResponse != nil {
-        // handle response
+        switch res.TaskResponse.Data.Type {
+            case shared.TaskResponseDataTypeTaskStripe:
+                // res.TaskResponse.Data.TaskStripe is populated
+            case shared.TaskResponseDataTypeTaskWise:
+                // res.TaskResponse.Data.TaskWise is populated
+            case shared.TaskResponseDataTypeTaskCurrencyCloud:
+                // res.TaskResponse.Data.TaskCurrencyCloud is populated
+            case shared.TaskResponseDataTypeTaskDummyPay:
+                // res.TaskResponse.Data.TaskDummyPay is populated
+            case shared.TaskResponseDataTypeTaskModulr:
+                // res.TaskResponse.Data.TaskModulr is populated
+            case shared.TaskResponseDataTypeTaskBankingCircle:
+                // res.TaskResponse.Data.TaskBankingCircle is populated
+            case shared.TaskResponseDataTypeTaskMangoPay:
+                // res.TaskResponse.Data.TaskMangoPay is populated
+            case shared.TaskResponseDataTypeTaskMoneycorp:
+                // res.TaskResponse.Data.TaskMoneycorp is populated
+        }
+
     }
 }
 ```
@@ -1991,7 +2026,31 @@ func main() {
         log.Fatal(err)
     }
     if res.ConnectorConfigResponse != nil {
-        // handle response
+        switch res.ConnectorConfigResponse.Data.Type {
+            case shared.ConnectorConfigTypeAdyen:
+                // res.ConnectorConfigResponse.Data.AdyenConfig is populated
+            case shared.ConnectorConfigTypeAtlar:
+                // res.ConnectorConfigResponse.Data.AtlarConfig is populated
+            case shared.ConnectorConfigTypeBankingcircle:
+                // res.ConnectorConfigResponse.Data.BankingCircleConfig is populated
+            case shared.ConnectorConfigTypeCurrencycloud:
+                // res.ConnectorConfigResponse.Data.CurrencyCloudConfig is populated
+            case shared.ConnectorConfigTypeDummypay:
+                // res.ConnectorConfigResponse.Data.DummyPayConfig is populated
+            case shared.ConnectorConfigTypeGeneric:
+                // res.ConnectorConfigResponse.Data.GenericConfig is populated
+            case shared.ConnectorConfigTypeMangopay:
+                // res.ConnectorConfigResponse.Data.MangoPayConfig is populated
+            case shared.ConnectorConfigTypeModulr:
+                // res.ConnectorConfigResponse.Data.ModulrConfig is populated
+            case shared.ConnectorConfigTypeMoneycorp:
+                // res.ConnectorConfigResponse.Data.MoneycorpConfig is populated
+            case shared.ConnectorConfigTypeStripe:
+                // res.ConnectorConfigResponse.Data.StripeConfig is populated
+            case shared.ConnectorConfigTypeWise:
+                // res.ConnectorConfigResponse.Data.WiseConfig is populated
+        }
+
     }
 }
 ```
@@ -2051,7 +2110,31 @@ func main() {
         log.Fatal(err)
     }
     if res.ConnectorConfigResponse != nil {
-        // handle response
+        switch res.ConnectorConfigResponse.Data.Type {
+            case shared.ConnectorConfigTypeAdyen:
+                // res.ConnectorConfigResponse.Data.AdyenConfig is populated
+            case shared.ConnectorConfigTypeAtlar:
+                // res.ConnectorConfigResponse.Data.AtlarConfig is populated
+            case shared.ConnectorConfigTypeBankingcircle:
+                // res.ConnectorConfigResponse.Data.BankingCircleConfig is populated
+            case shared.ConnectorConfigTypeCurrencycloud:
+                // res.ConnectorConfigResponse.Data.CurrencyCloudConfig is populated
+            case shared.ConnectorConfigTypeDummypay:
+                // res.ConnectorConfigResponse.Data.DummyPayConfig is populated
+            case shared.ConnectorConfigTypeGeneric:
+                // res.ConnectorConfigResponse.Data.GenericConfig is populated
+            case shared.ConnectorConfigTypeMangopay:
+                // res.ConnectorConfigResponse.Data.MangoPayConfig is populated
+            case shared.ConnectorConfigTypeModulr:
+                // res.ConnectorConfigResponse.Data.ModulrConfig is populated
+            case shared.ConnectorConfigTypeMoneycorp:
+                // res.ConnectorConfigResponse.Data.MoneycorpConfig is populated
+            case shared.ConnectorConfigTypeStripe:
+                // res.ConnectorConfigResponse.Data.StripeConfig is populated
+            case shared.ConnectorConfigTypeWise:
+                // res.ConnectorConfigResponse.Data.WiseConfig is populated
+        }
+
     }
 }
 ```

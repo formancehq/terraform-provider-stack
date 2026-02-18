@@ -38,6 +38,7 @@ func (s *LedgerSchema) ConfigValidators(context.Context) []resource.ConfigValida
 		resourcevalidator.AtLeastOneOf(
 			path.MatchRoot("chart"),
 			path.MatchRoot("transactions"),
+			path.MatchRoot("queries"),
 		),
 	}
 }
@@ -47,6 +48,7 @@ type LedgerSchemaModel struct {
 	Ledger         types.String  `tfsdk:"ledger"`
 	Chart          types.Dynamic `tfsdk:"chart"`
 	Transactions   types.Dynamic `tfsdk:"transactions"`
+	Queries        types.Dynamic `tfsdk:"queries"`
 	IdempotencyKey types.String  `tfsdk:"idempotency_key"`
 }
 
@@ -81,6 +83,15 @@ var SchemaLedgerSchema = schema.Schema{
 			Description: "The idempotency key of the schema.",
 		},
 		"transactions": schema.DynamicAttribute{
+			Optional:    true,
+			Computed:    true,
+			Description: "The transaction templates defined in the schema.",
+			PlanModifiers: []planmodifier.Dynamic{
+				dynamicplanmodifier.RequiresReplace(),
+			},
+			Default: dynamicdefault.StaticValue(types.DynamicValue(types.ObjectValueMust(map[string]attr.Type{}, map[string]attr.Value{}))),
+		},
+		"queries": schema.DynamicAttribute{
 			Optional:    true,
 			Computed:    true,
 			Description: "The transaction templates defined in the schema.",
@@ -141,6 +152,19 @@ func (s *LedgerSchemaModel) parseTransaction() (map[string]shared.V2TransactionT
 	return v2Schema, nil
 }
 
+func (s *LedgerSchemaModel) parseQuery() (map[string]shared.V2QueryTemplate, error) {
+	_, ok := s.Queries.UnderlyingValue().(types.Object)
+	if !ok {
+		return nil, fmt.Errorf("queries is not a valid JSON object")
+	}
+	v2Schema := map[string]shared.V2QueryTemplate{}
+	if err := json.Unmarshal([]byte(s.Queries.String()), &v2Schema); err != nil {
+		return nil, fmt.Errorf("failed to marshal queries: %w", err)
+	}
+
+	return v2Schema, nil
+}
+
 func (s *LedgerSchema) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, res *resource.ValidateConfigResponse) {
 	var conf LedgerSchemaModel
 	res.Diagnostics.Append(req.Config.Get(ctx, &conf)...)
@@ -152,7 +176,7 @@ func (s *LedgerSchema) ValidateConfig(ctx context.Context, req resource.Validate
 		if _, ok := conf.Chart.UnderlyingValue().(types.Object); !ok {
 			res.Diagnostics.AddError("Invalid Ledger Query", "The ledger_query must be a valid JSON object.")
 		} else {
-			logging.FromContext(ctx).Debug("Ledger query is valid")
+			logging.FromContext(ctx).Debug("Ledger chart is valid")
 			_, err := conf.parseSchema()
 			if err != nil {
 				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for ledger schema: %s", err))
@@ -164,8 +188,20 @@ func (s *LedgerSchema) ValidateConfig(ctx context.Context, req resource.Validate
 		if _, ok := conf.Transactions.UnderlyingValue().(types.Object); !ok {
 			res.Diagnostics.AddError("Invalid Ledger Query", "The ledger_query must be a valid JSON object.")
 		} else {
-			logging.FromContext(ctx).Debug("Ledger query is valid")
+			logging.FromContext(ctx).Debug("Ledger transaction is valid")
 			_, err := conf.parseTransaction()
+			if err != nil {
+				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for ledger schema: %s", err))
+			}
+		}
+	}
+
+	if !conf.Queries.IsNull() {
+		if _, ok := conf.Queries.UnderlyingValue().(types.Object); !ok {
+			res.Diagnostics.AddError("Invalid Ledger Query", "The ledger_query must be a valid JSON object.")
+		} else {
+			logging.FromContext(ctx).Debug("Ledger query is valid")
+			_, err := conf.parseQuery()
 			if err != nil {
 				res.Diagnostics.AddError("Invalid Configuration", fmt.Sprintf("Failed to create configuration for ledger schema: %s", err))
 			}
@@ -185,6 +221,7 @@ func (s *LedgerSchema) Create(ctx context.Context, req resource.CreateRequest, r
 	var (
 		chartData       map[string]shared.V2ChartSegment
 		transactionData map[string]shared.V2TransactionTemplate
+		queriesData     map[string]shared.V2QueryTemplate
 		err             error
 	)
 	if !plan.Chart.IsNull() {
@@ -201,6 +238,13 @@ func (s *LedgerSchema) Create(ctx context.Context, req resource.CreateRequest, r
 			return
 		}
 	}
+	if !plan.Queries.IsNull() {
+		queriesData, err = plan.parseQuery()
+		if err != nil {
+			res.Diagnostics.AddError("Invalid Queries", fmt.Sprintf("Failed to parse queries: %s", err))
+			return
+		}
+	}
 
 	var IK *string
 	if !plan.IdempotencyKey.IsNull() {
@@ -214,6 +258,7 @@ func (s *LedgerSchema) Create(ctx context.Context, req resource.CreateRequest, r
 		IdempotencyKey: IK,
 		V2SchemaData: shared.V2SchemaData{
 			Chart:        chartData,
+			Queries:      queriesData,
 			Transactions: transactionData,
 		},
 	}
@@ -293,6 +338,21 @@ func (s *LedgerSchema) Read(ctx context.Context, req resource.ReadRequest, res *
 		}
 		tfValues := ConvertToAttrValues(m)
 		state.Transactions = types.DynamicValue(NewDynamicObjectValue(tfValues).Value())
+	}
+	queries := readSchemaResponse.V2SchemaResponse.Data.Queries
+	if len(queries) >= 0 {
+		data, err := json.Marshal(queries)
+		if err != nil {
+			res.Diagnostics.AddError("Transactions Marshalling Error", fmt.Sprintf("Failed to marshal transactions: %s", err))
+			return
+		}
+		var m = make(map[string]any)
+		if err := json.Unmarshal(data, &m); err != nil {
+			res.Diagnostics.AddError("Transactions Unmarshalling Error", fmt.Sprintf("Failed to unmarshal transactions: %s", err))
+			return
+		}
+		tfValues := ConvertToAttrValues(m)
+		state.Queries = types.DynamicValue(NewDynamicObjectValue(tfValues).Value())
 	}
 
 	state.Version = types.StringValue(readSchemaResponse.V2SchemaResponse.Data.Version)

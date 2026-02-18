@@ -1,4 +1,4 @@
-# ActivityCreateTransactionOutput
+# RevertTransactionResponse
 
 
 ## Fields

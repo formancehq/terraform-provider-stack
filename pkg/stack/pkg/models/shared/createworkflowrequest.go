@@ -2,21 +2,21 @@
 
 package shared
 
-type WorkflowConfig struct {
+type CreateWorkflowRequest struct {
 	Name   *string          `json:"name,omitempty"`
 	Stages []map[string]any `json:"stages"`
 }
 
-func (w *WorkflowConfig) GetName() *string {
-	if w == nil {
+func (c *CreateWorkflowRequest) GetName() *string {
+	if c == nil {
 		return nil
 	}
-	return w.Name
+	return c.Name
 }
 
-func (w *WorkflowConfig) GetStages() []map[string]any {
-	if w == nil {
+func (c *CreateWorkflowRequest) GetStages() []map[string]any {
+	if c == nil {
 		return []map[string]any{}
 	}
-	return w.Stages
+	return c.Stages
 }

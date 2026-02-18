@@ -18,6 +18,7 @@ const (
 	V3InstallConnectorRequestTypeColumn        V3InstallConnectorRequestType = "Column"
 	V3InstallConnectorRequestTypeCurrencycloud V3InstallConnectorRequestType = "Currencycloud"
 	V3InstallConnectorRequestTypeDummypay      V3InstallConnectorRequestType = "Dummypay"
+	V3InstallConnectorRequestTypeFireblocks    V3InstallConnectorRequestType = "Fireblocks"
 	V3InstallConnectorRequestTypeGeneric       V3InstallConnectorRequestType = "Generic"
 	V3InstallConnectorRequestTypeIncrease      V3InstallConnectorRequestType = "Increase"
 	V3InstallConnectorRequestTypeMangopay      V3InstallConnectorRequestType = "Mangopay"
@@ -32,23 +33,24 @@ const (
 )
 
 type V3InstallConnectorRequest struct {
-	V3AdyenConfig         *V3AdyenConfig         `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3AtlarConfig         *V3AtlarConfig         `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3BankingcircleConfig *V3BankingcircleConfig `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3ColumnConfig        *V3ColumnConfig        `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3CurrencycloudConfig *V3CurrencycloudConfig `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3DummypayConfig      *V3DummypayConfig      `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3GenericConfig       *V3GenericConfig       `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3IncreaseConfig      *V3IncreaseConfig      `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3MangopayConfig      *V3MangopayConfig      `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3ModulrConfig        *V3ModulrConfig        `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3MoneycorpConfig     *V3MoneycorpConfig     `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3PlaidConfig         *V3PlaidConfig         `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3PowensConfig        *V3PowensConfig        `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3QontoConfig         *V3QontoConfig         `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3StripeConfig        *V3StripeConfig        `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3TinkConfig          *V3TinkConfig          `queryParam:"inline,name=V3InstallConnectorRequest"`
-	V3WiseConfig          *V3WiseConfig          `queryParam:"inline,name=V3InstallConnectorRequest"`
+	V3AdyenConfig         *V3AdyenConfig         `queryParam:"inline" union:"member"`
+	V3AtlarConfig         *V3AtlarConfig         `queryParam:"inline" union:"member"`
+	V3BankingcircleConfig *V3BankingcircleConfig `queryParam:"inline" union:"member"`
+	V3ColumnConfig        *V3ColumnConfig        `queryParam:"inline" union:"member"`
+	V3CurrencycloudConfig *V3CurrencycloudConfig `queryParam:"inline" union:"member"`
+	V3DummypayConfig      *V3DummypayConfig      `queryParam:"inline" union:"member"`
+	V3FireblocksConfig    *V3FireblocksConfig    `queryParam:"inline" union:"member"`
+	V3GenericConfig       *V3GenericConfig       `queryParam:"inline" union:"member"`
+	V3IncreaseConfig      *V3IncreaseConfig      `queryParam:"inline" union:"member"`
+	V3MangopayConfig      *V3MangopayConfig      `queryParam:"inline" union:"member"`
+	V3ModulrConfig        *V3ModulrConfig        `queryParam:"inline" union:"member"`
+	V3MoneycorpConfig     *V3MoneycorpConfig     `queryParam:"inline" union:"member"`
+	V3PlaidConfig         *V3PlaidConfig         `queryParam:"inline" union:"member"`
+	V3PowensConfig        *V3PowensConfig        `queryParam:"inline" union:"member"`
+	V3QontoConfig         *V3QontoConfig         `queryParam:"inline" union:"member"`
+	V3StripeConfig        *V3StripeConfig        `queryParam:"inline" union:"member"`
+	V3TinkConfig          *V3TinkConfig          `queryParam:"inline" union:"member"`
+	V3WiseConfig          *V3WiseConfig          `queryParam:"inline" union:"member"`
 
 	Type V3InstallConnectorRequestType
 }
@@ -122,6 +124,18 @@ func CreateV3InstallConnectorRequestDummypay(dummypay V3DummypayConfig) V3Instal
 	return V3InstallConnectorRequest{
 		V3DummypayConfig: &dummypay,
 		Type:             typ,
+	}
+}
+
+func CreateV3InstallConnectorRequestFireblocks(fireblocks V3FireblocksConfig) V3InstallConnectorRequest {
+	typ := V3InstallConnectorRequestTypeFireblocks
+
+	typStr := string(typ)
+	fireblocks.Provider = &typStr
+
+	return V3InstallConnectorRequest{
+		V3FireblocksConfig: &fireblocks,
+		Type:               typ,
 	}
 }
 
@@ -323,6 +337,15 @@ func (u *V3InstallConnectorRequest) UnmarshalJSON(data []byte) error {
 		u.V3DummypayConfig = v3DummypayConfig
 		u.Type = V3InstallConnectorRequestTypeDummypay
 		return nil
+	case "Fireblocks":
+		v3FireblocksConfig := new(V3FireblocksConfig)
+		if err := utils.UnmarshalJSON(data, &v3FireblocksConfig, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Provider == Fireblocks) type V3FireblocksConfig within V3InstallConnectorRequest: %w", string(data), err)
+		}
+
+		u.V3FireblocksConfig = v3FireblocksConfig
+		u.Type = V3InstallConnectorRequestTypeFireblocks
+		return nil
 	case "Generic":
 		v3GenericConfig := new(V3GenericConfig)
 		if err := utils.UnmarshalJSON(data, &v3GenericConfig, "", true, nil); err != nil {
@@ -450,6 +473,10 @@ func (u V3InstallConnectorRequest) MarshalJSON() ([]byte, error) {
 
 	if u.V3DummypayConfig != nil {
 		return utils.MarshalJSON(u.V3DummypayConfig, "", true)
+	}
+
+	if u.V3FireblocksConfig != nil {
+		return utils.MarshalJSON(u.V3FireblocksConfig, "", true)
 	}
 
 	if u.V3GenericConfig != nil {

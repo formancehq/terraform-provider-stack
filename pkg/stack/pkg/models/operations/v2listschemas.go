@@ -69,7 +69,8 @@ type V2ListSchemasRequest struct {
 	// The sort order
 	Order *Order `default:"desc" queryParam:"style=form,explode=true,name=order"`
 	// The maximum number of results to return per page
-	PageSize *int64 `default:"15" queryParam:"style=form,explode=true,name=pageSize"`
+	PageSize *int64         `default:"15" queryParam:"style=form,explode=true,name=pageSize"`
+	Query    map[string]any `queryParam:"serialization=json,name=query"`
 	// The field to sort by
 	Sort *Sort `default:"created_at" queryParam:"style=form,explode=true,name=sort"`
 }
@@ -79,7 +80,7 @@ func (v V2ListSchemasRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2ListSchemasRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"ledger"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -111,6 +112,13 @@ func (v *V2ListSchemasRequest) GetPageSize() *int64 {
 		return nil
 	}
 	return v.PageSize
+}
+
+func (v *V2ListSchemasRequest) GetQuery() map[string]any {
+	if v == nil {
+		return nil
+	}
+	return v.Query
 }
 
 func (v *V2ListSchemasRequest) GetSort() *Sort {

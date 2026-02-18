@@ -24,7 +24,7 @@ func (v V2GetTransactionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2GetTransactionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"id", "ledger"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

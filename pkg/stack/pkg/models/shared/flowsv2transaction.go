@@ -21,7 +21,7 @@ func (f FlowsV2Transaction) MarshalJSON() ([]byte, error) {
 }
 
 func (f *FlowsV2Transaction) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &f, "", false, []string{"metadata", "postings", "timestamp", "txid"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &f, "", false, nil); err != nil {
 		return err
 	}
 	return nil

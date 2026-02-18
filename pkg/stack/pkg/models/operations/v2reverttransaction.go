@@ -32,7 +32,7 @@ func (v V2RevertTransactionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2RevertTransactionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"id", "ledger"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil
@@ -102,10 +102,10 @@ type V2RevertTransactionResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// OK
-	V2CreateTransactionResponse *shared.V2CreateTransactionResponse
 	// Error
 	V2ErrorResponse *shared.V2ErrorResponse
+	// OK
+	V2RevertTransactionResponse *shared.V2RevertTransactionResponse
 }
 
 func (v *V2RevertTransactionResponse) GetContentType() string {
@@ -136,16 +136,16 @@ func (v *V2RevertTransactionResponse) GetRawResponse() *http.Response {
 	return v.RawResponse
 }
 
-func (v *V2RevertTransactionResponse) GetV2CreateTransactionResponse() *shared.V2CreateTransactionResponse {
-	if v == nil {
-		return nil
-	}
-	return v.V2CreateTransactionResponse
-}
-
 func (v *V2RevertTransactionResponse) GetV2ErrorResponse() *shared.V2ErrorResponse {
 	if v == nil {
 		return nil
 	}
 	return v.V2ErrorResponse
+}
+
+func (v *V2RevertTransactionResponse) GetV2RevertTransactionResponse() *shared.V2RevertTransactionResponse {
+	if v == nil {
+		return nil
+	}
+	return v.V2RevertTransactionResponse
 }

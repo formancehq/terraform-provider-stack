@@ -23,7 +23,7 @@ func (r RevertTransactionRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RevertTransactionRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &r, "", false, []string{"ledger", "txid"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -24,4 +24,5 @@ Resource for managing a Formance Ledger Schema. For advanced usage and configura
 
 - `chart` (Dynamic) The chart of account definition in JSON format.
 - `idempotency_key` (String) The idempotency key of the schema.
+- `queries` (Dynamic) The transaction templates defined in the schema.
 - `transactions` (Dynamic) The transaction templates defined in the schema.

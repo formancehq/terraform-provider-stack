@@ -20,7 +20,7 @@ func (t TransferInitiationAdjustments) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TransferInitiationAdjustments) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &t, "", false, []string{"adjustmentID", "createdAt", "status"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &t, "", false, nil); err != nil {
 		return err
 	}
 	return nil

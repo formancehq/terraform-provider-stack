@@ -62,15 +62,14 @@ type ResourceTracer struct {
 	underlyingValue any
 }
 
-func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, res any) func() resource.Resource {
+func NewResourceTracer(tracer trace.Tracer, logger logging.Logger, factory func() resource.Resource) func() resource.Resource {
 	return func() resource.Resource {
 		return &ResourceTracer{
 			tracer:          tracer,
 			logger:          logger,
-			underlyingValue: res,
+			underlyingValue: factory(),
 		}
 	}
-
 }
 
 // ConfigValidators implements resource.ResourceWithConfigValidators.

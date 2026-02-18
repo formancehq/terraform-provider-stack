@@ -13,6 +13,8 @@ type V2Schema struct {
 	Chart map[string]V2ChartSegment `json:"chart"`
 	// Schema creation timestamp
 	CreatedAt time.Time `json:"createdAt"`
+	// Query templates
+	Queries map[string]V2QueryTemplate `json:"queries,omitempty"`
 	// Transaction templates
 	Transactions map[string]V2TransactionTemplate `json:"transactions"`
 	// Schema version
@@ -42,6 +44,13 @@ func (v *V2Schema) GetCreatedAt() time.Time {
 		return time.Time{}
 	}
 	return v.CreatedAt
+}
+
+func (v *V2Schema) GetQueries() map[string]V2QueryTemplate {
+	if v == nil {
+		return nil
+	}
+	return v.Queries
 }
 
 func (v *V2Schema) GetTransactions() map[string]V2TransactionTemplate {

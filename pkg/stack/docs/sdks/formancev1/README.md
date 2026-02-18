@@ -1,5 +1,4 @@
-# FormanceV1
-(*Ledger.V1*)
+# Ledger.V1
 
 ## Overview
 
@@ -448,14 +447,7 @@ func main() {
             },
             Reference: v3.Pointer("ref:001"),
             Script: &shared.PostTransactionScript{
-                Plain: "vars {\n" +
-                "account $user\n" +
-                "}\n" +
-                "send [COIN 10] (\n" +
-                "	source = @world\n" +
-                "	destination = $user\n" +
-                ")\n" +
-                "",
+                Plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n",
                 Vars: map[string]any{
                     "user": "users:042",
                 },
@@ -1307,14 +1299,7 @@ func main() {
 
     res, err := s.Ledger.V1.RunScript(ctx, operations.RunScriptRequest{
         Script: shared.Script{
-            Plain: "vars {\n" +
-            "account $user\n" +
-            "}\n" +
-            "send [COIN 10] (\n" +
-            "	source = @world\n" +
-            "	destination = $user\n" +
-            ")\n" +
-            "",
+            Plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n",
             Reference: v3.Pointer("order_1234"),
             Vars: map[string]any{
                 "user": "users:042",

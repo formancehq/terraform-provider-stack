@@ -26,7 +26,7 @@ func (v V3InitiatePaymentRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3InitiatePaymentRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"amount", "asset", "connectorID", "description", "reference", "scheduledAt", "type"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

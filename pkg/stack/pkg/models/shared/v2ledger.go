@@ -22,7 +22,7 @@ func (v V2Ledger) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2Ledger) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"addedAt", "bucket", "name"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

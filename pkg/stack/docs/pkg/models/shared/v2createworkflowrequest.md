@@ -1,4 +1,4 @@
-# V2WorkflowConfig
+# V2CreateWorkflowRequest
 
 
 ## Fields
