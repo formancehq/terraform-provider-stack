@@ -39,7 +39,8 @@ jobs:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - run: >
           nix develop --impure --command just pre-commit
-
+        env:
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
       - name: Get changed files
         id: changed-files
         shell: bash
