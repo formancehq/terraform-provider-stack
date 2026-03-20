@@ -24,9 +24,9 @@ func TestLedgerSchemaChart(t *testing.T) {
 			tfversion.SkipBelow(tfversion.Version0_15_0),
 		},
 		Steps: []resource.TestStep{
-			newTestStepStack(),
+			newTestStepStackWithLatestVersion(),
 			{
-				Config: newStack(RegionName) +
+				Config: newStackWithLatestVersion(RegionName) +
 					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
@@ -79,9 +79,9 @@ func TestLedgerSchemaTransactions(t *testing.T) {
 			tfversion.SkipBelow(tfversion.Version0_15_0),
 		},
 		Steps: []resource.TestStep{
-			newTestStepStack(),
+			newTestStepStackWithLatestVersion(),
 			{
-				Config: newStack(RegionName) +
+				Config: newStackWithLatestVersion(RegionName) +
 					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
@@ -138,7 +138,7 @@ func TestLedgerSchemaTransactionsScriptError(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: newStack(RegionName) +
+				Config: newStackWithLatestVersion(RegionName) +
 					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
