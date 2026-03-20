@@ -6,7 +6,7 @@ replace github.com/formancehq/formance-sdk-go/v3 => ./pkg/stack
 
 require (
 	github.com/formancehq/formance-sdk-go/v3 v3.7.1
-	github.com/formancehq/go-libs/v3 v3.6.0
+	github.com/formancehq/go-libs/v4 v4.1.1
 	github.com/google/go-cmp v0.7.0
 	github.com/stretchr/testify v1.11.1
 	github.com/zitadel/oidc/v3 v3.45.0
@@ -15,12 +15,12 @@ require (
 )
 
 require (
-	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/apparentlymart/go-textseg/v16 v16.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
-	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
-	github.com/oklog/ulid v1.3.1 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+	github.com/lithammer/shortuuid/v4 v4.2.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.1 // indirect
+	google.golang.org/appengine/v2 v2.0.6 // indirect
 )
 
 require (
