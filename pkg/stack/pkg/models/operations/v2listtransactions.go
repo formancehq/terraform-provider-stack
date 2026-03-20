@@ -55,8 +55,7 @@ type V2ListTransactionsRequest struct {
 	Pit      *time.Time     `queryParam:"style=form,explode=true,name=pit"`
 	Query    map[string]any `queryParam:"serialization=json,name=query"`
 	Reverse  *bool          `queryParam:"style=form,explode=true,name=reverse"`
-	// Sort results using a field name and order (ascending or descending).
-	// Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
+	// Sort results using a field name and order (ascending or descending). Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
 	//
 	Sort *string `queryParam:"style=form,explode=true,name=sort"`
 }
@@ -66,7 +65,7 @@ func (v V2ListTransactionsRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2ListTransactionsRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"ledger"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

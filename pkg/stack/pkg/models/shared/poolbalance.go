@@ -18,7 +18,7 @@ func (p PoolBalance) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PoolBalance) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &p, "", false, []string{"amount", "asset"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &p, "", false, nil); err != nil {
 		return err
 	}
 	return nil

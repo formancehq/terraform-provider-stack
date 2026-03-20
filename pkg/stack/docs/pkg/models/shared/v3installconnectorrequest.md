@@ -39,6 +39,12 @@ v3InstallConnectorRequest := shared.CreateV3InstallConnectorRequestCurrencycloud
 v3InstallConnectorRequest := shared.CreateV3InstallConnectorRequestDummypay(shared.V3DummypayConfig{/* values here */})
 ```
 
+### V3FireblocksConfig
+
+```go
+v3InstallConnectorRequest := shared.CreateV3InstallConnectorRequestFireblocks(shared.V3FireblocksConfig{/* values here */})
+```
+
 ### V3GenericConfig
 
 ```go
@@ -105,3 +111,47 @@ v3InstallConnectorRequest := shared.CreateV3InstallConnectorRequestTink(shared.V
 v3InstallConnectorRequest := shared.CreateV3InstallConnectorRequestWise(shared.V3WiseConfig{/* values here */})
 ```
 
+## Union Discrimination
+
+Use the `Type` field to determine which variant is active, then access the corresponding field:
+
+```go
+switch v3InstallConnectorRequest.Type {
+	case shared.V3InstallConnectorRequestTypeAdyen:
+		// v3InstallConnectorRequest.V3AdyenConfig is populated
+	case shared.V3InstallConnectorRequestTypeAtlar:
+		// v3InstallConnectorRequest.V3AtlarConfig is populated
+	case shared.V3InstallConnectorRequestTypeBankingcircle:
+		// v3InstallConnectorRequest.V3BankingcircleConfig is populated
+	case shared.V3InstallConnectorRequestTypeColumn:
+		// v3InstallConnectorRequest.V3ColumnConfig is populated
+	case shared.V3InstallConnectorRequestTypeCurrencycloud:
+		// v3InstallConnectorRequest.V3CurrencycloudConfig is populated
+	case shared.V3InstallConnectorRequestTypeDummypay:
+		// v3InstallConnectorRequest.V3DummypayConfig is populated
+	case shared.V3InstallConnectorRequestTypeFireblocks:
+		// v3InstallConnectorRequest.V3FireblocksConfig is populated
+	case shared.V3InstallConnectorRequestTypeGeneric:
+		// v3InstallConnectorRequest.V3GenericConfig is populated
+	case shared.V3InstallConnectorRequestTypeIncrease:
+		// v3InstallConnectorRequest.V3IncreaseConfig is populated
+	case shared.V3InstallConnectorRequestTypeMangopay:
+		// v3InstallConnectorRequest.V3MangopayConfig is populated
+	case shared.V3InstallConnectorRequestTypeModulr:
+		// v3InstallConnectorRequest.V3ModulrConfig is populated
+	case shared.V3InstallConnectorRequestTypeMoneycorp:
+		// v3InstallConnectorRequest.V3MoneycorpConfig is populated
+	case shared.V3InstallConnectorRequestTypePlaid:
+		// v3InstallConnectorRequest.V3PlaidConfig is populated
+	case shared.V3InstallConnectorRequestTypePowens:
+		// v3InstallConnectorRequest.V3PowensConfig is populated
+	case shared.V3InstallConnectorRequestTypeQonto:
+		// v3InstallConnectorRequest.V3QontoConfig is populated
+	case shared.V3InstallConnectorRequestTypeStripe:
+		// v3InstallConnectorRequest.V3StripeConfig is populated
+	case shared.V3InstallConnectorRequestTypeTink:
+		// v3InstallConnectorRequest.V3TinkConfig is populated
+	case shared.V3InstallConnectorRequestTypeWise:
+		// v3InstallConnectorRequest.V3WiseConfig is populated
+}
+```

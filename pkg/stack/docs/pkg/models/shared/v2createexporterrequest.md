@@ -1,4 +1,4 @@
-# V2ExporterConfiguration
+# V2CreateExporterRequest
 
 
 ## Fields

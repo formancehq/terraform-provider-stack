@@ -2,8 +2,23 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v3/pkg/utils"
+)
+
 type V2ChartAccountMetadata struct {
 	Default *string `json:"default,omitempty"`
+}
+
+func (v V2ChartAccountMetadata) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(v, "", false)
+}
+
+func (v *V2ChartAccountMetadata) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (v *V2ChartAccountMetadata) GetDefault() *string {

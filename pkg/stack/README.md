@@ -157,7 +157,11 @@ func main() {
 <details open>
 <summary>Available methods</summary>
 
-#### [Auth.V1](docs/sdks/v1/README.md)
+### [Formance SDK](docs/sdks/formance/README.md)
+
+* [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
+
+### [Auth.V1](docs/sdks/v1/README.md)
 
 * [CreateClient](docs/sdks/v1/README.md#createclient) - Create client
 * [CreateSecret](docs/sdks/v1/README.md#createsecret) - Add a secret to a client
@@ -170,10 +174,6 @@ func main() {
 * [ReadClient](docs/sdks/v1/README.md#readclient) - Read client
 * [ReadUser](docs/sdks/v1/README.md#readuser) - Read user
 * [UpdateClient](docs/sdks/v1/README.md#updateclient) - Update client
-
-### [Formance SDK](docs/sdks/formance/README.md)
-
-* [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
 
 ### [Ledger](docs/sdks/ledger/README.md)
 
@@ -243,12 +243,13 @@ func main() {
 * [ResetPipeline](docs/sdks/v2/README.md#resetpipeline) - Reset pipeline
 * [RestoreBucket](docs/sdks/v2/README.md#restorebucket) - Restore bucket
 * [RevertTransaction](docs/sdks/v2/README.md#reverttransaction) - Revert a ledger transaction by its ID
+* [RunQuery](docs/sdks/v2/README.md#runquery) - Run a query template
 * [StartPipeline](docs/sdks/v2/README.md#startpipeline) - Start pipeline
 * [StopPipeline](docs/sdks/v2/README.md#stoppipeline) - Stop pipeline
 * [UpdateExporter](docs/sdks/v2/README.md#updateexporter) - Update exporter
 * [UpdateLedgerMetadata](docs/sdks/v2/README.md#updateledgermetadata) - Update ledger metadata
 
-#### [Orchestration.V1](docs/sdks/formanceorchestrationv1/README.md)
+### [Orchestration.V1](docs/sdks/formanceorchestrationv1/README.md)
 
 * [CancelEvent](docs/sdks/formanceorchestrationv1/README.md#cancelevent) - Cancel a running workflow
 * [CreateTrigger](docs/sdks/formanceorchestrationv1/README.md#createtrigger) - Create trigger
@@ -268,7 +269,7 @@ func main() {
 * [RunWorkflow](docs/sdks/formanceorchestrationv1/README.md#runworkflow) - Run workflow
 * [SendEvent](docs/sdks/formanceorchestrationv1/README.md#sendevent) - Send an event to a running workflow
 
-#### [Orchestration.V2](docs/sdks/formancev2/README.md)
+### [Orchestration.V2](docs/sdks/formancev2/README.md)
 
 * [CancelEvent](docs/sdks/formancev2/README.md#cancelevent) - Cancel a running workflow
 * [CreateTrigger](docs/sdks/formancev2/README.md#createtrigger) - Create trigger
@@ -289,7 +290,7 @@ func main() {
 * [SendEvent](docs/sdks/formancev2/README.md#sendevent) - Send an event to a running workflow
 * [TestTrigger](docs/sdks/formancev2/README.md#testtrigger) - Test trigger
 
-#### [Payments.V1](docs/sdks/formancepaymentsv1/README.md)
+### [Payments.V1](docs/sdks/formancepaymentsv1/README.md)
 
 * [AddAccountToPool](docs/sdks/formancepaymentsv1/README.md#addaccounttopool) - Add an account to a pool
 * [ConnectorsTransfer](docs/sdks/formancepaymentsv1/README.md#connectorstransfer) - Transfer funds between Connector accounts
@@ -337,7 +338,7 @@ func main() {
 * [UpdatePoolQuery](docs/sdks/formancepaymentsv1/README.md#updatepoolquery) - Update the query of a pool
 * [UpdateTransferInitiationStatus](docs/sdks/formancepaymentsv1/README.md#updatetransferinitiationstatus) - Update the status of a transfer initiation
 
-#### [Payments.V3](docs/sdks/v3/README.md)
+### [Payments.V3](docs/sdks/v3/README.md)
 
 * [AddAccountToPool](docs/sdks/v3/README.md#addaccounttopool) - Add an account to a pool
 * [AddBankAccountToPaymentServiceUser](docs/sdks/v3/README.md#addbankaccounttopaymentserviceuser) - Add a bank account to a payment service user
@@ -403,7 +404,7 @@ Allows to check if users used the link and completed the oauth flow.
 * [UpdatePoolQuery](docs/sdks/v3/README.md#updatepoolquery) - Update the query of a pool
 * [V3UpdateConnectorConfig](docs/sdks/v3/README.md#v3updateconnectorconfig) - Update the config of a connector
 
-#### [Reconciliation.V1](docs/sdks/formancereconciliationv1/README.md)
+### [Reconciliation.V1](docs/sdks/formancereconciliationv1/README.md)
 
 * [CreatePolicy](docs/sdks/formancereconciliationv1/README.md#createpolicy) - Create a policy
 * [DeletePolicy](docs/sdks/formancereconciliationv1/README.md#deletepolicy) - Delete a policy
@@ -414,7 +415,7 @@ Allows to check if users used the link and completed the oauth flow.
 * [Reconcile](docs/sdks/formancereconciliationv1/README.md#reconcile) - Reconcile using a policy
 * [ReconciliationgetServerInfo](docs/sdks/formancereconciliationv1/README.md#reconciliationgetserverinfo) - Get server info
 
-#### [Wallets.V1](docs/sdks/formancewalletsv1/README.md)
+### [Wallets.V1](docs/sdks/formancewalletsv1/README.md)
 
 * [ConfirmHold](docs/sdks/formancewalletsv1/README.md#confirmhold) - Confirm a hold
 * [CreateBalance](docs/sdks/formancewalletsv1/README.md#createbalance) - Create a balance
@@ -433,7 +434,7 @@ Allows to check if users used the link and completed the oauth flow.
 * [VoidHold](docs/sdks/formancewalletsv1/README.md#voidhold) - Cancel a hold
 * [WalletsgetServerInfo](docs/sdks/formancewalletsv1/README.md#walletsgetserverinfo) - Get server info
 
-#### [Webhooks.V1](docs/sdks/formancewebhooksv1/README.md)
+### [Webhooks.V1](docs/sdks/formancewebhooksv1/README.md)
 
 * [ActivateConfig](docs/sdks/formancewebhooksv1/README.md#activateconfig) - Activate one config
 * [ChangeConfigSecret](docs/sdks/formancewebhooksv1/README.md#changeconfigsecret) - Change the signing secret of a config
@@ -639,7 +640,7 @@ func main() {
 	s := v3.New(
 		v3.WithServerIndex(1),
 		v3.WithEnvironment("us-east-1"),
-		v3.WithOrganization("<value>"),
+		v3.WithOrganization("orgID-stackID"),
 		v3.WithSecurity(shared.Security{
 			ClientID:     "<YOUR_CLIENT_ID_HERE>",
 			ClientSecret: "<YOUR_CLIENT_SECRET_HERE>",

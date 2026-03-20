@@ -2,19 +2,19 @@
 
 package shared
 
-type V2ExporterConfiguration struct {
+type V2CreateExporterRequest struct {
 	Config map[string]any `json:"config"`
 	Driver string         `json:"driver"`
 }
 
-func (v *V2ExporterConfiguration) GetConfig() map[string]any {
+func (v *V2CreateExporterRequest) GetConfig() map[string]any {
 	if v == nil {
 		return map[string]any{}
 	}
 	return v.Config
 }
 
-func (v *V2ExporterConfiguration) GetDriver() string {
+func (v *V2CreateExporterRequest) GetDriver() string {
 	if v == nil {
 		return ""
 	}

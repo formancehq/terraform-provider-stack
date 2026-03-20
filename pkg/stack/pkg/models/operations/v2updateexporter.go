@@ -8,16 +8,16 @@ import (
 )
 
 type V2UpdateExporterRequest struct {
-	V2ExporterConfiguration shared.V2ExporterConfiguration `request:"mediaType=application/json"`
+	V2CreateExporterRequest shared.V2CreateExporterRequest `request:"mediaType=application/json"`
 	// The exporter id
 	ExporterID string `pathParam:"style=simple,explode=false,name=exporterID"`
 }
 
-func (v *V2UpdateExporterRequest) GetV2ExporterConfiguration() shared.V2ExporterConfiguration {
+func (v *V2UpdateExporterRequest) GetV2CreateExporterRequest() shared.V2CreateExporterRequest {
 	if v == nil {
-		return shared.V2ExporterConfiguration{}
+		return shared.V2CreateExporterRequest{}
 	}
-	return v.V2ExporterConfiguration
+	return v.V2CreateExporterRequest
 }
 
 func (v *V2UpdateExporterRequest) GetExporterID() string {

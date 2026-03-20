@@ -1,5 +1,4 @@
-# V3
-(*Payments.V3*)
+# Payments.V3
 
 ## Overview
 
@@ -1283,7 +1282,45 @@ func main() {
         log.Fatal(err)
     }
     if res.V3GetConnectorConfigResponse != nil {
-        // handle response
+        switch res.V3GetConnectorConfigResponse.Data.Type {
+            case shared.V3InstallConnectorRequestTypeAdyen:
+                // res.V3GetConnectorConfigResponse.Data.V3AdyenConfig is populated
+            case shared.V3InstallConnectorRequestTypeAtlar:
+                // res.V3GetConnectorConfigResponse.Data.V3AtlarConfig is populated
+            case shared.V3InstallConnectorRequestTypeBankingcircle:
+                // res.V3GetConnectorConfigResponse.Data.V3BankingcircleConfig is populated
+            case shared.V3InstallConnectorRequestTypeColumn:
+                // res.V3GetConnectorConfigResponse.Data.V3ColumnConfig is populated
+            case shared.V3InstallConnectorRequestTypeCurrencycloud:
+                // res.V3GetConnectorConfigResponse.Data.V3CurrencycloudConfig is populated
+            case shared.V3InstallConnectorRequestTypeDummypay:
+                // res.V3GetConnectorConfigResponse.Data.V3DummypayConfig is populated
+            case shared.V3InstallConnectorRequestTypeFireblocks:
+                // res.V3GetConnectorConfigResponse.Data.V3FireblocksConfig is populated
+            case shared.V3InstallConnectorRequestTypeGeneric:
+                // res.V3GetConnectorConfigResponse.Data.V3GenericConfig is populated
+            case shared.V3InstallConnectorRequestTypeIncrease:
+                // res.V3GetConnectorConfigResponse.Data.V3IncreaseConfig is populated
+            case shared.V3InstallConnectorRequestTypeMangopay:
+                // res.V3GetConnectorConfigResponse.Data.V3MangopayConfig is populated
+            case shared.V3InstallConnectorRequestTypeModulr:
+                // res.V3GetConnectorConfigResponse.Data.V3ModulrConfig is populated
+            case shared.V3InstallConnectorRequestTypeMoneycorp:
+                // res.V3GetConnectorConfigResponse.Data.V3MoneycorpConfig is populated
+            case shared.V3InstallConnectorRequestTypePlaid:
+                // res.V3GetConnectorConfigResponse.Data.V3PlaidConfig is populated
+            case shared.V3InstallConnectorRequestTypePowens:
+                // res.V3GetConnectorConfigResponse.Data.V3PowensConfig is populated
+            case shared.V3InstallConnectorRequestTypeQonto:
+                // res.V3GetConnectorConfigResponse.Data.V3QontoConfig is populated
+            case shared.V3InstallConnectorRequestTypeStripe:
+                // res.V3GetConnectorConfigResponse.Data.V3StripeConfig is populated
+            case shared.V3InstallConnectorRequestTypeTink:
+                // res.V3GetConnectorConfigResponse.Data.V3TinkConfig is populated
+            case shared.V3InstallConnectorRequestTypeWise:
+                // res.V3GetConnectorConfigResponse.Data.V3WiseConfig is populated
+        }
+
     }
 }
 ```

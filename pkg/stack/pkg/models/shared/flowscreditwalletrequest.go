@@ -23,7 +23,7 @@ func (f FlowsCreditWalletRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (f *FlowsCreditWalletRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &f, "", false, []string{"amount", "metadata", "sources"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &f, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -16,7 +16,7 @@ func (v V2AssetHolder) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2AssetHolder) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"assets"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

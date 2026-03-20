@@ -2,13 +2,13 @@
 
 package shared
 
-type ActivityCreateTransactionOutput struct {
+type RevertTransactionResponse struct {
 	Data FlowsTransaction `json:"data"`
 }
 
-func (a *ActivityCreateTransactionOutput) GetData() FlowsTransaction {
-	if a == nil {
+func (r *RevertTransactionResponse) GetData() FlowsTransaction {
+	if r == nil {
 		return FlowsTransaction{}
 	}
-	return a.Data
+	return r.Data
 }

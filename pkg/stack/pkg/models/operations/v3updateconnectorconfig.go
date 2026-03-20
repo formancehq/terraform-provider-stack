@@ -62,6 +62,13 @@ func (v *V3UpdateConnectorConfigRequest) GetV3InstallConnectorRequestDummypay() 
 	return nil
 }
 
+func (v *V3UpdateConnectorConfigRequest) GetV3InstallConnectorRequestFireblocks() *shared.V3FireblocksConfig {
+	if v := v.GetV3InstallConnectorRequest(); v != nil {
+		return v.V3FireblocksConfig
+	}
+	return nil
+}
+
 func (v *V3UpdateConnectorConfigRequest) GetV3InstallConnectorRequestGeneric() *shared.V3GenericConfig {
 	if v := v.GetV3InstallConnectorRequest(); v != nil {
 		return v.V3GenericConfig

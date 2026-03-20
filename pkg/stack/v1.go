@@ -32,7 +32,7 @@ func newV1(rootSDK *Formance, sdkConfig config.SDKConfiguration, hooks *hooks.Ho
 }
 
 // CreateClient - Create client
-func (s *V1) CreateClient(ctx context.Context, request *shared.ClientOptions, opts ...operations.Option) (*operations.CreateClientResponse, error) {
+func (s *V1) CreateClient(ctx context.Context, request *shared.CreateClientRequest, opts ...operations.Option) (*operations.CreateClientResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -2061,7 +2061,7 @@ func (s *V1) UpdateClient(ctx context.Context, request operations.UpdateClientRe
 		OAuth2Scopes:     []string{"auth:write"},
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, true, "ClientOptions", "json", `request:"mediaType=application/json"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, true, "CreateClientRequest", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}
@@ -2201,12 +2201,12 @@ func (s *V1) UpdateClient(ctx context.Context, request operations.UpdateClientRe
 				return nil, err
 			}
 
-			var out shared.CreateClientResponse
+			var out shared.UpdateClientResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.CreateClientResponse = &out
+			res.UpdateClientResponse = &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {

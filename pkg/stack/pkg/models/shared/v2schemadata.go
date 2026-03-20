@@ -6,6 +6,8 @@ package shared
 type V2SchemaData struct {
 	// Chart of account
 	Chart map[string]V2ChartSegment `json:"chart"`
+	// Query templates
+	Queries map[string]V2QueryTemplate `json:"queries,omitempty"`
 	// Transaction templates
 	Transactions map[string]V2TransactionTemplate `json:"transactions"`
 }
@@ -15,6 +17,13 @@ func (v *V2SchemaData) GetChart() map[string]V2ChartSegment {
 		return map[string]V2ChartSegment{}
 	}
 	return v.Chart
+}
+
+func (v *V2SchemaData) GetQueries() map[string]V2QueryTemplate {
+	if v == nil {
+		return nil
+	}
+	return v.Queries
 }
 
 func (v *V2SchemaData) GetTransactions() map[string]V2TransactionTemplate {

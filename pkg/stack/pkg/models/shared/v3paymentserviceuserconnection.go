@@ -22,7 +22,7 @@ func (v V3PaymentServiceUserConnection) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3PaymentServiceUserConnection) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"connectionID", "connectorID", "createdAt", "dataUpdatedAt", "status"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

@@ -1,0 +1,24 @@
+speakeasyVersion: 1.722.2
+sources: {}
+targets:
+    terraform-provider-stack:
+        source: terraform-provider-stack
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: latest
+    sources:
+        terraform-provider-stack:
+            inputs:
+                - location: ../../openapi/build.yaml
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/terraform-provider-stack
+    targets:
+        terraform-provider-stack:
+            target: go
+            source: terraform-provider-stack
+            codeSamples:
+                registry:
+                    location: registry.speakeasyapi.dev/formance/formance/terraform-provider-stack-go-code-samples
+                labelOverride:
+                    fixedValue: Go (SDK)
+                blocking: false

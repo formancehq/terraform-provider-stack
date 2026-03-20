@@ -254,7 +254,7 @@ func (p *FormanceStackProvider) Resources(ctx context.Context) []func() resource
 		resources.NewLedgerSchema(),
 	}
 	return collectionutils.Map(res, func(fn func() resource.Resource) func() resource.Resource {
-		return resources.NewResourceTracer(p.tracer, p.logger, fn())
+		return resources.NewResourceTracer(p.tracer, p.logger, fn)
 	})
 }
 

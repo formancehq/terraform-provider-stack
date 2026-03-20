@@ -2,11 +2,26 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v3/pkg/utils"
+)
+
 type V2TransactionTemplate struct {
 	Description *string `json:"description,omitempty"`
 	// The numscript runtime used to execute the script. Uses "machine" by default, unless the "--experimental-numscript-interpreter" feature flag is passed.
 	Runtime *Runtime `json:"runtime,omitempty"`
 	Script  string   `json:"script"`
+}
+
+func (v V2TransactionTemplate) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(v, "", false)
+}
+
+func (v *V2TransactionTemplate) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"script"}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (v *V2TransactionTemplate) GetDescription() *string {

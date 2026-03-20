@@ -22,7 +22,7 @@ func (v V3CreateAccountRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3CreateAccountRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"accountName", "connectorID", "createdAt", "reference", "type"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

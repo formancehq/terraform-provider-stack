@@ -22,7 +22,7 @@ func (f FlowsTransaction) MarshalJSON() ([]byte, error) {
 }
 
 func (f *FlowsTransaction) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &f, "", false, []string{"id", "metadata", "postings", "reverted", "timestamp"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &f, "", false, nil); err != nil {
 		return err
 	}
 	return nil

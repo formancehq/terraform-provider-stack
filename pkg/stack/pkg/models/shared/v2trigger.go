@@ -23,7 +23,7 @@ func (v V2Trigger) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2Trigger) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"createdAt", "event", "id", "workflowID"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

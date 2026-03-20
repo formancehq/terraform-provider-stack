@@ -37,7 +37,7 @@ func TestPaymentConnector(t *testing.T) {
 						resource "cloud_stack" "default" {
 							name = "test"
 							region_id = data.cloud_regions.default.id
-							version = "v3.2-rc.1"
+							version = "v3.2-rc"
 							force_destroy = true
 						}
 

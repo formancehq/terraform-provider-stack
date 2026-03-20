@@ -2,19 +2,19 @@
 
 package shared
 
-type V2WorkflowConfig struct {
+type V2CreateWorkflowRequest struct {
 	Name   *string          `json:"name,omitempty"`
 	Stages []map[string]any `json:"stages"`
 }
 
-func (v *V2WorkflowConfig) GetName() *string {
+func (v *V2CreateWorkflowRequest) GetName() *string {
 	if v == nil {
 		return nil
 	}
 	return v.Name
 }
 
-func (v *V2WorkflowConfig) GetStages() []map[string]any {
+func (v *V2CreateWorkflowRequest) GetStages() []map[string]any {
 	if v == nil {
 		return []map[string]any{}
 	}

@@ -27,7 +27,7 @@ func (v V3PaymentAdjustment) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V3PaymentAdjustment) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"createdAt", "id", "raw", "reference", "status"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

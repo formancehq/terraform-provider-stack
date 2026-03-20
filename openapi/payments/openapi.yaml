@@ -3126,7 +3126,7 @@ components:
           type: string
           example: 60s
           description: The frequency at which the connector will fetch transactions
-          default: 120s
+          default: 30m
         endpoint:
           type: string
           example: XXX
@@ -3158,7 +3158,7 @@ components:
           example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Adyen API.
-          default: 120s
+          default: 30m
     AtlarConfig:
       type: object
       required:
@@ -5647,7 +5647,6 @@ components:
         - id
         - name
         - createdAt
-        - type
         - poolAccounts
       properties:
         id:
@@ -5771,6 +5770,7 @@ components:
           Column: '#/components/schemas/V3ColumnConfig'
           Currencycloud: '#/components/schemas/V3CurrencycloudConfig'
           Dummypay: '#/components/schemas/V3DummypayConfig'
+          Fireblocks: '#/components/schemas/V3FireblocksConfig'
           Generic: '#/components/schemas/V3GenericConfig'
           Increase: '#/components/schemas/V3IncreaseConfig'
           Mangopay: '#/components/schemas/V3MangopayConfig'
@@ -5789,6 +5789,7 @@ components:
         - $ref: '#/components/schemas/V3ColumnConfig'
         - $ref: '#/components/schemas/V3CurrencycloudConfig'
         - $ref: '#/components/schemas/V3DummypayConfig'
+        - $ref: '#/components/schemas/V3FireblocksConfig'
         - $ref: '#/components/schemas/V3GenericConfig'
         - $ref: '#/components/schemas/V3IncreaseConfig'
         - $ref: '#/components/schemas/V3MangopayConfig'
@@ -5851,6 +5852,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Atlar
@@ -5882,6 +5884,7 @@ components:
           type: string
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Bankingcircle
@@ -5911,6 +5914,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Column
@@ -5966,6 +5970,32 @@ components:
           default: Dummypay
         updateLinkFlowError:
           type: boolean
+    V3FireblocksConfig:
+      type: object
+      required:
+        - name
+        - apiKey
+        - privateKey
+      properties:
+        apiKey:
+          type: string
+        endpoint:
+          type: string
+        name:
+          type: string
+        pageSize:
+          type: integer
+          default: 25
+          deprecated: true
+          x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
+        pollingPeriod:
+          type: string
+          default: 30m
+        privateKey:
+          type: string
+        provider:
+          type: string
+          default: Fireblocks
     V3GenericConfig:
       type: object
       required:
@@ -5986,6 +6016,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Generic
@@ -6010,6 +6041,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Increase
@@ -6038,6 +6070,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Mangopay
@@ -6064,6 +6097,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Modulr
@@ -6090,6 +6124,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Moneycorp
@@ -6178,6 +6213,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Qonto
@@ -6200,6 +6236,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Stripe
@@ -6248,6 +6285,7 @@ components:
           x-speakeasy-deprecation-message: From v3.1, this parameter will be ignored
         pollingPeriod:
           type: string
+          default: 30m
         provider:
           type: string
           default: Wise

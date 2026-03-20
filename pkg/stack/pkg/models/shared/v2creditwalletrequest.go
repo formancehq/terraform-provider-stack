@@ -23,7 +23,7 @@ func (v V2CreditWalletRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2CreditWalletRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"amount", "metadata", "sources"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

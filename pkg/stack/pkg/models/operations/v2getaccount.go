@@ -27,7 +27,7 @@ func (v V2GetAccountRequest) MarshalJSON() ([]byte, error) {
 }
 
 func (v *V2GetAccountRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &v, "", false, []string{"address", "ledger"}); err != nil {
+	if err := utils.UnmarshalJSON(data, &v, "", false, nil); err != nil {
 		return err
 	}
 	return nil

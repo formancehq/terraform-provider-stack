@@ -20,9 +20,9 @@ type V2ListLedgersRequest struct {
 	IncludeDeleted *bool `default:"false" queryParam:"style=form,explode=true,name=includeDeleted"`
 	// The maximum number of results to return per page.
 	//
-	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
-	// Sort results using a field name and order (ascending or descending).
-	// Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
+	PageSize *int64         `queryParam:"style=form,explode=true,name=pageSize"`
+	Query    map[string]any `queryParam:"serialization=json,name=query"`
+	// Sort results using a field name and order (ascending or descending). Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
 	//
 	Sort *string `queryParam:"style=form,explode=true,name=sort"`
 }
@@ -57,6 +57,13 @@ func (v *V2ListLedgersRequest) GetPageSize() *int64 {
 		return nil
 	}
 	return v.PageSize
+}
+
+func (v *V2ListLedgersRequest) GetQuery() map[string]any {
+	if v == nil {
+		return nil
+	}
+	return v.Query
 }
 
 func (v *V2ListLedgersRequest) GetSort() *string {
