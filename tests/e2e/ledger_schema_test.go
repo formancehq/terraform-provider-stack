@@ -24,25 +24,14 @@ func TestLedgerSchemaChart(t *testing.T) {
 			tfversion.SkipBelow(tfversion.Version0_15_0),
 		},
 		Steps: []resource.TestStep{
+			newTestStepStackWithLatestVersion(),
 			{
-				Config: `
+				Config: newStackWithLatestVersion(RegionName) +
+					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
-						}
-
-						data "cloud_current_organization" "default" {}
-
-						data "cloud_regions" "default" {
-							name = "` + RegionName + `"
-						}
-
-						resource "cloud_stack" "default" {
-							name = "test"
-							region_id = data.cloud_regions.default.id
-							version = "v3.2-rc.1"
-							force_destroy = true
 						}
 
 						resource "stack_ledger" "default" {
@@ -90,25 +79,14 @@ func TestLedgerSchemaTransactions(t *testing.T) {
 			tfversion.SkipBelow(tfversion.Version0_15_0),
 		},
 		Steps: []resource.TestStep{
+			newTestStepStackWithLatestVersion(),
 			{
-				Config: `
+				Config: newStackWithLatestVersion(RegionName) +
+					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
-						}
-
-						data "cloud_current_organization" "default" {}
-
-						data "cloud_regions" "default" {
-							name = "` + RegionName + `"
-						}
-
-						resource "cloud_stack" "default" {
-							name = "test"
-							region_id = data.cloud_regions.default.id
-							version = "v3.2-rc.1"
-							force_destroy = true
 						}
 
 						resource "stack_ledger" "default" {
@@ -160,24 +138,12 @@ func TestLedgerSchemaTransactionsScriptError(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: `
+				Config: newStackWithLatestVersion(RegionName) +
+					`
 						provider "stack" {
 							stack_id = cloud_stack.default.id
 							organization_id = data.cloud_current_organization.default.id
 							uri = cloud_stack.default.uri
-						}
-
-						data "cloud_current_organization" "default" {}
-
-						data "cloud_regions" "default" {
-							name = "` + RegionName + `"
-						}
-
-						resource "cloud_stack" "default" {
-							name = "test"
-							region_id = data.cloud_regions.default.id
-							version = "v3.2-rc.1"
-							force_destroy = true
 						}
 
 						resource "stack_ledger" "default" {

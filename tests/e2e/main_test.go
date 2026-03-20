@@ -51,6 +51,18 @@ func newTestStepStack() resource.TestStep {
 	}
 }
 
+func newTestStepStackWithLatestVersion() resource.TestStep {
+	return resource.TestStep{
+		Config: newStackWithLatestVersion(RegionName),
+		ConfigStateChecks: []statecheck.StateCheck{
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("name"), knownvalue.StringExact("test")),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("id"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("force_destroy"), knownvalue.Bool(true)),
+			statecheck.ExpectKnownValue("cloud_stack.default", tfjsonpath.New("uri"), knownvalue.StringRegexp(regexp.MustCompile(`.+`))),
+		},
+	}
+}
+
 func TestMain(m *testing.M) {
 	endpoint := os.Getenv("FORMANCE_CLOUD_API_ENDPOINT")
 	clientID := os.Getenv("FORMANCE_CLOUD_CLIENT_ID")
@@ -159,6 +171,32 @@ func newStack(regionName string) string {
 		resource "cloud_stack" "default" {
 			name = "test"
 			region_id = data.cloud_regions.default.id
+
+			force_destroy = true
+		}
+	`
+}
+
+func newStackWithLatestVersion(regionName string) string {
+	return `
+		data "cloud_current_organization" "default" {}
+
+		data "cloud_regions" "default" {
+			name = "` + regionName + `"
+		}
+
+		data "cloud_region_versions" "default" {
+			id = data.cloud_regions.default.id
+		}
+
+		locals {
+			latest_version = data.cloud_region_versions.default.versions[length(data.cloud_region_versions.default.versions) - 1].name
+		}
+
+		resource "cloud_stack" "default" {
+			name = "test"
+			region_id = data.cloud_regions.default.id
+			version   = local.latest_version
 
 			force_destroy = true
 		}
