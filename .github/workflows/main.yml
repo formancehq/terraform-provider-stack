@@ -23,14 +23,14 @@ jobs:
       statuses: write
       pull-requests: read
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      - uses: amannn/action-semantic-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Dirty:
     runs-on: "shipfox-2vcpu-ubuntu-2404"
     name: "Dirty (Pre-commit)"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
       - name: Setup Nix
@@ -48,7 +48,7 @@ jobs:
     name: "Tests (Unit)"
     runs-on: "shipfox-4vcpu-ubuntu-2404"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
       - name: Setup Nix
@@ -60,7 +60,7 @@ jobs:
           nix develop --impure --command just tests-unit
 
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-unit-report
           path: ./coverage/coverage_unit.txt
@@ -68,7 +68,7 @@ jobs:
     name: "Tests (E2E)"
     runs-on: "shipfox-8vcpu-ubuntu-2404"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
       - name: Setup Nix
@@ -87,7 +87,7 @@ jobs:
           FORMANCE_CLOUD_REGION_NAME: ${{ secrets.FORMANCE_CLOUD_REGION_NAME }}
           FORMANCE_CLOUD_ORGANIZATION_ID: ${{ secrets.FORMANCE_CLOUD_ORGANIZATION_ID }}
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-e2e-report
           path: ./coverage/coverage_e2e.txt
@@ -95,7 +95,7 @@ jobs:
     name: "Tests (Integration)"
     runs-on: "shipfox-8vcpu-ubuntu-2404"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
       - name: Setup Nix
@@ -107,7 +107,7 @@ jobs:
           nix develop --impure --command just tests-integration ci
 
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-integration-report
           path: ./coverage/coverage_integration.txt
@@ -119,7 +119,7 @@ jobs:
       - TestsIntegration
       - TestsE2E
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
       - name: Setup Nix
@@ -127,7 +127,7 @@ jobs:
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - name: Download a report artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: coverage
           pattern: coverage-*
